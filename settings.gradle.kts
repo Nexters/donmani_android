@@ -1,4 +1,7 @@
+rootProject.name = "donmani_android"
+
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -19,8 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "donmani_android"
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
@@ -32,4 +33,3 @@ include(":core:ui")
 include(":core:designsystem")
 include(":core:data")
 include(":core:network")
-include(":core:navigation")
