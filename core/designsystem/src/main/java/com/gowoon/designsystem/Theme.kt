@@ -1,4 +1,4 @@
-package com.gowoon.donmani_android.ui.theme
+package com.gowoon.designsystem
 
 import android.app.Activity
 import android.os.Build
