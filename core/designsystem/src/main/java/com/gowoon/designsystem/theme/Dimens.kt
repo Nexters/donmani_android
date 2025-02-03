@@ -1,4 +1,4 @@
-package com.gowoon.designsystem
+package com.gowoon.designsystem.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf

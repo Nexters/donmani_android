@@ -11,7 +11,6 @@ class AndroidFeaturePlugin: Plugin<Project> {
 
             dependencies {
                 "implementation"(project(":core:designsystem"))
-                "implementation"(project(":core:ui"))
                 "implementation"(project(":core:domain"))
                 "implementation"(project(":core:common"))
             }
