@@ -24,6 +24,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 jetbrainsKotlinJvm = "2.1.0"
+material = "1.12.0"
 
 # third-party
 
@@ -57,6 +58,7 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
@@ -71,6 +73,7 @@ donmani-android-application = { id = "donmani.android.application" }
 donmani-android-compose = { id = "donmani.android.compose" }
 donmani-android-library = { id = "donmani.android.library"}
 donmani-kotlin-jvm-library = { id = "donmani.kotlin.jvm.library" }
+donmani-android-feature = { id = "donmani.android.feature" }
 
 [bundles]
 android-compose = [
@@ -84,5 +87,8 @@ android-compose-debug = [
     "androidx-ui-tooling",
     "androidx-ui-test-manifest",
 ]
-android-ui-test = []
-unit-text = []
+android-ui-test = [
+    "androidx-junit",
+    "androidx-espresso-core",
+    "androidx-ui-test-junit4"
+]

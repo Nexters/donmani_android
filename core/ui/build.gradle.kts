@@ -8,10 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.designsystem)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.bundles.android.ui.test)
 }

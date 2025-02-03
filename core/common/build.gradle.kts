@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "com.gowoon.network"
+    namespace = "com.gowoon.common"
 }

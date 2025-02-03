@@ -30,5 +30,9 @@ gradlePlugin {
             id = libs.plugins.donmani.kotlin.jvm.library.get().pluginId
             implementationClass = "JvmLibraryPlugin"
         }
+        register("androidFeature"){
+            id = libs.plugins.donmani.android.feature.get().pluginId
+            implementationClass = "AndroidFeaturePlugin"
+        }
     }
 }
