@@ -21,7 +21,6 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
     implementation(projects.core.model)
-    implementation(projects.core.ui)
     implementation(projects.core.network)
     implementation(projects.feature.home)
     implementation(projects.feature.mypage)
