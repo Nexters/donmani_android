@@ -17,7 +17,12 @@ appcompat = "1.7.0"
 
 # kotlin
 kotlin = "2.1.0"
+
+# ksp
 ksp = "2.0.21-1.0.27"
+
+# hilt
+hilt = "2.55"
 
 # test
 junit = "4.13.2"
@@ -46,6 +51,10 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 
 # kotlin
 
+# hilt
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 
 # test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -62,11 +71,20 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 
 [plugins]
+# android
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+# kotlin
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+
+# kotlin
+ksp = { id = "com.google.devtools.ksp" , version.ref = "ksp"}
+
+# hilt
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 # donmani plugins
 donmani-android-application = { id = "donmani.android.application" }
@@ -74,6 +92,7 @@ donmani-android-compose = { id = "donmani.android.compose" }
 donmani-android-library = { id = "donmani.android.library"}
 donmani-kotlin-jvm-library = { id = "donmani.kotlin.jvm.library" }
 donmani-android-feature = { id = "donmani.android.feature" }
+donmani-hilt = { id = "donmani.hilt" }
 
 [bundles]
 android-compose = [
