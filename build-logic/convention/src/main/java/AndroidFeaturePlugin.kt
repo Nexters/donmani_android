@@ -1,3 +1,4 @@
+import com.gowoon.configs.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -15,6 +16,8 @@ class AndroidFeaturePlugin: Plugin<Project> {
                 "implementation"(project(":core:ui"))
                 "implementation"(project(":core:domain"))
                 "implementation"(project(":core:common"))
+
+                "implementation"(libs.findLibrary("androidx.navigation.compose").get())
             }
         }
 
