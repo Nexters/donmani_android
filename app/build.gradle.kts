@@ -13,6 +13,9 @@ android {
             )
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -22,9 +25,11 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.model)
     implementation(projects.core.network)
+    implementation(projects.core.ui)
     implementation(projects.feature.home)
     implementation(projects.feature.mypage)
 
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)
 }

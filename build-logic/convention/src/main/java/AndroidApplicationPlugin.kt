@@ -1,5 +1,4 @@
 import com.android.build.api.dsl.ApplicationExtension
-import com.gowoon.configs.Plugins
 import com.gowoon.configs.configureAndroidCompose
 import com.gowoon.configs.configureKotlinAndroid
 import com.gowoon.configs.libs
@@ -11,9 +10,10 @@ import org.gradle.kotlin.dsl.configure
 class AndroidApplicationPlugin: Plugin<Project> {
     override fun apply(target: Project) {
         with(target){
-            apply(plugin = Plugins.ANDROID_APPLICATION)
-            apply(plugin = Plugins.KOTLIN_ANDROID)
-            apply(plugin = Plugins.KOTLIN_COMPOSE)
+            apply(plugin = "com.android.application")
+            apply(plugin = "org.jetbrains.kotlin.android")
+            apply(plugin = "org.jetbrains.kotlin.plugin.compose")
+            apply<HiltPlugin>()
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)

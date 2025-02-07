@@ -34,5 +34,9 @@ gradlePlugin {
             id = libs.plugins.donmani.android.feature.get().pluginId
             implementationClass = "AndroidFeaturePlugin"
         }
+        register("hilt"){
+            id = libs.plugins.donmani.hilt.get().pluginId
+            implementationClass = "HiltPlugin"
+        }
     }
 }
