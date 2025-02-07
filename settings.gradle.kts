@@ -26,7 +26,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":feature:home")
-include(":feature:mypage")
+include(":feature:record")
 include(":core:domain")
 include(":core:model")
 include(":core:designsystem")

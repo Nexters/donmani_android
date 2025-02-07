@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gowoon.mypage"
+    namespace = "com.gowoon.record"
 }
 
 dependencies {

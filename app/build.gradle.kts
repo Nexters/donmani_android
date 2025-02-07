@@ -27,7 +27,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.ui)
     implementation(projects.feature.home)
-    implementation(projects.feature.mypage)
+    implementation(projects.feature.record)
 
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
