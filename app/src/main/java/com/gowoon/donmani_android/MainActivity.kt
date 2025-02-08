@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
             DonmaniTheme {
                 val appState = rememberAppState()
                 GradientBackground(if (appState.isHome) BGMode.MAIN else BGMode.DEFAULT) {
-                    DonmaniNavHost(appState)
+                    DonmaniNavHost()
                 }
             }
         }

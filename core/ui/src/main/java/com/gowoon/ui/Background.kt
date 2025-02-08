@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,7 +51,7 @@ fun TransparentScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
-        modifier = modifier.padding(horizontal = DonmaniTheme.dimens.Margin20),
+        modifier = modifier.safeDrawingPadding().padding(horizontal = DonmaniTheme.dimens.Margin20),
         topBar = topBar,
         bottomBar = bottomBar,
         snackbarHost = snackbarHost,
