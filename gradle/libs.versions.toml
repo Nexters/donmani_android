@@ -10,7 +10,7 @@ versionName = "1.0.0"
 # android
 agp = "8.8.0"
 coreKtx = "1.15.0"
-lifecycleRuntimeKtx = "2.8.7"
+lifecycle = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2025.01.01"
 appcompat = "1.7.0"
@@ -41,7 +41,10 @@ napier = "2.7.1"
 ## core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 ## lifecycle
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 ## appcompat
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 ## activity
@@ -74,7 +77,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 
 # third party
 ## napier
-napier = { group =  "io.github.aakira", name = "napier", version.ref = "napier" }
+napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 
 # gradle plugin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -94,10 +97,10 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version = "kotlin"}
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version = "kotlin" }
 
 # kotlin
-ksp = { id = "com.google.devtools.ksp" , version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # hilt
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -105,7 +108,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 # donmani plugins
 donmani-android-application = { id = "donmani.android.application" }
 donmani-android-compose = { id = "donmani.android.compose" }
-donmani-android-library = { id = "donmani.android.library"}
+donmani-android-library = { id = "donmani.android.library" }
 donmani-kotlin-jvm-library = { id = "donmani.kotlin.jvm.library" }
 donmani-android-feature = { id = "donmani.android.feature" }
 donmani-hilt = { id = "donmani.hilt" }
@@ -126,4 +129,10 @@ android-ui-test = [
     "androidx-junit",
     "androidx-espresso-core",
     "androidx-ui-test-junit4"
+]
+android-lifecycle = [
+    "androidx-lifecycle-runtime-ktx",
+    "androidx-lifecycle-viewmodel",
+    "androidx-lifecycle-viewmodel-compose",
+    "androidx-lifecycle-compose"
 ]

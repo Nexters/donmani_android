@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.gowoon.common"
 }
+
+dependencies {
+    implementation(libs.androidx.lifecycle.viewmodel)
+}

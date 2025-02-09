@@ -4,9 +4,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
-class AndroidFeaturePlugin: Plugin<Project> {
+class AndroidFeaturePlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        with(target){
+        with(target) {
             apply<AndroidLibraryPlugin>()
             apply<AndroidComposePlugin>()
             apply<HiltPlugin>()
@@ -18,6 +18,7 @@ class AndroidFeaturePlugin: Plugin<Project> {
                 "implementation"(project(":core:common"))
 
                 "implementation"(libs.findLibrary("androidx.navigation.compose").get())
+                "implementation"(libs.findBundle("android-lifecycle").get())
             }
         }
 
