@@ -2,6 +2,7 @@ package com.gowoon.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,8 +22,9 @@ import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.ui.noRippleClickable
 
-enum class RoundedButtonRadius(val radius: Dp) {
-    Row(16.dp), High(25.dp)
+enum class RoundedButtonRadius(val radius: Dp, val verticalPadding: Dp, val horizontalPadding: Dp) {
+    Row(radius = 16.dp, verticalPadding = 16.dp, horizontalPadding = 16.dp),
+    High(radius = 25.dp, verticalPadding = 8.dp, horizontalPadding = 16.dp)
 }
 
 @Composable
@@ -39,6 +41,7 @@ fun RoundedButton(
                 color = if (enable) DonmaniTheme.colors.Gray95 else DonmaniTheme.colors.DeepBlue20,
                 shape = RoundedCornerShape(type.radius)
             )
+            .padding(vertical = type.verticalPadding, horizontal = type.horizontalPadding)
             .noRippleClickable { if (enable) onClick() }
     ) {
         Text(
@@ -79,5 +82,13 @@ fun CircleButton(
             tint = contentColor,
             contentDescription = null
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ButtonPreview(){
+    RoundedButton(type = RoundedButtonRadius.Row, label = "button") {
+
     }
 }
