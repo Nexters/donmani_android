@@ -17,11 +17,11 @@ appcompat = "1.7.0"
 navigationCompose = "2.8.6"
 
 # kotlin
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlinxSerialization = "1.8.0"
 
 # ksp
-ksp = "2.0.21-1.0.27"
+ksp = "2.1.10-1.0.29"
 
 # hilt
 hilt = "2.55"

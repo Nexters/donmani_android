@@ -6,6 +6,10 @@ import com.gowoon.home.HomeScreen
 
 const val homeNavigationRoute = "home_route"
 
-fun NavGraphBuilder.homeScreen() {
-    composable(route = homeNavigationRoute) { HomeScreen() }
+fun NavGraphBuilder.homeScreen(
+    onClickSetting: () -> Unit,
+    onClickCalendar: () -> Unit,
+    onClickAdd: (Boolean, Boolean) -> Unit
+) {
+    composable(route = homeNavigationRoute) { HomeScreen(onClickAdd = onClickAdd) }
 }

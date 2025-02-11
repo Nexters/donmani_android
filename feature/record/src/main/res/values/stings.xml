@@ -1,6 +1,7 @@
 <resources>
-    <string name="record_main_title">오늘 소비 정리해 볼까요?</string>
+    <string name="record_main_title">%s 소비 정리해 볼까요?</string>
     <string name="no_consumption_message">무소비 했어요</string>
     <string name="record_bottom_message_default">너의 소비를 별사탕으로 바꿔줄게!</string>
     <string name="btn_record_save">저장하기</string>
+    <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
 </resources>

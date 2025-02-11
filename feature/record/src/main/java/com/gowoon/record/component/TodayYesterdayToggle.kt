@@ -19,17 +19,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.model.common.EntryDay
 import com.gowoon.ui.noRippleClickable
 
 
 @Composable
 internal fun TodayYesterdayToggle(
     modifier: Modifier = Modifier,
-    options: Array<String>,
-    onClick: (String) -> Unit
+    options: List<EntryDay>,
+    onClick: (EntryDay) -> Unit
 ) {
     var selected by remember { mutableStateOf(options[options.lastIndex]) }
     LaunchedEffect(selected) {
@@ -45,7 +45,7 @@ internal fun TodayYesterdayToggle(
     ) {
         options.forEachIndexed { index, option ->
             TitleButton(
-                title = option,
+                title = option.title,
                 isSelected = selected == option
             ) { selected = option }
             if (index < options.lastIndex) {
@@ -78,10 +78,4 @@ private fun Divider() {
             .padding(vertical = 5.dp)
             .background(DonmaniTheme.colors.DeepBlue70)
     )
-}
-
-@Preview
-@Composable
-private fun TogglePreview() {
-    TodayYesterdayToggle(options = arrayOf("어제", "오늘")) { }
 }

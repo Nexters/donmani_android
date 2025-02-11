@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.component.HomeAppBar
@@ -23,7 +22,10 @@ import com.gowoon.ui.component.CircleButtonSize
 import com.gowoon.ui.component.Title
 
 @Composable
-internal fun HomeScreen() {
+internal fun HomeScreen(onClickAdd: (Boolean, Boolean) -> Unit) {
+    // TODO 어제 오늘 기록 있는지 여부
+    val hasToday = false
+    val hasYesterday = false
     // TODO nickname 받아서 타이틀 구성
     val nickname = "고운"
     TransparentScaffold(
@@ -39,7 +41,10 @@ internal fun HomeScreen() {
             Title(text = stringResource(R.string.home_title, nickname))
             Spacer(Modifier.height(95.dp))
             HomeContent()
-            HomeFooter(Modifier.weight(1f))
+            HomeFooter(
+                modifier = Modifier.weight(1f),
+                onClickAdd = { onClickAdd(hasToday, hasYesterday) }
+            )
         }
     }
 }
@@ -56,7 +61,10 @@ private fun HomeContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HomeFooter(modifier: Modifier = Modifier) {
+private fun HomeFooter(
+    modifier: Modifier = Modifier,
+    onClickAdd: () -> Unit
+) {
     // TODO 오늘, 어제 기록 여부에 따라 분기 처리 추가
     Box(modifier) {
         CircleButton(
@@ -64,14 +72,6 @@ private fun HomeFooter(modifier: Modifier = Modifier) {
             buttonSize = CircleButtonSize.Big,
             backgroundColor = DonmaniTheme.colors.PurpleBlue70,
             contentColor = DonmaniTheme.colors.PurpleBlue99
-        ) {
-            // TODO navigte to record
-        }
+        ) { onClickAdd() }
     }
-}
-
-@Preview
-@Composable
-private fun HomeScreenPreview() {
-    HomeScreen()
 }

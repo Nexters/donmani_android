@@ -6,7 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
+import com.gowoon.record.navigation.navigateToRecord
+import com.gowoon.record.navigation.recordScreen
 
+// TODO enter, exit transition
 @Composable
 fun DonmaniNavHost(
     modifier: Modifier = Modifier
@@ -17,6 +20,13 @@ fun DonmaniNavHost(
         startDestination = homeNavigationRoute,
         modifier = modifier
     ) {
-        homeScreen()
+        homeScreen(
+            onClickSetting = {},
+            onClickCalendar = {},
+            onClickAdd = navController::navigateToRecord
+        )
+        recordScreen(
+            onClickBack = navController::popBackStack
+        )
     }
 }
