@@ -8,7 +8,9 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.donmani_android.navigation.DonmaniNavHost
 import com.gowoon.ui.BGMode
 import com.gowoon.ui.GradientBackground
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

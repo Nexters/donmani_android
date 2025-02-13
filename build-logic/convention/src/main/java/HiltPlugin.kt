@@ -4,9 +4,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 
-class HiltPlugin: Plugin<Project> {
+class HiltPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        with(target){
+        with(target) {
             apply(plugin = "com.google.devtools.ksp")
 
             dependencies {
@@ -23,6 +23,7 @@ class HiltPlugin: Plugin<Project> {
                 apply(plugin = "com.google.dagger.hilt.android")
                 dependencies {
                     "implementation"(libs.findLibrary("hilt.android").get())
+                    "implementation"(libs.findLibrary("androidx.hilt.navigation.compose").get())
                 }
             }
         }
