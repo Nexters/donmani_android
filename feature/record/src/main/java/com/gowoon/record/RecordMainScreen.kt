@@ -33,9 +33,10 @@ import com.gowoon.model.record.Record
 import com.gowoon.record.component.EmptyCard
 import com.gowoon.record.component.MessageBox
 import com.gowoon.record.component.NoConsumptionCard
-import com.gowoon.record.component.RecordMainAppBar
+import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.AppBar
 import com.gowoon.ui.component.CheckBoxWithTitle
 import com.gowoon.ui.component.RoundedButton
 import com.gowoon.ui.component.RoundedButtonRadius
@@ -52,9 +53,14 @@ internal fun RecordMainScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
         topBar = {
-            RecordMainAppBar(onClickBack = onClickBack) { selected ->
-                viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
-            }
+            AppBar(
+                onClickNavigation = onClickBack,
+                actionButton = {
+                    TodayYesterdayToggle(options = EntryDay.entries) { selected ->
+                        viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                    }
+                }
+            )
         }
     ) { padding ->
         val scrollState = rememberScrollState()

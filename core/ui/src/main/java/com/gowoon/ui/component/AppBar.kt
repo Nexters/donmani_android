@@ -20,7 +20,7 @@ import com.gowoon.ui.noRippleClickable
 
 @Composable
 fun AppBar(
-    navigationIcon: ImageVector,
+    navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.arrow_left),
     onClickNavigation: () -> Unit,
     actionButton: (@Composable () -> Unit)? = null,
     title: String? = null,
