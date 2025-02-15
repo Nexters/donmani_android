@@ -28,6 +28,39 @@ enum class RoundedButtonRadius(val radius: Dp, val verticalPadding: Dp, val hori
 }
 
 @Composable
+fun PositiveButton(
+    modifier: Modifier = Modifier,
+    label: String,
+    onClick: () -> Unit
+) {
+    RoundedButton(
+        modifier = modifier,
+        type = RoundedButtonRadius.Row,
+        label = label,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun NegativeButton(
+    modifier: Modifier = Modifier,
+    label: String,
+    onClick: () -> Unit
+) {
+    val type = RoundedButtonRadius.Row
+    BaseRoundedButton(
+        modifier = modifier,
+        backgroundColor = DonmaniTheme.colors.DeepBlue50,
+        contentColor = DonmaniTheme.colors.Common0,
+        radius = type.radius,
+        verticalPadding = type.verticalPadding,
+        horizontalPadding = type.horizontalPadding,
+        label = label,
+        onClick = onClick
+    )
+}
+
+@Composable
 fun RoundedButton(
     modifier: Modifier = Modifier,
     type: RoundedButtonRadius,
@@ -35,19 +68,41 @@ fun RoundedButton(
     enable: Boolean = true,
     onClick: () -> Unit
 ) {
+    BaseRoundedButton(
+        modifier = modifier,
+        backgroundColor = if (enable) DonmaniTheme.colors.Gray95 else DonmaniTheme.colors.DeepBlue20,
+        contentColor = if (enable) DonmaniTheme.colors.DeepBlue20 else DonmaniTheme.colors.DeepBlue70,
+        radius = type.radius,
+        verticalPadding = type.verticalPadding,
+        horizontalPadding = type.horizontalPadding,
+        label = label
+    ) { if (enable) onClick() }
+}
+
+@Composable
+fun BaseRoundedButton(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color,
+    contentColor: Color,
+    radius: Dp,
+    verticalPadding: Dp,
+    horizontalPadding: Dp,
+    label: String,
+    onClick: () -> Unit
+) {
     Box(
         modifier = modifier
             .background(
-                color = if (enable) DonmaniTheme.colors.Gray95 else DonmaniTheme.colors.DeepBlue20,
-                shape = RoundedCornerShape(type.radius)
+                color = backgroundColor,
+                shape = RoundedCornerShape(radius)
             )
-            .padding(vertical = type.verticalPadding, horizontal = type.horizontalPadding)
-            .noRippleClickable { if (enable) onClick() }
+            .padding(vertical = verticalPadding, horizontal = horizontalPadding)
+            .noRippleClickable { onClick() }
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = label,
-            color = if (enable) DonmaniTheme.colors.DeepBlue20 else DonmaniTheme.colors.DeepBlue70,
+            color = contentColor,
             style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold)
         )
     }
@@ -87,7 +142,7 @@ fun CircleButton(
 
 @Preview
 @Composable
-private fun ButtonPreview(){
+private fun ButtonPreview() {
     RoundedButton(type = RoundedButtonRadius.Row, label = "button") {
 
     }

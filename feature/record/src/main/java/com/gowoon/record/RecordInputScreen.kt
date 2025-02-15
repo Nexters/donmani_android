@@ -29,7 +29,7 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.component.InputCategoryChip
-import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
 import com.gowoon.ui.component.InputField
@@ -44,7 +44,8 @@ internal fun RecordInputScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
-    GradientBackground(state.category) {
+
+    CategoryBackground(state.category) {
         TransparentScaffold(
             topBar = {
                 AppBar(
