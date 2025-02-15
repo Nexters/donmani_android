@@ -29,6 +29,7 @@ import com.gowoon.ui.component.Card
 import com.gowoon.ui.component.CircleButton
 import com.gowoon.ui.component.CircleButtonSize
 import com.gowoon.ui.noRippleClickable
+import com.gowoon.ui.util.getNoConsumptionColor
 
 @Composable
 internal fun EmptyCard(
@@ -78,7 +79,7 @@ internal fun NoConsumptionCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        backgroundColor = Color.White.copy(0.1f)
+        backgroundColor = getNoConsumptionColor()
     ) {
         Column(
             modifier = Modifier

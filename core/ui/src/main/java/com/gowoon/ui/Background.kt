@@ -18,19 +18,45 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.model.record.Category
+import com.gowoon.ui.util.getColor
 
 enum class BGMode { DEFAULT, MAIN }
 
 @Composable
 fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () -> Unit) {
+    GradientBackground(
+        startColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(
+            0xFF020617
+        ),
+        endColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(0xFF091958),
+        content = content
+    )
+}
+
+@Composable
+fun GradientBackground(category: Category?, content: @Composable () -> Unit) {
+    GradientBackground(
+        startColor = category?.getColor() ?: DonmaniTheme.colors.DeepBlue30,
+        endColor = DonmaniTheme.colors.DeepBlue50,
+        content = content
+    )
+}
+
+@Composable
+fun GradientBackground(
+    startColor: Color,
+    endColor: Color,
+    content: @Composable () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        if(mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(0xFF020617),
-                        if(mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(0xFF091958)
+                        startColor,
+                        endColor
                     )
                 )
             )
@@ -51,7 +77,9 @@ fun TransparentScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
-        modifier = modifier.safeDrawingPadding().padding(horizontal = DonmaniTheme.dimens.Margin20),
+        modifier = modifier
+            .safeDrawingPadding()
+            .padding(horizontal = DonmaniTheme.dimens.Margin20),
         topBar = topBar,
         bottomBar = bottomBar,
         snackbarHost = snackbarHost,
@@ -67,5 +95,5 @@ fun TransparentScaffold(
 @Preview
 @Composable
 fun DefaultGradientBackgroundPreview() {
-    GradientBackground {  }
+    GradientBackground { }
 }

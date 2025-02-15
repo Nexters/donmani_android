@@ -120,6 +120,7 @@ donmani-android-library = { id = "donmani.android.library" }
 donmani-kotlin-jvm-library = { id = "donmani.kotlin.jvm.library" }
 donmani-android-feature = { id = "donmani.android.feature" }
 donmani-hilt = { id = "donmani.hilt" }
+donmani-kotlin-serialization = { id = "donmani.kotlin.serailization" }
 
 [bundles]
 android-compose = [
