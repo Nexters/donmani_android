@@ -48,7 +48,8 @@ import com.gowoon.ui.component.TooltipDirection
 @Composable
 internal fun RecordMainScreen(
     viewModel: RecordMainViewModel = hiltViewModel(),
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickAdd: (type: ConsumptionType) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
@@ -89,9 +90,7 @@ internal fun RecordMainScreen(
                         onClickCheckBox = { checked ->
                             viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionCheckBox(checked))
                         },
-                        onClickEmptyBox = {
-                            // TODO navigate to record input
-                        },
+                        onClickEmptyBox = onClickAdd,
                         onClickTooltip = {
                             viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionTooltip)
                         }
@@ -190,7 +189,10 @@ private fun RecordMainFooter(modifier: Modifier = Modifier) {
 private fun RecordMainPreview() {
     DonmaniTheme {
         GradientBackground {
-            RecordMainScreen {}
+            RecordMainScreen(
+                onClickBack = {},
+                onClickAdd = {}
+            )
         }
     }
 }

@@ -4,7 +4,13 @@ import androidx.compose.ui.graphics.Color
 import com.gowoon.designsystem.R
 import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Category
+import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
+
+fun ConsumptionType.getDefaultResId(): Int = when(this){
+    ConsumptionType.GOOD -> R.drawable.happy_default
+    ConsumptionType.BAD -> R.drawable.regret_default
+}
 
 fun Category.getColor(): Color = when (val category = this) {
     is GoodCategory -> {

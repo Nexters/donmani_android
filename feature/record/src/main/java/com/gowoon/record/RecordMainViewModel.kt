@@ -26,15 +26,14 @@ internal class RecordMainViewModel @Inject constructor(
     private val getNoConsumptionTooltipStateUseCase: GetNoConsumptionTooltipStateUseCase,
     private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase
 ) : BaseViewModel<RecordMainState, RecordMainEvent, RecordMainEffect>() {
-    private val showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not()
-    private val showYesterday =
-        savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
+    override fun createInitialState(): RecordMainState = RecordMainState()
 
     init {
-        initialState()
+        initialState(
+            showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not().not(),
+            showYesterday = savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
+        )
     }
-
-    override fun createInitialState(): RecordMainState = RecordMainState()
     override fun handleEvent(event: RecordMainEvent) {
         when (event) {
             is RecordMainEvent.OnClickDayToggle -> {
@@ -56,7 +55,7 @@ internal class RecordMainViewModel @Inject constructor(
         }
     }
 
-    private fun initialState() {
+    private fun initialState(showToday: Boolean, showYesterday: Boolean) {
         viewModelScope.launch {
             getNoConsumptionTooltipStateUseCase().stateIn(this).collect {
                 when (it) {

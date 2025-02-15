@@ -47,7 +47,8 @@ fun InputField(
             textColor = textColor,
             placeholderColor = placeholderColor,
             brushColor = brushColor,
-            textStyle = textStyle
+            textStyle = textStyle,
+            maxLength = maxLength
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -67,7 +68,8 @@ private fun ScrollableInputField(
     textColor: Color,
     placeholderColor: Color,
     brushColor: Color,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    maxLength: Int
 ) {
     val scrollState = rememberScrollState()
     val customTextSelectionColors = TextSelectionColors(
@@ -90,7 +92,10 @@ private fun ScrollableInputField(
                 state = text,
                 textStyle = textStyle.copy(color = textColor),
                 cursorBrush = SolidColor(brushColor),
-                scrollState = scrollState
+                scrollState = scrollState,
+                inputTransformation = {
+                    takeIf { it.length > maxLength }?.revertAllChanges()
+                }
             )
         }
     }

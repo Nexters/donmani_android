@@ -30,6 +30,7 @@ import com.gowoon.ui.component.CircleButton
 import com.gowoon.ui.component.CircleButtonSize
 import com.gowoon.ui.noRippleClickable
 import com.gowoon.ui.util.getNoConsumptionColor
+import com.gowoon.ui.util.getNoConsumptionResId
 
 @Composable
 internal fun EmptyCard(
@@ -95,7 +96,7 @@ internal fun NoConsumptionCard(modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(20.dp))
             Icon(
-                imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.icon_no_consumption),
+                imageVector = ImageVector.vectorResource(getNoConsumptionResId()),
                 tint = Color.Unspecified,
                 contentDescription = null
             )

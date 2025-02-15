@@ -24,3 +24,8 @@ enum class BadCategory(val title: String) : Category {
     Stingy("과한절약"),
     None("없음")
 }
+
+fun Category.getTitle(type: ConsumptionType): String? = when(type){
+    ConsumptionType.GOOD -> (this as? GoodCategory)?.title
+    ConsumptionType.BAD -> (this as? BadCategory)?.title
+}
