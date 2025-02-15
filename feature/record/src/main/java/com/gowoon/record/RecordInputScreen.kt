@@ -12,7 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
+import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.component.InputCategoryChip
@@ -44,6 +47,7 @@ internal fun RecordInputScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
+    var showBottomSheet by remember { mutableStateOf(true) }
 
     CategoryBackground(state.category) {
         TransparentScaffold(
@@ -54,6 +58,16 @@ internal fun RecordInputScreen(
                 )
             }
         ) {
+            if (showBottomSheet) {
+                CategorySelectBottomSheet(
+                    type = state.type,
+                    selected = state.category,
+                    onChangedValue = { selected ->
+                        viewModel.setEvent(RecordInputEvent.OnChangeCagegory(selected))
+                    }
+                ) { showBottomSheet = false }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -65,7 +79,7 @@ internal fun RecordInputScreen(
                     category = state.category,
                     memo = state.memo
                 ) {
-                    // TODO onClickEdit
+                    showBottomSheet = true
                 }
                 RoundedButton(
                     modifier = Modifier
@@ -76,7 +90,7 @@ internal fun RecordInputScreen(
                     enable = enabled
 
                 ) {
-                    // TODO onClick
+                    // TODO pass consumption data
                 }
             }
         }

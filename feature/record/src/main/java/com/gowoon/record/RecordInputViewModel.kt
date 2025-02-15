@@ -24,7 +24,11 @@ class RecordInputViewModel @Inject constructor(
     }
 
     override fun handleEvent(event: RecordInputEvent) {
-
+        when (event) {
+            is RecordInputEvent.OnChangeCagegory -> {
+                setState(currentState.copy(category = event.category))
+            }
+        }
     }
 }
 
@@ -34,5 +38,8 @@ data class RecordInputState(
     val memo: TextFieldState = TextFieldState()
 ) : UiState
 
-sealed class RecordInputEvent : UiEvent
+sealed class RecordInputEvent : UiEvent {
+    data class OnChangeCagegory(val category: Category) : RecordInputEvent()
+}
+
 sealed class RecordInputEffect : UiEffect

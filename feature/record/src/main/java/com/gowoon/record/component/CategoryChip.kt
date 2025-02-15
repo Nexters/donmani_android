@@ -1,6 +1,7 @@
 package com.gowoon.record.component
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -18,6 +19,21 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.ui.util.getDefaultResId
 import com.gowoon.ui.util.getImageResId
+
+@Composable
+internal fun CategorySelectChip(
+    modifier: Modifier = Modifier,
+    category: Category,
+    selected: Boolean = false
+) {
+    CategoryChip(
+        modifier = modifier,
+        resId = category.getImageResId(),
+        size = 62.dp,
+        radius = 16.dp,
+        border = if (selected) 2.dp else null
+    )
+}
 
 @Composable
 internal fun InputCategoryChip(
@@ -42,7 +58,9 @@ private fun CategoryChip(
     radius: Dp,
     border: Dp? = null
 ) {
-    val baseModifier = modifier.size(size).clip(shape = RoundedCornerShape(radius))
+    val baseModifier = modifier
+        .size(size)
+        .clip(shape = RoundedCornerShape(radius))
     val finalModifier = border?.let {
         baseModifier.then(
             Modifier.border(
@@ -63,5 +81,8 @@ private fun CategoryChip(
 @Preview
 @Composable
 private fun CategoryChipPreview() {
-    InputCategoryChip(type = ConsumptionType.GOOD, category = GoodCategory.Energy)
+    Column {
+        InputCategoryChip(type = ConsumptionType.GOOD, category = GoodCategory.Energy)
+        CategorySelectChip(category = GoodCategory.Energy, selected = true)
+    }
 }

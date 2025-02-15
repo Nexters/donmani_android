@@ -13,25 +13,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.ui.noRippleClickable
+import kotlinx.coroutines.launch
 
 sealed interface BottomSheetButtonType {
     data class Single(val title: String, val enable: Boolean = true) : BottomSheetButtonType
@@ -44,14 +40,16 @@ fun BottomSheet(
     title: String,
     buttonType: BottomSheetButtonType,
     content: @Composable () -> Unit,
-    onClick: (Boolean) -> Unit
+    onClick: (Boolean) -> Unit,
+    onDismissRequest: () -> Unit
 ) {
-    val state = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         sheetState = state,
         dragHandle = null,
         containerColor = DonmaniTheme.colors.DeepBlue60,
-        onDismissRequest = {}
+        onDismissRequest = onDismissRequest
     ) {
         Column(
             modifier = Modifier
@@ -71,11 +69,16 @@ fun BottomSheet(
             when (buttonType) {
                 is BottomSheetButtonType.Single -> {
                     RoundedButton(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
                         type = RoundedButtonRadius.Row,
                         label = buttonType.title,
                         enable = buttonType.enable,
-                    ) { onClick(true) }
+                    ) {
+                        scope.launch { state.hide() }
+                        onClick(true)
+                    }
                 }
 
                 is BottomSheetButtonType.Double -> {
@@ -88,11 +91,17 @@ fun BottomSheet(
                         NegativeButton(
                             modifier = Modifier.weight(1f),
                             label = buttonType.negativeTitle
-                        ) { onClick(false) }
+                        ) {
+                            scope.launch { state.hide() }
+                            onClick(false)
+                        }
                         PositiveButton(
                             modifier = Modifier.weight(1f),
                             label = buttonType.positiveTitle
-                        ) { onClick(true) }
+                        ) {
+                            scope.launch { state.hide() }
+                            onClick(true)
+                        }
                     }
                 }
             }
@@ -120,31 +129,5 @@ private fun CloseButton(
             tint = Color.Unspecified,
             contentDescription = null
         )
-    }
-}
-
-@Preview
-@Composable
-private fun BottomSheetPreview() {
-    var showBottomSheet by remember { mutableStateOf(false) }
-    Scaffold { padding ->
-
-        if (showBottomSheet) {
-            BottomSheet(
-                title = "타이틀",
-                buttonType = BottomSheetButtonType.Single("완료"),
-                {},
-                {}
-            )
-        }
-
-        Column(Modifier.padding(padding)) {
-            RoundedButton(
-                type = RoundedButtonRadius.Row,
-                label = "click"
-            ) {
-                showBottomSheet = true
-            }
-        }
     }
 }
