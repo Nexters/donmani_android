@@ -28,10 +28,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
-import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
+import com.gowoon.model.record.name
 import com.gowoon.record.component.InputCategoryChip
+import com.gowoon.record.navigation.InputToMainArgument
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
@@ -43,7 +44,8 @@ import com.gowoon.ui.noRippleClickable
 @Composable
 internal fun RecordInputScreen(
     viewModel: RecordInputViewModel = hiltViewModel(),
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickDone: (InputToMainArgument) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
@@ -63,7 +65,7 @@ internal fun RecordInputScreen(
                     type = state.type,
                     selected = state.category,
                     onChangedValue = { selected ->
-                        viewModel.setEvent(RecordInputEvent.OnChangeCagegory(selected))
+                        viewModel.setEvent(RecordInputEvent.OnChangeCategory(selected))
                     }
                 ) { showBottomSheet = false }
             }
@@ -90,7 +92,15 @@ internal fun RecordInputScreen(
                     enable = enabled
 
                 ) {
-                    // TODO pass consumption data
+                    state.category?.let { category ->
+                        onClickDone(
+                            InputToMainArgument(
+                                type = state.type.name,
+                                category = category.name(state.type),
+                                memo = state.memo.text.toString()
+                            )
+                        )
+                    }
                 }
             }
         }

@@ -21,6 +21,20 @@ import com.gowoon.ui.util.getDefaultResId
 import com.gowoon.ui.util.getImageResId
 
 @Composable
+internal fun CardCategoryChip(
+    modifier: Modifier = Modifier,
+    category: Category,
+) {
+    CategoryChip(
+        modifier = modifier,
+        resId = category.getImageResId(),
+        size = 78.dp,
+        radius = 20.dp,
+        border = 3.dp
+    )
+}
+
+@Composable
 internal fun CategorySelectChip(
     modifier: Modifier = Modifier,
     category: Category,

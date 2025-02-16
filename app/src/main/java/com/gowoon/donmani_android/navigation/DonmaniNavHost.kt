@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
+import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.record.navigation.navigateToRecord
 import com.gowoon.record.navigation.navigateToRecordInput
 import com.gowoon.record.navigation.recordGraph
@@ -28,7 +29,14 @@ fun DonmaniNavHost(
         )
         recordGraph(
             onClickBack = navController::popBackStack,
-            navigateToRecordInput = navController::navigateToRecordInput
+            navigateToRecordInput = navController::navigateToRecordInput,
+            popBackStackWithArgument = { data ->
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    InputToMainArgumentKey,
+                    data
+                )
+                navController.popBackStack()
+            }
         )
     }
 }

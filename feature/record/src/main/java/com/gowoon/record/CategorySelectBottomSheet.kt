@@ -101,7 +101,7 @@ private fun CategoryGridItem(
             selected = selected
         )
         Text(
-            text = category.getTitle(type) ?: "",
+            text = category.getTitle(type),
             color = DonmaniTheme.colors.DeepBlue99,
             style = DonmaniTheme.typography.Body2.copy(fontWeight = FontWeight.SemiBold)
         )

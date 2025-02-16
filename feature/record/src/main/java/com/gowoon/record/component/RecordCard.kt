@@ -1,6 +1,7 @@
 package com.gowoon.record.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
@@ -15,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -23,14 +26,73 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.model.record.BadCategory
+import com.gowoon.model.record.Category
+import com.gowoon.model.record.Consumption
+import com.gowoon.model.record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
+import com.gowoon.model.record.GoodCategory
+import com.gowoon.model.record.Record
+import com.gowoon.model.record.getTitle
 import com.gowoon.record.R
 import com.gowoon.ui.component.Card
 import com.gowoon.ui.component.CircleButton
 import com.gowoon.ui.component.CircleButtonSize
+import com.gowoon.ui.component.RecordStar
 import com.gowoon.ui.noRippleClickable
+import com.gowoon.ui.util.getColor
 import com.gowoon.ui.util.getNoConsumptionColor
 import com.gowoon.ui.util.getNoConsumptionResId
+
+@Composable
+private fun ConsumptionContent(
+    modifier: Modifier = Modifier,
+    title: String,
+    category: Category,
+    memo: String,
+    showEdit: Boolean
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                color = DonmaniTheme.colors.Gray95,
+                style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold)
+            )
+            if (showEdit) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row {
+            Box(
+                modifier = Modifier
+                    .width(78.dp)
+                    .height(86.dp)
+            ) {
+                CardCategoryChip(category = category)
+                RecordStar(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    category = category
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = memo,
+                color = DonmaniTheme.colors.Gray95,
+                style = DonmaniTheme.typography.Body1
+            )
+        }
+    }
+}
 
 @Composable
 internal fun EmptyCard(
@@ -65,13 +127,59 @@ internal fun EmptyCard(
 }
 
 @Composable
-internal fun ConsumptionCard() {
-
+internal fun ConsumptionCard(
+    modifier: Modifier = Modifier,
+    consumption: Consumption
+) {
+    consumption.category?.let {
+        Card(
+            modifier = modifier.fillMaxWidth(),
+            backgroundColor = it.getColor().copy(alpha = 0.5f)
+        ) {
+            ConsumptionContent(
+                title = it.getTitle(consumption.type),
+                category = it,
+                memo = consumption.description,
+                showEdit = true
+            )
+        }
+    }
 }
 
 @Composable
-internal fun RecordCard() {
-
+internal fun RecordCard(
+    modifier: Modifier = Modifier,
+    record: ConsumptionRecord
+) {
+    record.goodRecord.category?.let { goodCategory ->
+        record.badRecord.category?.let {  badCategory ->
+            Card(
+                modifier = modifier.fillMaxWidth(),
+                backgroundColor = Brush.linearGradient(
+                    listOf(
+                        goodCategory.getColor(),
+                        badCategory.getColor()
+                    )
+                )
+            ) {
+                Column {
+                    ConsumptionContent(
+                        title = goodCategory.getTitle(ConsumptionType.GOOD),
+                        category = goodCategory,
+                        memo = record.goodRecord.description,
+                        showEdit = false
+                    )
+                    Spacer(Modifier.height(32.dp))
+                    ConsumptionContent(
+                        title = badCategory.getTitle(ConsumptionType.BAD),
+                        category = badCategory,
+                        memo = record.badRecord.description,
+                        showEdit = false
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -107,5 +215,10 @@ internal fun NoConsumptionCard(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun CardPreview() {
-    NoConsumptionCard()
+    RecordCard(
+        record = ConsumptionRecord(
+            goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.Energy, "오오오오"),
+            badRecord = Consumption(ConsumptionType.BAD, BadCategory.Stingy, "우우우우"),
+        )
+    )
 }
