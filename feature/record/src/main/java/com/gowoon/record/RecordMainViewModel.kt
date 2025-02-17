@@ -11,7 +11,9 @@ import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.tooltip.GetNoConsumptionTooltipStateUseCase
 import com.gowoon.domain.usecase.tooltip.HideNoConsumptionTooltipUseCase
 import com.gowoon.model.common.EntryDay
+import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
+import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.NoConsumption
 import com.gowoon.model.record.Record
 import com.gowoon.record.navigation.RecordNavigationRoute
@@ -27,13 +29,14 @@ internal class RecordMainViewModel @Inject constructor(
     private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase
 ) : BaseViewModel<RecordMainState, RecordMainEvent, RecordMainEffect>() {
     override fun createInitialState(): RecordMainState = RecordMainState()
+    private val showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not()
+    private val showYesterday =
+        savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
 
     init {
-        initialState(
-            showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not().not(),
-            showYesterday = savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
-        )
+        initialState()
     }
+
     override fun handleEvent(event: RecordMainEvent) {
         when (event) {
             is RecordMainEvent.OnClickDayToggle -> {
@@ -52,19 +55,27 @@ internal class RecordMainViewModel @Inject constructor(
             is RecordMainEvent.OnClickNoConsumptionTooltip -> {
                 hideTooltip()
             }
+
+            is RecordMainEvent.OnChangedConsumption -> {
+                updateConsumption(event.consumption)
+            }
         }
     }
 
-    private fun initialState(showToday: Boolean, showYesterday: Boolean) {
+    private fun initialState() {
         viewModelScope.launch {
             getNoConsumptionTooltipStateUseCase().stateIn(this).collect {
                 when (it) {
                     is Result.Success -> {
                         setState(
                             currentState.copy(
-                                todayRecord = if (showToday) ConsumptionRecord() else null,
-                                yesterdayRecord = if (showYesterday) ConsumptionRecord() else null,
-                                selectedDay = if (showToday) EntryDay.Today else EntryDay.Yesterday,
+                                records = mutableMapOf<String, Record>().apply {
+                                    if (showToday) put(EntryDay.Today.name, ConsumptionRecord())
+                                    if (showYesterday) put(
+                                        EntryDay.Yesterday.name,
+                                        ConsumptionRecord()
+                                    )
+                                },
                                 showTooltip = it.data
                             )
                         )
@@ -79,9 +90,35 @@ internal class RecordMainViewModel @Inject constructor(
     }
 
     private fun updateCurrentDayRecord(newRecord: Record) {
-        when (currentState.selectedDay) {
-            EntryDay.Today -> setState(currentState.copy(todayRecord = newRecord))
-            EntryDay.Yesterday -> setState(currentState.copy(yesterdayRecord = newRecord))
+        setState(
+            currentState.copy(
+                records = currentState.records.toMutableMap().apply {
+                    put(currentState.selectedDay.name, newRecord)
+                }
+            )
+        )
+    }
+
+    private fun updateConsumption(newConsumption: Consumption) {
+        (currentState.records[currentState.selectedDay.name] as? ConsumptionRecord)?.let { originRecord ->
+            setState(
+                currentState.copy(
+                    records = currentState.records.toMutableMap().apply {
+                        put(
+                            currentState.selectedDay.name,
+                            when (newConsumption.type) {
+                                ConsumptionType.GOOD -> {
+                                    originRecord.copy(goodRecord = newConsumption)
+                                }
+
+                                ConsumptionType.BAD -> {
+                                    originRecord.copy(badRecord = newConsumption)
+                                }
+                            }
+                        )
+                    }
+                )
+            )
         }
     }
 
@@ -95,8 +132,7 @@ internal class RecordMainViewModel @Inject constructor(
 }
 
 data class RecordMainState(
-    val todayRecord: Record? = null,
-    val yesterdayRecord: Record? = null,
+    val records: Map<String, Record> = mapOf(),
     val selectedDay: EntryDay = EntryDay.Today,
     val showTooltip: Boolean = false
 ) : UiState
@@ -105,6 +141,8 @@ sealed class RecordMainEvent : UiEvent {
     data class OnClickDayToggle(val selected: EntryDay) : RecordMainEvent()
     data class OnClickNoConsumptionCheckBox(val checked: Boolean) : RecordMainEvent()
     data object OnClickNoConsumptionTooltip : RecordMainEvent()
+    data class OnChangedConsumption(val consumption: Consumption) :
+        RecordMainEvent()
 }
 
 sealed class RecordMainEffect : UiEffect

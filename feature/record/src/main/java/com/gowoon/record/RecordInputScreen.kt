@@ -28,11 +28,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
+import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
-import com.gowoon.model.record.name
 import com.gowoon.record.component.InputCategoryChip
-import com.gowoon.record.navigation.InputToMainArgument
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
@@ -40,12 +39,13 @@ import com.gowoon.ui.component.InputField
 import com.gowoon.ui.component.RoundedButton
 import com.gowoon.ui.component.RoundedButtonRadius
 import com.gowoon.ui.noRippleClickable
+import kotlinx.serialization.json.Json
 
 @Composable
 internal fun RecordInputScreen(
     viewModel: RecordInputViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    onClickDone: (InputToMainArgument) -> Unit
+    onClickDone: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
@@ -92,12 +92,18 @@ internal fun RecordInputScreen(
                     enable = enabled
 
                 ) {
+                    // TODO json builder util, di
+                    val json = Json {
+                        useArrayPolymorphism = true
+                    }
                     state.category?.let { category ->
                         onClickDone(
-                            InputToMainArgument(
-                                type = state.type.name,
-                                category = category.name(state.type),
-                                memo = state.memo.text.toString()
+                            json.encodeToString(
+                                Consumption(
+                                    type = state.type,
+                                    category = category,
+                                    description = state.memo.text.toString()
+                                )
                             )
                         )
                     }

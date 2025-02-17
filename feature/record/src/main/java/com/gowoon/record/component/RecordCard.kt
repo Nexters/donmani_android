@@ -32,7 +32,6 @@ import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
-import com.gowoon.model.record.Record
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.R
 import com.gowoon.ui.component.Card
@@ -50,7 +49,7 @@ private fun ConsumptionContent(
     title: String,
     category: Category,
     memo: String,
-    showEdit: Boolean
+    showEdit: Boolean = true
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -131,19 +130,17 @@ internal fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption
 ) {
-    consumption.category?.let {
-        Card(
-            modifier = modifier.fillMaxWidth(),
-            backgroundColor = it.getColor().copy(alpha = 0.5f)
-        ) {
-            ConsumptionContent(
-                title = it.getTitle(consumption.type),
-                category = it,
-                memo = consumption.description,
-                showEdit = true
-            )
-        }
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        backgroundColor = consumption.category.getColor().copy(alpha = 0.5f)
+    ) {
+        ConsumptionContent(
+            title = consumption.category.getTitle(consumption.type),
+            category = consumption.category,
+            memo = consumption.description
+        )
     }
+
 }
 
 @Composable
@@ -151,30 +148,28 @@ internal fun RecordCard(
     modifier: Modifier = Modifier,
     record: ConsumptionRecord
 ) {
-    record.goodRecord.category?.let { goodCategory ->
-        record.badRecord.category?.let {  badCategory ->
+    record.goodRecord?.let { good ->
+        record.badRecord?.let { bad ->
             Card(
                 modifier = modifier.fillMaxWidth(),
                 backgroundColor = Brush.linearGradient(
                     listOf(
-                        goodCategory.getColor(),
-                        badCategory.getColor()
+                        good.category.getColor(),
+                        bad.category.getColor()
                     )
                 )
             ) {
                 Column {
                     ConsumptionContent(
-                        title = goodCategory.getTitle(ConsumptionType.GOOD),
-                        category = goodCategory,
-                        memo = record.goodRecord.description,
-                        showEdit = false
+                        title = good.category.getTitle(ConsumptionType.GOOD),
+                        category = good.category,
+                        memo = good.description
                     )
                     Spacer(Modifier.height(32.dp))
                     ConsumptionContent(
-                        title = badCategory.getTitle(ConsumptionType.BAD),
-                        category = badCategory,
-                        memo = record.badRecord.description,
-                        showEdit = false
+                        title = bad.category.getTitle(ConsumptionType.BAD),
+                        category = bad.category,
+                        memo = bad.description
                     )
                 }
             }

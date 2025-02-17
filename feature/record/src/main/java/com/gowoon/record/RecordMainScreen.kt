@@ -13,28 +13,33 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.gowoon.designsystem.theme.DonmaniTheme
+import androidx.navigation.NavController
 import com.gowoon.model.common.EntryDay
+import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.NoConsumption
 import com.gowoon.model.record.Record
+import com.gowoon.record.component.ConsumptionCard
 import com.gowoon.record.component.EmptyCard
 import com.gowoon.record.component.MessageBox
 import com.gowoon.record.component.NoConsumptionCard
+import com.gowoon.record.component.RecordCard
 import com.gowoon.record.component.TodayYesterdayToggle
-import com.gowoon.ui.GradientBackground
+import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
 import com.gowoon.ui.component.CheckBoxWithTitle
@@ -44,22 +49,59 @@ import com.gowoon.ui.component.Title
 import com.gowoon.ui.component.Tooltip
 import com.gowoon.ui.component.TooltipCaretAlignment
 import com.gowoon.ui.component.TooltipDirection
+import io.github.aakira.napier.Napier
+import kotlinx.serialization.json.Json
 
 @Composable
 internal fun RecordMainScreen(
+    navController: NavController,
     viewModel: RecordMainViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
     onClickAdd: (type: ConsumptionType) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val finishToRecord by remember {
+        derivedStateOf {
+            state.records[state.selectedDay.name]?.let { record: Record ->
+                when (record) {
+                    is NoConsumption -> true
+                    is ConsumptionRecord -> {
+                        record.goodRecord != null && record.badRecord != null
+                    }
+                }
+            } ?: false
+        }
+    }
+    val result =
+        navController.currentBackStackEntry?.savedStateHandle?.get<String>(InputToMainArgumentKey)
+
+    LaunchedEffect(result) {
+        result?.let {
+            // TODO json builder util, di
+            val json = Json { useArrayPolymorphism = true }
+            viewModel.setEvent(
+                RecordMainEvent.OnChangedConsumption(
+                    json.decodeFromString<Consumption>(
+                        it
+                    )
+                )
+            )
+        }
+    }
+    LaunchedEffect(state) {
+        Napier.d("gowoon log changed state ${state}")
+    }
+
     TransparentScaffold(
         topBar = {
             AppBar(
                 onClickNavigation = onClickBack,
                 actionButton = {
-                    TodayYesterdayToggle(options = EntryDay.entries) { selected ->
-                        viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
-                    }
+                    TodayYesterdayToggle(
+                        options = EntryDay.entries.filter { state.records.containsKey(it.name) }
+                            .ifEmpty { EntryDay.entries },
+                        selectedState = state.selectedDay
+                    ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
                 }
             )
         }
@@ -79,13 +121,11 @@ internal fun RecordMainScreen(
                 Spacer(Modifier.height(16.dp))
                 Title(text = stringResource(R.string.record_main_title, state.selectedDay.title))
                 Spacer(Modifier.height(60.dp))
-                when (state.selectedDay) {
-                    EntryDay.Today -> state.todayRecord
-                    EntryDay.Yesterday -> state.yesterdayRecord
-                }?.let {
+                state.records[state.selectedDay.name]?.let {
                     RecordMainContent(
                         modifier = Modifier.weight(1f),
                         record = it,
+                        finishToRecord = finishToRecord,
                         showTooltip = state.showTooltip,
                         onClickCheckBox = { checked ->
                             viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionCheckBox(checked))
@@ -98,10 +138,13 @@ internal fun RecordMainScreen(
                 }
             }
             RecordMainFooter(
-                Modifier
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .zIndex(1f)
-            )
+                    .zIndex(1f),
+                enable = finishToRecord
+            ) {
+                // TODO onClickSave
+            }
         }
     }
 }
@@ -110,6 +153,7 @@ internal fun RecordMainScreen(
 private fun RecordMainContent(
     modifier: Modifier = Modifier,
     record: Record,
+    finishToRecord: Boolean,
     showTooltip: Boolean,
     onClickCheckBox: (Boolean) -> Unit,
     onClickEmptyBox: (ConsumptionType) -> Unit,
@@ -122,13 +166,24 @@ private fun RecordMainContent(
             }
 
             is ConsumptionRecord -> {
-                // TODO content 유무에 따라 분기
-                record.goodRecord.apply {
-                    EmptyCard(type = type) { onClickEmptyBox(ConsumptionType.GOOD) }
-                }
-                Spacer(Modifier.height(20.dp))
-                record.badRecord.apply {
-                    EmptyCard(type = type) { onClickEmptyBox(ConsumptionType.BAD) }
+                if (finishToRecord) {
+                    RecordCard(record = record)
+                } else {
+                    if (record.goodRecord == null) {
+                        EmptyCard(type = ConsumptionType.GOOD) { onClickEmptyBox(ConsumptionType.GOOD) }
+                    } else {
+                        record.goodRecord?.let {
+                            ConsumptionCard(consumption = it)
+                        }
+                    }
+                    Spacer(Modifier.height(20.dp))
+                    if (record.badRecord == null) {
+                        EmptyCard(type = ConsumptionType.BAD) { onClickEmptyBox(ConsumptionType.BAD) }
+                    } else {
+                        record.badRecord?.let {
+                            ConsumptionCard(consumption = it)
+                        }
+                    }
                 }
             }
         }
@@ -151,9 +206,12 @@ private fun RecordMainContent(
 }
 
 @Composable
-private fun RecordMainFooter(modifier: Modifier = Modifier) {
+private fun RecordMainFooter(
+    modifier: Modifier = Modifier,
+    enable: Boolean,
+    onClick: () -> Unit
+) {
     // TODO message 문구 로직 > timer
-    // TODO button enable 로직
     val gradientBgColor = Color(0xFF091647)
     Column(
         modifier = modifier
@@ -177,22 +235,8 @@ private fun RecordMainFooter(modifier: Modifier = Modifier) {
                 .padding(vertical = 8.dp),
             type = RoundedButtonRadius.Row,
             label = stringResource(R.string.btn_record_save),
-            enable = true
-        ) {
-            // TOOD onClick
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun RecordMainPreview() {
-    DonmaniTheme {
-        GradientBackground {
-            RecordMainScreen(
-                onClickBack = {},
-                onClickAdd = {}
-            )
-        }
+            enable = enable,
+            onClick = onClick
+        )
     }
 }

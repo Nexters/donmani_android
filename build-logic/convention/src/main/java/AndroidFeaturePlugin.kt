@@ -11,7 +11,6 @@ class AndroidFeaturePlugin : Plugin<Project> {
             apply<AndroidComposePlugin>()
             apply<HiltPlugin>()
             apply<KotlinSerializationPlugin>()
-            apply(plugin = "org.jetbrains.kotlin.plugin.parcelize")
 
             dependencies {
                 "implementation"(project(":core:designsystem"))
@@ -20,7 +19,6 @@ class AndroidFeaturePlugin : Plugin<Project> {
                 "implementation"(project(":core:model"))
                 "implementation"(project(":core:common"))
 
-                "implementation"(libs.findLibrary("androidx.core.ktx").get())
                 "implementation"(libs.findLibrary("androidx.navigation.compose").get())
                 "implementation"(libs.findBundle("android-lifecycle").get())
             }

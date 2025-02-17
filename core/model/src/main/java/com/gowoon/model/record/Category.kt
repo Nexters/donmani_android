@@ -1,6 +1,11 @@
 package com.gowoon.model.record
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed interface Category
+
+@Serializable
 enum class GoodCategory(val title: String) : Category {
     Energy("활력"),
     Growth("성장"),
@@ -13,6 +18,7 @@ enum class GoodCategory(val title: String) : Category {
     None("없음")
 }
 
+@Serializable
 enum class BadCategory(val title: String) : Category {
     Greed("욕심"),
     Addiction("중독"),

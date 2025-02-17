@@ -1,22 +1,14 @@
 package com.gowoon.record.navigation
 
-import android.os.Parcelable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.gowoon.model.record.ConsumptionType
+import com.gowoon.record.RecordInputScreen
 import com.gowoon.record.RecordMainScreen
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 const val InputToMainArgumentKey = "inputToMain"
-
-@Parcelize
-data class InputToMainArgument(
-    val type: String,
-    val category: String,
-    val memo: String
-) : Parcelable
 
 @Serializable
 data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
@@ -33,19 +25,22 @@ fun NavController.navigateToRecordInput(type: ConsumptionType) {
 }
 
 fun NavGraphBuilder.recordGraph(
+    navController: NavController,
     onClickBack: () -> Unit,
     navigateToRecordInput: (type: ConsumptionType) -> Unit,
-    popBackStackWithArgument: (data: InputToMainArgument) -> Unit
+    popBackStackWithArgument: (data: String) -> Unit
 ) {
     composable<RecordNavigationRoute> {
         RecordMainScreen(
+            navController = navController,
             onClickBack = onClickBack,
             onClickAdd = navigateToRecordInput
         )
     }
     composable<RecordInputNavigationRoute> {
         RecordInputScreen(
-            onClickBack = onClickBack
+            onClickBack = onClickBack,
+            onClickDone = popBackStackWithArgument
         )
     }
 }

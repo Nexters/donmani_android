@@ -29,12 +29,9 @@ import com.gowoon.ui.noRippleClickable
 internal fun TodayYesterdayToggle(
     modifier: Modifier = Modifier,
     options: List<EntryDay>,
+    selectedState: EntryDay,
     onClick: (EntryDay) -> Unit
 ) {
-    var selected by remember { mutableStateOf(options[options.lastIndex]) }
-    LaunchedEffect(selected) {
-        onClick(selected)
-    }
     Row(
         modifier = modifier
             .wrapContentWidth()
@@ -46,8 +43,8 @@ internal fun TodayYesterdayToggle(
         options.forEachIndexed { index, option ->
             TitleButton(
                 title = option.title,
-                isSelected = selected == option
-            ) { selected = option }
+                isSelected = selectedState == option
+            ) { onClick(option) }
             if (index < options.lastIndex) {
                 Divider()
             }
