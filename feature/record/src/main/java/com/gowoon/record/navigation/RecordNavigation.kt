@@ -3,6 +3,7 @@ package com.gowoon.record.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.record.RecordInputScreen
 import com.gowoon.record.RecordMainScreen
@@ -18,23 +19,31 @@ fun NavController.navigateToRecord(hasTodayRecord: Boolean, hasYesterdayRecord: 
 }
 
 @Serializable
-data class RecordInputNavigationRoute(val type: ConsumptionType)
+data class RecordInputNavigationRoute(
+    val type: ConsumptionType? = null,
+    val consumption: String? = null
+)
 
-fun NavController.navigateToRecordInput(type: ConsumptionType) {
-    navigate(route = RecordInputNavigationRoute(type))
+fun NavController.navigateToRecordInput(
+    type: ConsumptionType? = null,
+    consumption: String? = null
+) {
+    navigate(route = RecordInputNavigationRoute(type, consumption))
 }
 
 fun NavGraphBuilder.recordGraph(
-    navController: NavController,
     onClickBack: () -> Unit,
-    navigateToRecordInput: (type: ConsumptionType) -> Unit,
+    navigateToRecordInput: (ConsumptionType) -> Unit,
+    navigateToRecordInputWithData: (Consumption) -> Unit,
     popBackStackWithArgument: (data: String) -> Unit
 ) {
-    composable<RecordNavigationRoute> {
+    composable<RecordNavigationRoute> { backStackEntry ->
+        val result = backStackEntry.savedStateHandle.get<String>(InputToMainArgumentKey)
         RecordMainScreen(
-            navController = navController,
+            resultFromInput = result,
             onClickBack = onClickBack,
-            onClickAdd = navigateToRecordInput
+            onClickAdd = navigateToRecordInput,
+            onClickEdit = navigateToRecordInputWithData
         )
     }
     composable<RecordInputNavigationRoute> {

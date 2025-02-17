@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
@@ -39,7 +38,6 @@ import com.gowoon.record.component.MessageBox
 import com.gowoon.record.component.NoConsumptionCard
 import com.gowoon.record.component.RecordCard
 import com.gowoon.record.component.TodayYesterdayToggle
-import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
 import com.gowoon.ui.component.CheckBoxWithTitle
@@ -49,15 +47,17 @@ import com.gowoon.ui.component.Title
 import com.gowoon.ui.component.Tooltip
 import com.gowoon.ui.component.TooltipCaretAlignment
 import com.gowoon.ui.component.TooltipDirection
-import io.github.aakira.napier.Napier
+import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.serialization.json.Json
 
 @Composable
 internal fun RecordMainScreen(
-    navController: NavController,
     viewModel: RecordMainViewModel = hiltViewModel(),
+    json: Json = rememberHiltJson(),
+    resultFromInput: String? = null,
     onClickBack: () -> Unit,
-    onClickAdd: (type: ConsumptionType) -> Unit
+    onClickAdd: (ConsumptionType) -> Unit,
+    onClickEdit: (Consumption) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val finishToRecord by remember {
@@ -72,13 +72,9 @@ internal fun RecordMainScreen(
             } ?: false
         }
     }
-    val result =
-        navController.currentBackStackEntry?.savedStateHandle?.get<String>(InputToMainArgumentKey)
 
-    LaunchedEffect(result) {
-        result?.let {
-            // TODO json builder util, di
-            val json = Json { useArrayPolymorphism = true }
+    LaunchedEffect(resultFromInput) {
+        resultFromInput?.let {
             viewModel.setEvent(
                 RecordMainEvent.OnChangedConsumption(
                     json.decodeFromString<Consumption>(
@@ -87,9 +83,6 @@ internal fun RecordMainScreen(
                 )
             )
         }
-    }
-    LaunchedEffect(state) {
-        Napier.d("gowoon log changed state ${state}")
     }
 
     TransparentScaffold(
@@ -123,7 +116,7 @@ internal fun RecordMainScreen(
                 Spacer(Modifier.height(60.dp))
                 state.records[state.selectedDay.name]?.let {
                     RecordMainContent(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.padding(bottom = 140.dp),
                         record = it,
                         finishToRecord = finishToRecord,
                         showTooltip = state.showTooltip,
@@ -133,7 +126,8 @@ internal fun RecordMainScreen(
                         onClickEmptyBox = onClickAdd,
                         onClickTooltip = {
                             viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionTooltip)
-                        }
+                        },
+                        onClickEdit = onClickEdit
                     )
                 }
             }
@@ -157,7 +151,8 @@ private fun RecordMainContent(
     showTooltip: Boolean,
     onClickCheckBox: (Boolean) -> Unit,
     onClickEmptyBox: (ConsumptionType) -> Unit,
-    onClickTooltip: () -> Unit
+    onClickTooltip: () -> Unit,
+    onClickEdit: (Consumption) -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         when (record) {
@@ -167,13 +162,19 @@ private fun RecordMainContent(
 
             is ConsumptionRecord -> {
                 if (finishToRecord) {
-                    RecordCard(record = record)
+                    RecordCard(
+                        record = record,
+                        onClickEdit = onClickEdit
+                    )
                 } else {
                     if (record.goodRecord == null) {
                         EmptyCard(type = ConsumptionType.GOOD) { onClickEmptyBox(ConsumptionType.GOOD) }
                     } else {
                         record.goodRecord?.let {
-                            ConsumptionCard(consumption = it)
+                            ConsumptionCard(
+                                consumption = it,
+                                onClickEdit = onClickEdit
+                            )
                         }
                     }
                     Spacer(Modifier.height(20.dp))
@@ -181,7 +182,10 @@ private fun RecordMainContent(
                         EmptyCard(type = ConsumptionType.BAD) { onClickEmptyBox(ConsumptionType.BAD) }
                     } else {
                         record.badRecord?.let {
-                            ConsumptionCard(consumption = it)
+                            ConsumptionCard(
+                                consumption = it,
+                                onClickEdit = onClickEdit
+                            )
                         }
                     }
                 }

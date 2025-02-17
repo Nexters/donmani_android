@@ -10,6 +10,7 @@ import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.record.navigation.navigateToRecord
 import com.gowoon.record.navigation.navigateToRecordInput
 import com.gowoon.record.navigation.recordGraph
+import com.gowoon.ui.util.rememberHiltJson
 
 // TODO enter, exit transition
 @Composable
@@ -17,6 +18,7 @@ fun DonmaniNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val json = rememberHiltJson()
     NavHost(
         navController = navController,
         startDestination = homeNavigationRoute,
@@ -28,9 +30,13 @@ fun DonmaniNavHost(
             navigateToRecord = navController::navigateToRecord
         )
         recordGraph(
-            navController = navController,
             onClickBack = navController::popBackStack,
-            navigateToRecordInput = navController::navigateToRecordInput,
+            navigateToRecordInput = {
+                navController.navigateToRecordInput(type = it)
+            },
+            navigateToRecordInputWithData = {
+                navController.navigateToRecordInput(consumption = json.encodeToString(it))
+            },
             popBackStackWithArgument = { data ->
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     InputToMainArgumentKey,

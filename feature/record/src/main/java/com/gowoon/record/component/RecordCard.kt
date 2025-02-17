@@ -23,15 +23,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
-import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.R
 import com.gowoon.ui.component.Card
@@ -49,7 +46,8 @@ private fun ConsumptionContent(
     title: String,
     category: Category,
     memo: String,
-    showEdit: Boolean = true
+    showEdit: Boolean = true,
+    onClickEdit: () -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -64,6 +62,7 @@ private fun ConsumptionContent(
             )
             if (showEdit) {
                 Icon(
+                    modifier = Modifier.noRippleClickable { onClickEdit() },
                     imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
                     tint = Color.Unspecified,
                     contentDescription = null
@@ -119,8 +118,9 @@ internal fun EmptyCard(
             CircleButton(
                 buttonSize = CircleButtonSize.Small,
                 backgroundColor = DonmaniTheme.colors.DeepBlue70,
-                contentColor = DonmaniTheme.colors.DeepBlue99
-            ) { }
+                contentColor = DonmaniTheme.colors.DeepBlue99,
+                onClick = onClick
+            )
         }
     }
 }
@@ -128,7 +128,8 @@ internal fun EmptyCard(
 @Composable
 internal fun ConsumptionCard(
     modifier: Modifier = Modifier,
-    consumption: Consumption
+    consumption: Consumption,
+    onClickEdit: (Consumption) -> Unit
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -137,7 +138,8 @@ internal fun ConsumptionCard(
         ConsumptionContent(
             title = consumption.category.getTitle(consumption.type),
             category = consumption.category,
-            memo = consumption.description
+            memo = consumption.description,
+            onClickEdit = { onClickEdit(consumption) }
         )
     }
 
@@ -146,7 +148,8 @@ internal fun ConsumptionCard(
 @Composable
 internal fun RecordCard(
     modifier: Modifier = Modifier,
-    record: ConsumptionRecord
+    record: ConsumptionRecord,
+    onClickEdit: (Consumption) -> Unit
 ) {
     record.goodRecord?.let { good ->
         record.badRecord?.let { bad ->
@@ -163,13 +166,15 @@ internal fun RecordCard(
                     ConsumptionContent(
                         title = good.category.getTitle(ConsumptionType.GOOD),
                         category = good.category,
-                        memo = good.description
+                        memo = good.description,
+                        onClickEdit = { onClickEdit(good) }
                     )
                     Spacer(Modifier.height(32.dp))
                     ConsumptionContent(
                         title = bad.category.getTitle(ConsumptionType.BAD),
                         category = bad.category,
-                        memo = bad.description
+                        memo = bad.description,
+                        onClickEdit = { onClickEdit(bad) }
                     )
                 }
             }
@@ -205,15 +210,4 @@ internal fun NoConsumptionCard(modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun CardPreview() {
-    RecordCard(
-        record = ConsumptionRecord(
-            goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.Energy, "오오오오"),
-            badRecord = Consumption(ConsumptionType.BAD, BadCategory.Stingy, "우우우우"),
-        )
-    )
 }

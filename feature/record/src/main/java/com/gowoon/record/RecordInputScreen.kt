@@ -12,9 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,17 +37,18 @@ import com.gowoon.ui.component.InputField
 import com.gowoon.ui.component.RoundedButton
 import com.gowoon.ui.component.RoundedButtonRadius
 import com.gowoon.ui.noRippleClickable
+import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.serialization.json.Json
 
 @Composable
 internal fun RecordInputScreen(
     viewModel: RecordInputViewModel = hiltViewModel(),
+    json: Json = rememberHiltJson(),
     onClickBack: () -> Unit,
     onClickDone: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
-    var showBottomSheet by remember { mutableStateOf(true) }
 
     CategoryBackground(state.category) {
         TransparentScaffold(
@@ -60,14 +59,16 @@ internal fun RecordInputScreen(
                 )
             }
         ) {
-            if (showBottomSheet) {
+            if (state.showDialog) {
                 CategorySelectBottomSheet(
                     type = state.type,
                     selected = state.category,
                     onChangedValue = { selected ->
                         viewModel.setEvent(RecordInputEvent.OnChangeCategory(selected))
                     }
-                ) { showBottomSheet = false }
+                ) {
+                    viewModel.setEvent(RecordInputEvent.ShowDialog(false))
+                }
             }
 
             Column(
@@ -81,7 +82,7 @@ internal fun RecordInputScreen(
                     category = state.category,
                     memo = state.memo
                 ) {
-                    showBottomSheet = true
+                    viewModel.setEvent(RecordInputEvent.ShowDialog(true))
                 }
                 RoundedButton(
                     modifier = Modifier
@@ -92,10 +93,6 @@ internal fun RecordInputScreen(
                     enable = enabled
 
                 ) {
-                    // TODO json builder util, di
-                    val json = Json {
-                        useArrayPolymorphism = true
-                    }
                     state.category?.let { category ->
                         onClickDone(
                             json.encodeToString(
