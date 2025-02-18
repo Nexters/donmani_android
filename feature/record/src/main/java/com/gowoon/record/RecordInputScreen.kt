@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.di.FeatureJson
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
@@ -43,7 +44,7 @@ import kotlinx.serialization.json.Json
 @Composable
 internal fun RecordInputScreen(
     viewModel: RecordInputViewModel = hiltViewModel(),
-    json: Json = rememberHiltJson(),
+    @FeatureJson json: Json = rememberHiltJson(),
     onClickBack: () -> Unit,
     onClickDone: (String) -> Unit
 ) {

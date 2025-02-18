@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
 import com.gowoon.record.navigation.InputToMainArgumentKey
@@ -18,6 +19,8 @@ fun DonmaniNavHost(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+
+    @FeatureJson
     val json = rememberHiltJson()
     NavHost(
         navController = navController,

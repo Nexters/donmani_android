@@ -59,6 +59,10 @@ internal class RecordMainViewModel @Inject constructor(
             is RecordMainEvent.OnChangedConsumption -> {
                 updateConsumption(event.consumption)
             }
+
+            is RecordMainEvent.ShowConfirm -> {
+                setState(currentState.copy(showConfirm = event.show))
+            }
         }
     }
 
@@ -134,15 +138,16 @@ internal class RecordMainViewModel @Inject constructor(
 data class RecordMainState(
     val records: Map<String, Record> = mapOf(),
     val selectedDay: EntryDay = EntryDay.Today,
-    val showTooltip: Boolean = false
+    val showTooltip: Boolean = false,
+    val showConfirm: Boolean = false
 ) : UiState
 
 sealed class RecordMainEvent : UiEvent {
     data class OnClickDayToggle(val selected: EntryDay) : RecordMainEvent()
     data class OnClickNoConsumptionCheckBox(val checked: Boolean) : RecordMainEvent()
     data object OnClickNoConsumptionTooltip : RecordMainEvent()
-    data class OnChangedConsumption(val consumption: Consumption) :
-        RecordMainEvent()
+    data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent()
+    data class ShowConfirm(val show: Boolean) : RecordMainEvent()
 }
 
 sealed class RecordMainEffect : UiEffect

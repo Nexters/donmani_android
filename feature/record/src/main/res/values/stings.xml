@@ -4,11 +4,14 @@
 
     <!-- title  -->
     <string name="record_main_title">%s 소비 정리해 볼까요?</string>
+    <string name="record_confirm_title">저장하면 수정할 수 없어요!</string>
 
     <!-- button -->
     <string name="btn_record_save">저장하기</string>
     <string name="btn_record_input_done">완료</string>
     <string name="btn_category_select_done">완료</string>
+    <string name="btn_record_confirm_back">돌아가기</string>
+    <string name="btn_record_confirm">확인 했어요</string>
 
     <!-- tooltip -->
     <string name="no_consumption_tooltip_message">선택하면 무소비 날도 기록할 수 있어요!</string>

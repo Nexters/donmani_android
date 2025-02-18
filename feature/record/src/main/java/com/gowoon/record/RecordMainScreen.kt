@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.di.FeatureJson
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionRecord
@@ -53,7 +54,7 @@ import kotlinx.serialization.json.Json
 @Composable
 internal fun RecordMainScreen(
     viewModel: RecordMainViewModel = hiltViewModel(),
-    json: Json = rememberHiltJson(),
+    @FeatureJson json: Json = rememberHiltJson(),
     resultFromInput: String? = null,
     onClickBack: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
@@ -85,59 +86,83 @@ internal fun RecordMainScreen(
         }
     }
 
-    TransparentScaffold(
-        topBar = {
-            AppBar(
-                onClickNavigation = onClickBack,
-                actionButton = {
-                    TodayYesterdayToggle(
-                        options = EntryDay.entries.filter { state.records.containsKey(it.name) }
-                            .ifEmpty { EntryDay.entries },
-                        selectedState = state.selectedDay
-                    ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
-                }
-            )
-        }
-    ) { padding ->
-        val scrollState = rememberScrollState()
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally
+    if (state.showConfirm) {
+        state.records[state.selectedDay.name]?.let { record ->
+            RecordConfirmScreen(
+                modifier = Modifier.zIndex(1f),
+                record = record
             ) {
-                Spacer(Modifier.height(16.dp))
-                Title(text = stringResource(R.string.record_main_title, state.selectedDay.title))
-                Spacer(Modifier.height(60.dp))
-                state.records[state.selectedDay.name]?.let {
-                    RecordMainContent(
-                        modifier = Modifier.padding(bottom = 140.dp),
-                        record = it,
-                        finishToRecord = finishToRecord,
-                        showTooltip = state.showTooltip,
-                        onClickCheckBox = { checked ->
-                            viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionCheckBox(checked))
-                        },
-                        onClickEmptyBox = onClickAdd,
-                        onClickTooltip = {
-                            viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionTooltip)
-                        },
-                        onClickEdit = onClickEdit
-                    )
+                if (it) {
+                    // TODO api call
+                } else {
+                    viewModel.setEvent(RecordMainEvent.ShowConfirm(false))
                 }
             }
-            RecordMainFooter(
+        }
+    } else {
+        TransparentScaffold(
+            topBar = {
+                AppBar(
+                    onClickNavigation = onClickBack,
+                    actionButton = {
+                        TodayYesterdayToggle(
+                            options = EntryDay.entries.filter { state.records.containsKey(it.name) }
+                                .ifEmpty { EntryDay.entries },
+                            selectedState = state.selectedDay
+                        ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
+                    }
+                )
+            }
+        ) { padding ->
+            val scrollState = rememberScrollState()
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .zIndex(1f),
-                enable = finishToRecord
+                    .fillMaxSize()
+                    .padding(padding),
             ) {
-                // TODO onClickSave
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(Modifier.height(16.dp))
+                    Title(
+                        text = stringResource(
+                            R.string.record_main_title,
+                            state.selectedDay.title
+                        )
+                    )
+                    Spacer(Modifier.height(60.dp))
+                    state.records[state.selectedDay.name]?.let {
+                        RecordMainContent(
+                            modifier = Modifier.padding(bottom = 140.dp),
+                            record = it,
+                            finishToRecord = finishToRecord,
+                            showTooltip = state.showTooltip,
+                            onClickCheckBox = { checked ->
+                                viewModel.setEvent(
+                                    RecordMainEvent.OnClickNoConsumptionCheckBox(
+                                        checked
+                                    )
+                                )
+                            },
+                            onClickEmptyBox = onClickAdd,
+                            onClickTooltip = {
+                                viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionTooltip)
+                            },
+                            onClickEdit = onClickEdit
+                        )
+                    }
+                }
+                RecordMainFooter(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .zIndex(1f),
+                    enable = finishToRecord
+                ) {
+                    viewModel.setEvent(RecordMainEvent.ShowConfirm(true))
+                }
             }
         }
     }

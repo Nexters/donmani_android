@@ -149,6 +149,7 @@ internal fun ConsumptionCard(
 internal fun RecordCard(
     modifier: Modifier = Modifier,
     record: ConsumptionRecord,
+    showEdit: Boolean = true,
     onClickEdit: (Consumption) -> Unit
 ) {
     record.goodRecord?.let { good ->
@@ -167,6 +168,7 @@ internal fun RecordCard(
                         title = good.category.getTitle(ConsumptionType.GOOD),
                         category = good.category,
                         memo = good.description,
+                        showEdit = showEdit,
                         onClickEdit = { onClickEdit(good) }
                     )
                     Spacer(Modifier.height(32.dp))
@@ -174,6 +176,7 @@ internal fun RecordCard(
                         title = bad.category.getTitle(ConsumptionType.BAD),
                         category = bad.category,
                         memo = bad.description,
+                        showEdit = showEdit,
                         onClickEdit = { onClickEdit(bad) }
                     )
                 }
