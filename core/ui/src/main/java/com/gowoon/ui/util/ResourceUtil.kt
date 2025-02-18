@@ -33,7 +33,7 @@ fun Category.getColor(): Color = when (val category = this) {
             BadCategory.Addiction -> Color(0xffC4C4FF)
             BadCategory.Laziness -> Color(0xffB8C9E0)
             BadCategory.Impulse -> Color(0xffFFB8B9)
-            BadCategory.Meaningless -> Color(0xffC5CDD8)
+            BadCategory.Meaningless -> Color(0xffB1CFEC)
             BadCategory.Ostentation -> Color(0xffFBDA92)
             BadCategory.Habitual -> Color(0xffD9CDBD)
             BadCategory.Stingy -> Color(0xffAAE1C8)

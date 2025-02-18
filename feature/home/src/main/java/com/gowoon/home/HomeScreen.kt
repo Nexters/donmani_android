@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.ui.TransparentScaffold
@@ -22,12 +25,15 @@ import com.gowoon.ui.component.CircleButtonSize
 import com.gowoon.ui.component.Title
 
 @Composable
-internal fun HomeScreen(onClickAdd: (Boolean, Boolean) -> Unit) {
+internal fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onClickAdd: (Boolean, Boolean) -> Unit
+) {
     // TODO 어제 오늘 기록 있는지 여부
     val hasToday = false
     val hasYesterday = false
-    // TODO nickname 받아서 타이틀 구성
-    val nickname = "고운"
+
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
         topBar = { HomeAppBar() }
     ) { padding ->
@@ -38,7 +44,7 @@ internal fun HomeScreen(onClickAdd: (Boolean, Boolean) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(24.dp))
-            Title(text = stringResource(R.string.home_title, nickname))
+            Title(text = stringResource(R.string.home_title, state.nickname))
             Spacer(Modifier.height(95.dp))
             HomeContent()
             HomeFooter(

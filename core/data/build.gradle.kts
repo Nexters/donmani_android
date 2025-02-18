@@ -11,4 +11,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.datastore)
     implementation(projects.core.domain)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
 }
