@@ -1,0 +1,32 @@
+<resources>
+    <!-- appbar -->
+    <string name="record_detail_appbar_title">%s 소비</string>
+
+    <!-- title  -->
+    <string name="record_main_title">%s 소비 정리해 볼까요?</string>
+    <string name="record_confirm_title">저장하면 수정할 수 없어요!</string>
+
+    <!-- button -->
+    <string name="btn_record_save">저장하기</string>
+    <string name="btn_record_input_done">완료</string>
+    <string name="btn_category_select_done">완료</string>
+    <string name="btn_record_confirm_back">돌아가기</string>
+    <string name="btn_record_confirm">확인 했어요</string>
+
+    <!-- tooltip -->
+    <string name="no_consumption_tooltip_message">선택하면 무소비 날도 기록할 수 있어요!</string>
+
+    <!-- message -->
+    <string name="record_bottom_message_default">너의 소비를 별사탕으로 바꿔줄게!</string>
+
+    <!-- component -->
+    <!-- checkbox -->
+    <string name="no_consumption_message">무소비 했어요</string>
+    <!-- card -->
+    <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
+    <!-- input -->
+    <string name="good_record_input_memo_placeholder">소비가 행복했던 이유는?</string>
+    <string name="bad_record_input_memo_placeholder">소비가 후회됐던 이유는?</string>
+    <!-- bottom sheet -->
+    <string name="category_select_title">어떤 %s 소비였나요?</string>
+</resources>

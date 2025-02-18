@@ -14,29 +14,33 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        register("androidApplication"){
+        register("androidApplication") {
             id = libs.plugins.donmani.android.application.get().pluginId
             implementationClass = "AndroidApplicationPlugin"
         }
-        register("androidCompose"){
+        register("androidCompose") {
             id = libs.plugins.donmani.android.compose.get().pluginId
             implementationClass = "AndroidComposePlugin"
         }
-        register("androidLibrary"){
+        register("androidLibrary") {
             id = libs.plugins.donmani.android.library.get().pluginId
             implementationClass = "AndroidLibraryPlugin"
         }
-        register("kotlinJvmLibrary"){
+        register("kotlinJvmLibrary") {
             id = libs.plugins.donmani.kotlin.jvm.library.get().pluginId
             implementationClass = "JvmLibraryPlugin"
         }
-        register("androidFeature"){
+        register("androidFeature") {
             id = libs.plugins.donmani.android.feature.get().pluginId
             implementationClass = "AndroidFeaturePlugin"
         }
-        register("hilt"){
+        register("hilt") {
             id = libs.plugins.donmani.hilt.get().pluginId
             implementationClass = "HiltPlugin"
+        }
+        register("kotlinSerialization") {
+            id = libs.plugins.donmani.kotlin.serialization.get().pluginId
+            implementationClass = "KotlinSerializationPlugin"
         }
     }
 }

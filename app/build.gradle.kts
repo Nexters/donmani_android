@@ -20,6 +20,7 @@ android {
 
 dependencies {
     implementation(projects.core.data)
+    implementation(projects.core.datastore)
     implementation(projects.core.common)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
@@ -27,8 +28,10 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.ui)
     implementation(projects.feature.home)
-    implementation(projects.feature.mypage)
+    implementation(projects.feature.record)
 
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)

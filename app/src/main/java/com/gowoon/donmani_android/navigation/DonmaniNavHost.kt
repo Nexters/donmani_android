@@ -4,21 +4,49 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.gowoon.donmani_android.AppState
+import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
+import com.gowoon.record.navigation.InputToMainArgumentKey
+import com.gowoon.record.navigation.navigateToRecord
+import com.gowoon.record.navigation.navigateToRecordInput
+import com.gowoon.record.navigation.recordGraph
+import com.gowoon.ui.util.rememberHiltJson
 
+// TODO enter, exit transition
 @Composable
 fun DonmaniNavHost(
-    appState: AppState,
     modifier: Modifier = Modifier
-){
+) {
     val navController = rememberNavController()
+
+    @FeatureJson
+    val json = rememberHiltJson()
     NavHost(
         navController = navController,
         startDestination = homeNavigationRoute,
         modifier = modifier
-    ){
-        homeScreen()
+    ) {
+        homeScreen(
+            navigateToSetting = {},
+            navigateToCalendar = {},
+            navigateToRecord = navController::navigateToRecord
+        )
+        recordGraph(
+            onClickBack = navController::popBackStack,
+            navigateToRecordInput = {
+                navController.navigateToRecordInput(type = it)
+            },
+            navigateToRecordInputWithData = {
+                navController.navigateToRecordInput(consumption = json.encodeToString(it))
+            },
+            popBackStackWithArgument = { data ->
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    InputToMainArgumentKey,
+                    data
+                )
+                navController.popBackStack()
+            }
+        )
     }
 }
