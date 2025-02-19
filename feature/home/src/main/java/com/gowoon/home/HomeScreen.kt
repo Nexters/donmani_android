@@ -43,6 +43,7 @@ import java.time.LocalDate
 @Composable
 internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,7 +58,7 @@ internal fun HomeScreen(
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
     TransparentScaffold(
-        topBar = { HomeAppBar() }
+        topBar = { HomeAppBar(onClickSetting = onClickSetting) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -110,7 +111,9 @@ private fun HomeContent(modifier: Modifier = Modifier) {
             .height(400.dp)
     ) {
         Image(
-            modifier = Modifier.fillMaxSize().align(Alignment.Center),
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
             contentDescription = null
         )
