@@ -1,7 +1,9 @@
 package com.gowoon.data.di
 
+import com.gowoon.data.repository.RecordRepositoryImpl
 import com.gowoon.data.repository.TooltipRepositoryImpl
 import com.gowoon.data.repository.UserRepositoryImpl
+import com.gowoon.domain.repository.RecordRepository
 import com.gowoon.domain.repository.TooltipRepository
 import com.gowoon.domain.repository.UserRepository
 import dagger.Binds
@@ -17,4 +19,7 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    fun bindRecordRepository(recordRepositoryImpl: RecordRepositoryImpl): RecordRepository
 }

@@ -6,19 +6,23 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.user.GetRegistrationStateUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.domain.usecase.user.RegisterUserUseCase
+import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getRegistrationStateUseCase: GetRegistrationStateUseCase,
     private val registerUserUseCase: RegisterUserUseCase,
-    private val getUserNicknameUseCase: GetUserNicknameUseCase
+    private val getUserNicknameUseCase: GetUserNicknameUseCase,
+    private val getRecordListUseCase: GetRecordListUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
     override fun createInitialState(): HomeState {
         return HomeState()
@@ -30,7 +34,11 @@ class HomeViewModel @Inject constructor(
     }
 
     override fun handleEvent(event: HomeEvent) {
-        TODO("Not yet implemented")
+        when (event) {
+            is HomeEvent.HideTooltip -> {
+                setState(currentState.copy(showTooltip = false))
+            }
+        }
     }
 
     private fun registerUser() {
@@ -67,13 +75,37 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            getRecordListUseCase().stateIn(this).collect {
+                when (val result = it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(records = result.data.filterNotNull()))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+    }
+
+    fun hasRecordOfDay(date: LocalDate): Boolean {
+        return currentState.records.any { record ->
+            record.date == date
+        }
     }
 }
 
 data class HomeState(
-    val nickname: String = ""
+    val nickname: String = "",
+    val records: List<Record> = listOf(),
+    val showTooltip: Boolean = true
 ) : UiState
 
-sealed class HomeEvent : UiEvent
+sealed interface HomeEvent : UiEvent {
+    data object HideTooltip : HomeEvent
+}
+
 sealed class HomeEffect : UiEffect
 

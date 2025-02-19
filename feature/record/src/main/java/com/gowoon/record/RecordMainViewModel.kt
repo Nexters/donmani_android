@@ -12,10 +12,10 @@ import com.gowoon.domain.usecase.tooltip.GetNoConsumptionTooltipStateUseCase
 import com.gowoon.domain.usecase.tooltip.HideNoConsumptionTooltipUseCase
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
-import com.gowoon.model.record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
-import com.gowoon.model.record.NoConsumption
 import com.gowoon.model.record.Record
+import com.gowoon.model.record.Record.ConsumptionRecord
+import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.stateIn
@@ -45,7 +45,7 @@ internal class RecordMainViewModel @Inject constructor(
 
             is RecordMainEvent.OnClickNoConsumptionCheckBox -> {
                 val newRecord = if (event.checked) {
-                    NoConsumption
+                    NoConsumption()
                 } else {
                     ConsumptionRecord()
                 }

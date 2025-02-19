@@ -54,6 +54,6 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserNickname(): Flow<Result<String?>> = try {
         userDataSource.getUserNickname().map { Result.Success(it) }
     } catch (e: Exception) {
-        flow { Result.Error(message = e.message) }
+        flow { emit(Result.Error(message = e.message)) }
     }
 }

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
-import com.gowoon.model.record.ConsumptionRecord
+import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.R
