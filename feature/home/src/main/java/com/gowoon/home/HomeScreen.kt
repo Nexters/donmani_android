@@ -53,6 +53,7 @@ internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromRecord: String?,
+    onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -73,7 +74,7 @@ internal fun HomeScreen(
         }
     }
     TransparentScaffold(
-        topBar = { HomeAppBar() }
+        topBar = { HomeAppBar(onClickSetting = onClickSetting) }
     ) { padding ->
         Column(
             modifier = Modifier

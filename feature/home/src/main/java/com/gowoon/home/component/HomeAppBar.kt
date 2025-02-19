@@ -6,12 +6,12 @@ import androidx.compose.ui.res.vectorResource
 import com.gowoon.ui.component.AppBar
 
 @Composable
-internal fun HomeAppBar() {
+internal fun HomeAppBar(
+    onClickSetting: () -> Unit
+) {
     AppBar(
         navigationIcon = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.setting),
-        onClickNavigation = {
-            // TODO navigate to setting
-        },
+        onClickNavigation = onClickSetting,
         actionButton = {
             // TODO next update
 //            Icon(

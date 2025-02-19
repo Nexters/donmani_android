@@ -16,6 +16,7 @@ fun NavGraphBuilder.homeScreen(
         val result = backStackEntry.savedStateHandle.get<String>(MainToHomeArgumentKey)
         HomeScreen(
             resultFromRecord = result,
+            onClickSetting = navigateToSetting,
             onClickAdd = navigateToRecord
         )
     }

@@ -15,7 +15,7 @@ android {
         buildConfigField(
             "String",
             "SERVER_URL",
-            getApiKey("SERVER_URL")
+            gradleLocalProperties(rootDir, providers).getProperty("SERVER_URL")
         )
     }
 }
@@ -26,8 +26,4 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
-}
-
-fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
 }
