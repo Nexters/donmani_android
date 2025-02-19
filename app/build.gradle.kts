@@ -29,6 +29,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.feature.home)
     implementation(projects.feature.record)
+    implementation(projects.feature.setting)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
