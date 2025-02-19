@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.di.FeatureJson
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottle
@@ -42,11 +44,15 @@ import com.gowoon.ui.component.Tooltip
 import com.gowoon.ui.component.TooltipCaretAlignment
 import com.gowoon.ui.component.TooltipDirection
 import com.gowoon.ui.pxToDp
+import com.gowoon.ui.util.rememberHiltJson
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 
 @Composable
 internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    @FeatureJson json: Json = rememberHiltJson(),
+    resultFromRecord: String?,
     onClickAdd: (Boolean, Boolean) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,6 +66,12 @@ internal fun HomeScreen(
     }
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(resultFromRecord) {
+        resultFromRecord?.let {
+            viewModel.setEvent(HomeEvent.OnAddRecord(json.decodeFromString<Record>(it)))
+        }
+    }
     TransparentScaffold(
         topBar = { HomeAppBar() }
     ) { padding ->

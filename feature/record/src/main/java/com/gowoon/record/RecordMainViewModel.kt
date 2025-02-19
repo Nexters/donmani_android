@@ -49,9 +49,9 @@ internal class RecordMainViewModel @Inject constructor(
 
             is RecordMainEvent.OnClickNoConsumptionCheckBox -> {
                 val newRecord = if (event.checked) {
-                    NoConsumption()
+                    NoConsumption(consumptionDate = getDate())
                 } else {
-                    ConsumptionRecord()
+                    ConsumptionRecord(consumptionDate = getDate())
                 }
                 updateCurrentDayRecord(newRecord = newRecord)
             }
@@ -69,7 +69,7 @@ internal class RecordMainViewModel @Inject constructor(
             }
 
             is RecordMainEvent.OnSaveRecord -> {
-                requestSaveRecord(event.record)
+                requestSaveRecord(event.record, event.callback)
             }
         }
     }
@@ -154,18 +154,27 @@ internal class RecordMainViewModel @Inject constructor(
         }
     }
 
-    private fun requestSaveRecord(record: Record) {
+    private fun requestSaveRecord(record: Record, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             when (val result = saveRecordUseCase(record)) {
                 is Result.Success -> {
-                    Napier.d("gowoon log success save")
+                    Napier.d("gowoon log register success")
+                    callback(true)
                 }
 
                 is Result.Error -> {
                     // TODO error handling
-                    Napier.d("gowoon log error save $result")
+                    Napier.d("gowoon log register error $result")
+                    callback(false)
                 }
             }
+        }
+    }
+
+    private fun getDate(): LocalDate {
+        return when (currentState.selectedDay) {
+            EntryDay.Today -> LocalDate.now()
+            EntryDay.Yesterday -> LocalDate.now().minusDays(1)
         }
     }
 }
@@ -183,7 +192,7 @@ sealed class RecordMainEvent : UiEvent {
     data object OnClickNoConsumptionTooltip : RecordMainEvent()
     data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent()
     data class ShowConfirm(val show: Boolean) : RecordMainEvent()
-    data class OnSaveRecord(val record: Record) : RecordMainEvent()
+    data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent()
 }
 
 sealed class RecordMainEffect : UiEffect

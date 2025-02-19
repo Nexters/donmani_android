@@ -38,6 +38,7 @@ import com.gowoon.record.component.EmptyCard
 import com.gowoon.record.component.NoConsumptionCard
 import com.gowoon.record.component.RecordCard
 import com.gowoon.record.component.TodayYesterdayToggle
+import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
 import com.gowoon.ui.component.CheckBoxWithTitle
@@ -58,7 +59,8 @@ internal fun RecordMainScreen(
     resultFromInput: String? = null,
     onClickBack: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
-    onClickEdit: (Consumption) -> Unit
+    onClickEdit: (Consumption) -> Unit,
+    onSave: (String, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val finishToRecord by remember {
@@ -93,7 +95,11 @@ internal fun RecordMainScreen(
                 record = record
             ) {
                 if (it) {
-                    viewModel.setEvent(RecordMainEvent.OnSaveRecord(record))
+                    viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
+                        if (succeed) {
+                            onSave(MainToHomeArgumentKey, json.encodeToString(record))
+                        }
+                    })
                 } else {
                     viewModel.setEvent(RecordMainEvent.ShowConfirm(false))
                 }

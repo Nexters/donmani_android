@@ -12,6 +12,7 @@ import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.domain.usecase.user.RegisterUserUseCase
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -37,6 +38,10 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeEvent.HideTooltip -> {
                 setState(currentState.copy(showTooltip = false))
+            }
+
+            is HomeEvent.OnAddRecord -> {
+                addNewRecord(event.newRecord)
             }
         }
     }
@@ -90,6 +95,16 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun addNewRecord(record: Record) {
+        viewModelScope.launch {
+            delay(3000)
+            setState(
+                currentState.copy(
+                    records = currentState.records.toMutableList().apply { add(record) })
+            )
+        }
+    }
+
     fun hasRecordOfDay(date: LocalDate): Boolean {
         return currentState.records.any { record ->
             record.date == date
@@ -105,6 +120,7 @@ data class HomeState(
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
+    data class OnAddRecord(val newRecord: Record) : HomeEvent
 }
 
 sealed class HomeEffect : UiEffect
