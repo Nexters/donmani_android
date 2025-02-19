@@ -41,7 +41,9 @@ data class SettingItem(
 @Composable
 internal fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickPrivatePrivacy: () -> Unit,
+    onClickFeedback: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
@@ -67,7 +69,11 @@ internal fun SettingScreen(
                 listOf(
                     SettingItem(
                         stringResource(R.string.setting_private_privacy),
-                        { }
+                        onClickPrivatePrivacy
+                    ),
+                    SettingItem(
+                        stringResource(R.string.setting_feedback),
+                        onClickFeedback
                     )
                 )
             )

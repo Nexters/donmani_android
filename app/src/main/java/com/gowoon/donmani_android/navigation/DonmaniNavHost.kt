@@ -1,7 +1,10 @@
 package com.gowoon.donmani_android.navigation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
@@ -23,6 +26,7 @@ fun DonmaniNavHost(
 ) {
     @FeatureJson
     val json = rememberHiltJson()
+    val context = LocalContext.current
     NavHost(
         navController = navController,
         startDestination = homeNavigationRoute,
@@ -49,6 +53,12 @@ fun DonmaniNavHost(
                 navController.popBackStack()
             }
         )
-        settingScreen(onClickBack = navController::popBackStack)
+        settingScreen(
+            onClickBack = navController::popBackStack,
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            }
+        )
     }
 }
