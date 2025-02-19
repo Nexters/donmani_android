@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,8 +24,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
@@ -38,9 +40,10 @@ data class SettingItem(
 
 @Composable
 internal fun SettingScreen(
+    viewModel: SettingViewModel = hiltViewModel(),
     onClickBack: () -> Unit
 ) {
-    val nickname = "별통이"
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
         topBar = {
             AppBar(
@@ -57,7 +60,7 @@ internal fun SettingScreen(
         ) {
             Spacer(Modifier.height(30.dp))
             ProfileHeader(
-                nickname = nickname
+                nickname = state.nickname
             ) { }
             Spacer(Modifier.height(60.dp))
             SettingContent(
@@ -143,10 +146,4 @@ private fun SettingContentItem(
         )
         button?.let { it() }
     }
-}
-
-@Preview
-@Composable
-private fun SettingPreview() {
-    SettingScreen { }
 }
