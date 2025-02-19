@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface RecordRepository {
     suspend fun getRecordList(year: Int, month: Int): Flow<Result<List<Record?>>>
+    suspend fun saveRecord(record: Record): Result<Unit>
 }

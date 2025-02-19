@@ -8,6 +8,7 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.record.SaveRecordUseCase
 import com.gowoon.domain.usecase.tooltip.GetNoConsumptionTooltipStateUseCase
 import com.gowoon.domain.usecase.tooltip.HideNoConsumptionTooltipUseCase
 import com.gowoon.model.common.EntryDay
@@ -18,15 +19,18 @@ import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 internal class RecordMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getNoConsumptionTooltipStateUseCase: GetNoConsumptionTooltipStateUseCase,
-    private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase
+    private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase,
+    private val saveRecordUseCase: SaveRecordUseCase
 ) : BaseViewModel<RecordMainState, RecordMainEvent, RecordMainEffect>() {
     override fun createInitialState(): RecordMainState = RecordMainState()
     private val showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not()
@@ -63,6 +67,10 @@ internal class RecordMainViewModel @Inject constructor(
             is RecordMainEvent.ShowConfirm -> {
                 setState(currentState.copy(showConfirm = event.show))
             }
+
+            is RecordMainEvent.OnSaveRecord -> {
+                requestSaveRecord(event.record)
+            }
         }
     }
 
@@ -74,11 +82,22 @@ internal class RecordMainViewModel @Inject constructor(
                         setState(
                             currentState.copy(
                                 records = mutableMapOf<String, Record>().apply {
-                                    if (showToday) put(EntryDay.Today.name, ConsumptionRecord())
-                                    if (showYesterday) put(
-                                        EntryDay.Yesterday.name,
-                                        ConsumptionRecord()
-                                    )
+                                    if (showToday) {
+                                        put(
+                                            EntryDay.Today.name,
+                                            ConsumptionRecord(
+                                                consumptionDate = LocalDate.now()
+                                            )
+                                        )
+                                    }
+                                    if (showYesterday) {
+                                        put(
+                                            EntryDay.Yesterday.name,
+                                            ConsumptionRecord(
+                                                consumptionDate = LocalDate.now().minusDays(1)
+                                            )
+                                        )
+                                    }
                                 },
                                 showTooltip = it.data
                             )
@@ -133,6 +152,21 @@ internal class RecordMainViewModel @Inject constructor(
             }
         }
     }
+
+    private fun requestSaveRecord(record: Record) {
+        viewModelScope.launch {
+            when (val result = saveRecordUseCase(record)) {
+                is Result.Success -> {
+                    Napier.d("gowoon log success save")
+                }
+
+                is Result.Error -> {
+                    // TODO error handling
+                    Napier.d("gowoon log error save $result")
+                }
+            }
+        }
+    }
 }
 
 data class RecordMainState(
@@ -148,6 +182,7 @@ sealed class RecordMainEvent : UiEvent {
     data object OnClickNoConsumptionTooltip : RecordMainEvent()
     data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent()
     data class ShowConfirm(val show: Boolean) : RecordMainEvent()
+    data class OnSaveRecord(val record: Record) : RecordMainEvent()
 }
 
 sealed class RecordMainEffect : UiEffect

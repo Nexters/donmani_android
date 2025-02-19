@@ -93,8 +93,8 @@ internal fun RecordConfirmScreen(
 private fun RecordConfirmPreview() {
 //    val record: Record = NoConsumption
     val record: Record = ConsumptionRecord(
-        goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.Flex, "아아아아아아"),
-        badRecord = Consumption(ConsumptionType.BAD, BadCategory.Greed, "우우우우우우우"),
+        goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.FLEX, "아아아아아아"),
+        badRecord = Consumption(ConsumptionType.BAD, BadCategory.GREED, "우우우우우우우"),
     )
     RecordConfirmScreen(record = record){}
 }

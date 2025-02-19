@@ -1,10 +1,12 @@
 package com.gowoon.data.repository
 
+import com.gowoon.data.mapper.toDto
 import com.gowoon.data.mapper.toModel
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RecordRepository
 import com.gowoon.model.record.Record
 import com.gowoon.network.di.DeviceId
+import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.service.ExpenseService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -41,5 +43,24 @@ class RecordRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             emit(Result.Error(message = e.message))
         }
+    }
+
+    override suspend fun saveRecord(record: Record): Result<Unit> = try {
+        record.toDto()?.let {
+            recordService.postExpense(
+                PostRecordRequest(
+                    userKey = deviceId,
+                    records = listOf(it)
+                )
+            ).let { result ->
+                if (result.isSuccessful) {
+                    Result.Success(Unit)
+                } else {
+                    Result.Error(code = result.code(), message = result.message())
+                }
+            }
+        } ?: Result.Error(message = "date is null")
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
     }
 }

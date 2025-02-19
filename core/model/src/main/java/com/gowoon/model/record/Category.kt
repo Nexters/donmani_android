@@ -7,28 +7,28 @@ sealed interface Category
 
 @Serializable
 enum class GoodCategory(val title: String) : Category {
-    Energy("활력"),
-    Growth("성장"),
-    Healing("힐링"),
-    SBDH("소확행"),
-    Flex("플렉스"),
-    Maintenance("품위유지"),
-    Heart("마음전달"),
-    Healty("건강"),
-    None("없음")
+    ENERGY("활력"),
+    GROWTH("성장"),
+    HEALING("힐링"),
+    HAPPINESS("소확행"),
+    FLEX("플렉스"),
+    DIGNITY("품위유지"),
+    AFFECTION("마음전달"),
+    HEALTH("건강"),
+    NONE("없음")
 }
 
 @Serializable
 enum class BadCategory(val title: String) : Category {
-    Greed("욕심"),
-    Addiction("중독"),
-    Laziness("게으름"),
-    Impulse("충동"),
-    Meaningless("무의미"),
-    Ostentation("과시"),
-    Habitual("습관반복"),
-    Stingy("과한절약"),
-    None("없음")
+    GREED("욕심"),
+    ADDICTION("중독"),
+    LAZINESS("게으름"),
+    IMPULSE("충동"),
+    MEANINGLESSNESS("무의미"),
+    BOASTFULNESS("과시"),
+    HABIT("습관반복"),
+    OVERFRUGALITY("과한절약"),
+    NONE("없음")
 }
 
 fun Category.getTitle(type: ConsumptionType): String = when (type) {
