@@ -11,19 +11,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
-import com.gowoon.model.record.GoodCategory
 import com.gowoon.ui.util.getColor
 
 enum class BGMode { DEFAULT, MAIN }
@@ -60,6 +63,7 @@ fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () ->
         endColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
             0xFF091958
         ),
+        showStarBg = mode == BGMode.MAIN,
         content = content
     )
 }
@@ -68,6 +72,7 @@ fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () ->
 fun GradientBackground(
     startColor: Color,
     endColor: Color,
+    showStarBg: Boolean,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -81,7 +86,17 @@ fun GradientBackground(
                     )
                 )
             )
-    ) { content() }
+    ) {
+        if (showStarBg) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = ImageVector.vectorResource(R.drawable.star_background),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
+        }
+        content()
+    }
 }
 
 @Composable
@@ -111,12 +126,4 @@ fun TransparentScaffold(
         contentWindowInsets = contentWindowInsets,
         content = content
     )
-}
-
-@Preview
-@Composable
-fun DefaultGradientBackgroundPreview() {
-    CategoryBackground(
-        category = GoodCategory.Energy
-    ) { }
 }

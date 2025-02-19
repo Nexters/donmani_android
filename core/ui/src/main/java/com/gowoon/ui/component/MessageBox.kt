@@ -1,4 +1,4 @@
-package com.gowoon.record.component
+package com.gowoon.ui.component
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

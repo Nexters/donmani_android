@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Consumption
-import com.gowoon.model.record.ConsumptionRecord
+import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
-import com.gowoon.model.record.NoConsumption
+import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.model.record.Record
 import com.gowoon.record.component.NoConsumptionCard
 import com.gowoon.record.component.RecordCard

@@ -17,7 +17,7 @@ class TooltipRepositoryImpl @Inject constructor(
                 Result.Success(it)
             }
         } catch (e: Exception) {
-            flow { Result.Error(message = e.message) }
+            flow { emit(Result.Error(message = e.message)) }
         }
 
     override suspend fun setNoConsumptionTooltipState(state: Boolean): Result<Unit> =

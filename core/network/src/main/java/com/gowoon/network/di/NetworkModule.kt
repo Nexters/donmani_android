@@ -1,8 +1,12 @@
-package com.gowoon.network
+package com.gowoon.network.di
 
+import android.content.Context
+import android.provider.Settings
+import com.gowoon.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -18,9 +22,24 @@ import javax.inject.Singleton
 @Qualifier
 annotation class NetworkJson
 
+@Retention(AnnotationRetention.RUNTIME)
+@Qualifier
+annotation class DeviceId
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @DeviceId
+    @Provides
+    @Singleton
+    fun providesDeviceId(
+        @ApplicationContext context: Context
+    ): String {
+        return Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
+        ) ?: ""
+    }
 
     @NetworkJson
     @Provides
