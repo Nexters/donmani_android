@@ -36,6 +36,6 @@ fun RecordStar(
 @Composable
 private fun Star() {
     RecordStar(
-        category = GoodCategory.Energy
+        category = GoodCategory.ENERGY
     )
 }

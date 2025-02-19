@@ -1,8 +1,11 @@
 package com.gowoon.network.service
 
+import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.dto.response.ExpenseListResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -13,4 +16,9 @@ interface ExpenseService {
         @Query("year") year: Int,
         @Query("month") month: Int,
     ): Response<ExpenseListResponse>
+
+    @POST("/expenses")
+    suspend fun postExpense(
+        @Body requestBody: PostRecordRequest
+    ): Response<Unit>
 }

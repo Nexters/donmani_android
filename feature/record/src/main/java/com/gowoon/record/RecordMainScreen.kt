@@ -93,7 +93,7 @@ internal fun RecordMainScreen(
                 record = record
             ) {
                 if (it) {
-                    // TODO api call
+                    viewModel.setEvent(RecordMainEvent.OnSaveRecord(record))
                 } else {
                     viewModel.setEvent(RecordMainEvent.ShowConfirm(false))
                 }

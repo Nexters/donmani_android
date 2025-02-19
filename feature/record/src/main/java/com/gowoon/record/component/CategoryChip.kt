@@ -96,7 +96,7 @@ private fun CategoryChip(
 @Composable
 private fun CategoryChipPreview() {
     Column {
-        InputCategoryChip(type = ConsumptionType.GOOD, category = GoodCategory.Energy)
-        CategorySelectChip(category = GoodCategory.Energy, selected = true)
+        InputCategoryChip(type = ConsumptionType.GOOD, category = GoodCategory.ENERGY)
+        CategorySelectChip(category = GoodCategory.ENERGY, selected = true)
     }
 }
