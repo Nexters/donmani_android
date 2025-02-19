@@ -1,6 +1,7 @@
 package com.gowoon.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,18 +19,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.component.HomeAppBar
+import com.gowoon.home.component.StarBottle
+import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.CircleButton
 import com.gowoon.ui.component.CircleButtonSize
@@ -68,7 +72,7 @@ internal fun HomeScreen(
             Spacer(Modifier.height(24.dp))
             Title(text = stringResource(R.string.home_title, state.nickname))
             Spacer(Modifier.height(95.dp))
-            HomeContent()
+            HomeContent(records = state.records)
             HomeFooter(
                 modifier = Modifier.weight(1f),
                 hasToday = hasToday,
@@ -102,17 +106,29 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun HomeContent(modifier: Modifier = Modifier) {
-    // TODO 별사탕
+private fun HomeContent(
+    modifier: Modifier = Modifier,
+    records: List<Record>
+) {
     Box(
         modifier = modifier
             .width(300.dp)
             .height(400.dp)
     ) {
         Image(
-            modifier = Modifier.fillMaxSize().align(Alignment.Center),
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center),
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
             contentDescription = null
+        )
+        StarBottle(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 50.dp)
+                .padding(3.dp)
+                .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
+            records = records
         )
         Image(
             modifier = Modifier.align(Alignment.Center),
@@ -149,10 +165,4 @@ private fun HomeFooter(
             ) { onClickAdd() }
         }
     }
-}
-
-@Preview
-@Composable
-fun HomeContentPreview() {
-    HomeContent()
 }

@@ -99,6 +99,7 @@ internal class RecordMainViewModel @Inject constructor(
                                         )
                                     }
                                 },
+                                selectedDay = if (showToday) EntryDay.Today else EntryDay.Yesterday,
                                 showTooltip = it.data
                             )
                         )

@@ -40,6 +40,7 @@ material = "1.12.0"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 napier = "2.7.1"
+physicsLayout = "0.4.1"
 
 [libraries]
 # androidX
@@ -95,6 +96,8 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
 ## napier
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
+## physict compose
+physics-layout-compose = { group = "io.github.klassenkonstantin", name = "physics-layout", version.ref = "physicsLayout" }
 
 # gradle plugin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
