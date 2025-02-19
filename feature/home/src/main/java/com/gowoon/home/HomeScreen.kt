@@ -1,6 +1,6 @@
 package com.gowoon.home
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -107,8 +108,18 @@ private fun HomeContent(modifier: Modifier = Modifier) {
         modifier = modifier
             .width(300.dp)
             .height(400.dp)
-            .background(Color.White)
-    )
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize().align(Alignment.Center),
+            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
+            contentDescription = null
+        )
+        Image(
+            modifier = Modifier.align(Alignment.Center),
+            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
+            contentDescription = null
+        )
+    }
 }
 
 @Composable
@@ -138,4 +149,10 @@ private fun HomeFooter(
             ) { onClickAdd() }
         }
     }
+}
+
+@Preview
+@Composable
+fun HomeContentPreview() {
+    HomeContent()
 }

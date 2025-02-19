@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.navigation.compose.rememberNavController
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.donmani_android.navigation.DonmaniNavHost
 import com.gowoon.ui.BGMode
@@ -17,9 +18,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DonmaniTheme {
-                val appState = rememberAppState()
+                val navController = rememberNavController()
+                val appState = rememberAppState(navController)
                 GradientBackground(if (appState.isHome) BGMode.MAIN else BGMode.DEFAULT) {
-                    DonmaniNavHost()
+                    DonmaniNavHost(navController = navController)
                 }
             }
         }

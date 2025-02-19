@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.gowoon.home.navigation.homeNavigationRoute
 
 @Composable
-fun rememberAppState(navController: NavController = rememberNavController()): AppState =
+fun rememberAppState(navController: NavController): AppState =
     remember(navController) {
         AppState(navController)
     }
