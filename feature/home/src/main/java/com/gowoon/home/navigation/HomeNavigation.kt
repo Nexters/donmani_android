@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.gowoon.home.HomeScreen
 
+const val MainToHomeArgumentKey = "mainToHome"
 const val homeNavigationRoute = "home_route"
 
 fun NavGraphBuilder.homeScreen(
@@ -11,8 +12,10 @@ fun NavGraphBuilder.homeScreen(
     navigateToCalendar: () -> Unit,
     navigateToRecord: (Boolean, Boolean) -> Unit
 ) {
-    composable(route = homeNavigationRoute) {
+    composable(route = homeNavigationRoute) { backStackEntry ->
+        val result = backStackEntry.savedStateHandle.get<String>(MainToHomeArgumentKey)
         HomeScreen(
+            resultFromRecord = result,
             onClickSetting = navigateToSetting,
             onClickAdd = navigateToRecord
         )

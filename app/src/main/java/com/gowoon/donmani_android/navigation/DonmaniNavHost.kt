@@ -45,9 +45,9 @@ fun DonmaniNavHost(
             navigateToRecordInputWithData = {
                 navController.navigateToRecordInput(consumption = json.encodeToString(it))
             },
-            popBackStackWithArgument = { data ->
+            popBackStackWithArgument = { key, data ->
                 navController.previousBackStackEntry?.savedStateHandle?.set(
-                    InputToMainArgumentKey,
+                    key,
                     data
                 )
                 navController.popBackStack()

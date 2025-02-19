@@ -31,6 +31,7 @@ import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.component.InputCategoryChip
+import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.AppBar
@@ -46,7 +47,7 @@ internal fun RecordInputScreen(
     viewModel: RecordInputViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
     onClickBack: () -> Unit,
-    onClickDone: (String) -> Unit
+    onClickDone: (String, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
@@ -96,6 +97,7 @@ internal fun RecordInputScreen(
                 ) {
                     state.category?.let { category ->
                         onClickDone(
+                            InputToMainArgumentKey,
                             json.encodeToString(
                                 Consumption(
                                     type = state.type,

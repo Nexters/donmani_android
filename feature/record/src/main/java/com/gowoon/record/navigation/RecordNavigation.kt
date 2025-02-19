@@ -10,6 +10,7 @@ import com.gowoon.record.RecordMainScreen
 import kotlinx.serialization.Serializable
 
 const val InputToMainArgumentKey = "inputToMain"
+const val MainToHomeArgumentKey = "mainToHome"
 
 @Serializable
 data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
@@ -35,7 +36,7 @@ fun NavGraphBuilder.recordGraph(
     onClickBack: () -> Unit,
     navigateToRecordInput: (ConsumptionType) -> Unit,
     navigateToRecordInputWithData: (Consumption) -> Unit,
-    popBackStackWithArgument: (data: String) -> Unit
+    popBackStackWithArgument: (key: String, data: String) -> Unit,
 ) {
     composable<RecordNavigationRoute> { backStackEntry ->
         val result = backStackEntry.savedStateHandle.get<String>(InputToMainArgumentKey)
@@ -43,7 +44,8 @@ fun NavGraphBuilder.recordGraph(
             resultFromInput = result,
             onClickBack = onClickBack,
             onClickAdd = navigateToRecordInput,
-            onClickEdit = navigateToRecordInputWithData
+            onClickEdit = navigateToRecordInputWithData,
+            onSave = popBackStackWithArgument
         )
     }
     composable<RecordInputNavigationRoute> {
