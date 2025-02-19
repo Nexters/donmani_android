@@ -11,5 +11,10 @@ fun NavGraphBuilder.homeScreen(
     navigateToCalendar: () -> Unit,
     navigateToRecord: (Boolean, Boolean) -> Unit
 ) {
-    composable(route = homeNavigationRoute) { HomeScreen(onClickAdd = navigateToRecord) }
+    composable(route = homeNavigationRoute) {
+        HomeScreen(
+            onClickSetting = navigateToSetting,
+            onClickAdd = navigateToRecord
+        )
+    }
 }
