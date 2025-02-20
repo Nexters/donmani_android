@@ -59,7 +59,12 @@ fun BottomSheet(
                 .padding(top = 12.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            CloseButton(modifier = Modifier.align(Alignment.End)) { }
+            CloseButton(modifier = Modifier.align(Alignment.End)) {
+                scope.launch {
+                    state.hide()
+                    onDismissRequest()
+                }
+            }
             Text(
                 text = title,
                 color = DonmaniTheme.colors.Gray95,
@@ -76,8 +81,10 @@ fun BottomSheet(
                         label = buttonType.title,
                         enable = buttonType.enable,
                     ) {
-                        scope.launch { state.hide() }
-                        onClick(true)
+                        scope.launch {
+                            state.hide()
+                            onClick(true)
+                        }
                     }
                 }
 
@@ -92,15 +99,19 @@ fun BottomSheet(
                             modifier = Modifier.weight(1f),
                             label = buttonType.negativeTitle
                         ) {
-                            scope.launch { state.hide() }
-                            onClick(false)
+                            scope.launch {
+                                state.hide()
+                                onClick(false)
+                            }
                         }
                         PositiveButton(
                             modifier = Modifier.weight(1f),
                             label = buttonType.positiveTitle
                         ) {
-                            scope.launch { state.hide() }
-                            onClick(true)
+                            scope.launch {
+                                state.hide()
+                                onClick(true)
+                            }
                         }
                     }
                 }

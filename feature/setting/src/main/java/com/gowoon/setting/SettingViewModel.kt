@@ -23,7 +23,11 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun handleEvent(event: SettingEvent) {
-        TODO("Not yet implemented")
+        when(event){
+            is SettingEvent.ShowDialog -> {
+                setState(currentState.copy(showDialog = event.show))
+            }
+        }
     }
 
     private fun initialState() {
@@ -45,8 +49,11 @@ class SettingViewModel @Inject constructor(
 }
 
 data class SettingState(
-    val nickname: String = ""
+    val nickname: String = "",
+    val showDialog: Boolean = false
 ) : UiState
 
-sealed interface SettingEvent : UiEvent
+sealed interface SettingEvent : UiEvent {
+    data class ShowDialog(val show: Boolean): SettingEvent
+}
 sealed interface SettingEffect : UiEffect

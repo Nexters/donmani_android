@@ -31,6 +31,7 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.BBSRuleBottomSheet
 
 @Stable
 data class SettingItem(
@@ -54,6 +55,9 @@ internal fun SettingScreen(
             )
         }
     ) {
+        if (state.showDialog) {
+            BBSRuleBottomSheet { viewModel.setEvent(SettingEvent.ShowDialog(false)) }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -67,6 +71,9 @@ internal fun SettingScreen(
             Spacer(Modifier.height(60.dp))
             SettingContent(
                 listOf(
+                    SettingItem(
+                        stringResource(R.string.setting_bbs_rule)
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(true)) },
                     SettingItem(
                         stringResource(R.string.setting_private_privacy),
                         onClickPrivatePrivacy
