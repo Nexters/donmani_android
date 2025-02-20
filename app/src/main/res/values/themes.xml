@@ -2,4 +2,15 @@
 <resources>
 
     <style name="Theme.Donmani_android" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- 액션바 제거 -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <!-- 스플래시 옵션 -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">#04091E</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon_dummy</item>
+        <item name="postSplashScreenTheme">@style/Theme.Donmani_android</item>
+    </style>
 </resources>

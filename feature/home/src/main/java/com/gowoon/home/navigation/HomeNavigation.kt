@@ -1,11 +1,20 @@
 package com.gowoon.home.navigation
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.gowoon.home.HomeScreen
 
 const val MainToHomeArgumentKey = "mainToHome"
 const val homeNavigationRoute = "home_route"
+
+fun NavController.navigateToHome(from: String? = null) {
+    navigate(route = homeNavigationRoute) {
+        from?.let {
+            popUpTo(it) { inclusive = true }
+        }
+    }
+}
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
