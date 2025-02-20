@@ -16,16 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gowoon.designsystem.component.BottomSheet
+import com.gowoon.designsystem.component.BottomSheetButtonType
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
-import com.gowoon.record.component.CategorySelectChip
-import com.gowoon.ui.component.BottomSheet
-import com.gowoon.ui.component.BottomSheetButtonType
-import com.gowoon.ui.noRippleClickable
+import com.gowoon.ui.component.CategorySelectChip
 
 @Composable
 internal fun CategorySelectBottomSheet(

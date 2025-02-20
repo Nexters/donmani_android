@@ -22,8 +22,6 @@
     <!-- component -->
     <!-- checkbox -->
     <string name="no_consumption_message">무소비 했어요</string>
-    <!-- card -->
-    <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
     <!-- input -->
     <string name="good_record_input_memo_placeholder">소비가 행복했던 이유는?</string>
     <string name="bad_record_input_memo_placeholder">소비가 후회됐던 이유는?</string>

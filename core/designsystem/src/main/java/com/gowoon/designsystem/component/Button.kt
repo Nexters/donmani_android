@@ -1,4 +1,4 @@
-package com.gowoon.ui.component
+package com.gowoon.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.ui.noRippleClickable
+import com.gowoon.designsystem.util.noRippleClickable
 
 enum class RoundedButtonRadius(val radius: Dp, val verticalPadding: Dp, val horizontalPadding: Dp) {
     Row(radius = 16.dp, verticalPadding = 16.dp, horizontalPadding = 16.dp),

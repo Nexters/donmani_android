@@ -10,10 +10,11 @@ import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
-import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.record.navigation.navigateToRecord
 import com.gowoon.record.navigation.navigateToRecordInput
 import com.gowoon.record.navigation.recordGraph
+import com.gowoon.recordlist.navigation.navigateToRecordList
+import com.gowoon.recordlist.navigation.recordListScreen
 import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
 import com.gowoon.ui.util.rememberHiltJson
@@ -35,7 +36,8 @@ fun DonmaniNavHost(
         homeScreen(
             navigateToSetting = navController::navigateToSetting,
             navigateToCalendar = {},
-            navigateToRecord = navController::navigateToRecord
+            navigateToRecord = navController::navigateToRecord,
+            navigateToRecordList = navController::navigateToRecordList
         )
         recordGraph(
             onClickBack = navController::popBackStack,
@@ -51,6 +53,15 @@ fun DonmaniNavHost(
                     data
                 )
                 navController.popBackStack()
+            }
+        )
+        recordListScreen(
+            onClickBack = navController::popBackStack,
+            navigateToRecord = {
+                navController.navigateToRecord(
+                    hasTodayRecord = false,
+                    hasYesterdayRecord = false
+                )
             }
         )
         settingScreen(

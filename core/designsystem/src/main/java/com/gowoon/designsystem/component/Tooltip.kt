@@ -1,4 +1,4 @@
-package com.gowoon.ui.component
+package com.gowoon.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.ui.noRippleClickable
+import com.gowoon.designsystem.util.noRippleClickable
 
 enum class TooltipDirection {
     TopOf, BottomOf
