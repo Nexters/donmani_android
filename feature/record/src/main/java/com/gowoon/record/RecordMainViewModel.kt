@@ -75,34 +75,34 @@ internal class RecordMainViewModel @Inject constructor(
     }
 
     private fun initialState() {
+        setState(
+            currentState.copy(
+                records = mutableMapOf<String, Record>().apply {
+                    if (showToday) {
+                        put(
+                            EntryDay.Today.name,
+                            ConsumptionRecord(
+                                consumptionDate = LocalDate.now()
+                            )
+                        )
+                    }
+                    if (showYesterday) {
+                        put(
+                            EntryDay.Yesterday.name,
+                            ConsumptionRecord(
+                                consumptionDate = LocalDate.now().minusDays(1)
+                            )
+                        )
+                    }
+                },
+                selectedDay = if (showToday) EntryDay.Today else EntryDay.Yesterday,
+            )
+        )
         viewModelScope.launch {
             getNoConsumptionTooltipStateUseCase().stateIn(this).collect {
                 when (it) {
                     is Result.Success -> {
-                        setState(
-                            currentState.copy(
-                                records = mutableMapOf<String, Record>().apply {
-                                    if (showToday) {
-                                        put(
-                                            EntryDay.Today.name,
-                                            ConsumptionRecord(
-                                                consumptionDate = LocalDate.now()
-                                            )
-                                        )
-                                    }
-                                    if (showYesterday) {
-                                        put(
-                                            EntryDay.Yesterday.name,
-                                            ConsumptionRecord(
-                                                consumptionDate = LocalDate.now().minusDays(1)
-                                            )
-                                        )
-                                    }
-                                },
-                                selectedDay = if (showToday) EntryDay.Today else EntryDay.Yesterday,
-                                showTooltip = it.data
-                            )
-                        )
+                        setState(currentState.copy(showTooltip = it.data))
                     }
 
                     is Result.Error -> {
