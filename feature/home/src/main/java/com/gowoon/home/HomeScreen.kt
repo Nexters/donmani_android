@@ -38,6 +38,7 @@ import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottle
@@ -54,7 +55,8 @@ internal fun HomeScreen(
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
-    onClickAdd: (Boolean, Boolean) -> Unit
+    onClickAdd: (Boolean, Boolean) -> Unit,
+    onClickBottle: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
@@ -83,7 +85,8 @@ internal fun HomeScreen(
             Spacer(Modifier.height(95.dp))
             HomeContent(
                 records = state.records,
-                newRecord = state.newRecord
+                newRecord = state.newRecord,
+                onClickBottle = onClickBottle
             )
             HomeFooter(
                 modifier = Modifier.weight(1f),
@@ -122,11 +125,13 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     newRecord: Record?,
+    onClickBottle: () -> Unit
 ) {
     Box(
         modifier = modifier
             .width(300.dp)
             .height(400.dp)
+            .noRippleClickable { onClickBottle() }
     ) {
         Image(
             modifier = Modifier

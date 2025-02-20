@@ -10,14 +10,16 @@ const val homeNavigationRoute = "home_route"
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
     navigateToCalendar: () -> Unit,
-    navigateToRecord: (Boolean, Boolean) -> Unit
+    navigateToRecord: (Boolean, Boolean) -> Unit,
+    navigateToRecordList: () -> Unit
 ) {
     composable(route = homeNavigationRoute) { backStackEntry ->
         val result = backStackEntry.savedStateHandle.get<String>(MainToHomeArgumentKey)
         HomeScreen(
             resultFromRecord = result,
             onClickSetting = navigateToSetting,
-            onClickAdd = navigateToRecord
+            onClickAdd = navigateToRecord,
+            onClickBottle = navigateToRecordList
         )
     }
 }
