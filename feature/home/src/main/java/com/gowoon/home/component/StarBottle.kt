@@ -9,18 +9,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.gowoon.model.record.BadCategory
-import com.gowoon.model.record.Consumption
-import com.gowoon.model.record.ConsumptionType
-import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.ui.component.Star
 import de.apuri.physicslayout.lib.PhysicsLayout
@@ -28,31 +28,42 @@ import de.apuri.physicslayout.lib.drag.DragConfig
 import de.apuri.physicslayout.lib.physicsBody
 import de.apuri.physicslayout.lib.simulation.rememberClock
 import de.apuri.physicslayout.lib.simulation.rememberSimulation
+import kotlinx.coroutines.delay
+
+private const val COL_COUNT = 5
 
 @Composable
 internal fun StarBottle(
     modifier: Modifier = Modifier,
     bottleShape: Shape = RoundedCornerShape(65.dp),
-    records: List<Record>
+    records: List<Record>,
+    newRecord: Record?
 ) {
+    var show by remember { mutableStateOf(false) }
     val simulation = rememberSimulation(rememberClock())
+
+    LaunchedEffect(true) {
+        delay(1500)
+        show = true
+    }
     GravitySensor { (x, y) ->
         simulation.setGravity(Offset(-x, y).times(3f))
     }
-    val columns = 5
     PhysicsLayout(
-        modifier = modifier,
-        simulation = simulation,
-        shape = bottleShape
+        modifier = modifier, simulation = simulation, shape = bottleShape
     ) {
+        newRecord?.let {
+            if (show) {
+                Ball(modifier = Modifier.align(Alignment.TopCenter), record = it)
+            }
+        }
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            records.chunked(columns).forEach { rowItems ->
+            records.filterNot { it == newRecord }.chunked(COL_COUNT).forEach { rowItems ->
                 Row {
-                    rowItems.forEach { item ->
-                        Ball(record = item)
+                    rowItems.forEach { record ->
+                        Ball(record = record)
                     }
                 }
             }
@@ -62,11 +73,12 @@ internal fun StarBottle(
 
 @Composable
 private fun Ball(
+    modifier: Modifier = Modifier,
     size: Dp = 50.dp,
     record: Record
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .physicsBody(
                 shape = CircleShape,
                 dragConfig = DragConfig(),
@@ -76,40 +88,7 @@ private fun Ball(
         contentAlignment = Alignment.Center
     ) {
         Star(
-            size = size,
-            record = record
+            size = size, record = record
         )
     }
-}
-
-@Preview
-@Composable
-private fun StarBottlePreview() {
-    StarBottle(
-        modifier = Modifier.fillMaxSize(),
-        records = listOf(
-            Record.NoConsumption(),
-            Record.ConsumptionRecord(
-                goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.ENERGY, "아아"),
-                badRecord = Consumption(ConsumptionType.BAD, BadCategory.LAZINESS, "아아")
-            ),
-            Record.ConsumptionRecord(
-                goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.FLEX, "아아"),
-                badRecord = Consumption(ConsumptionType.BAD, BadCategory.ADDICTION, "아아")
-            ),
-            Record.ConsumptionRecord(
-                goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.HEALTH, "아아"),
-                badRecord = Consumption(ConsumptionType.BAD, BadCategory.OVERFRUGALITY, "아아")
-            ),
-            Record.ConsumptionRecord(
-                goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.DIGNITY, "아아"),
-                badRecord = Consumption(ConsumptionType.BAD, BadCategory.BOASTFULNESS, "아아")
-            ),
-            Record.NoConsumption(),
-            Record.ConsumptionRecord(
-                goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.GROWTH, "아아"),
-                badRecord = Consumption(ConsumptionType.BAD, BadCategory.HABIT, "아아")
-            ),
-        )
-    )
 }
