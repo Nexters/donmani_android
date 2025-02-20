@@ -17,6 +17,7 @@ appcompat = "1.7.0"
 navigationCompose = "2.8.6"
 datastore = "1.1.2"
 androidHilt = "1.2.0"
+splashScreen = "1.0.0"
 
 # kotlin
 kotlin = "2.1.10"
@@ -46,6 +47,8 @@ physicsLayout = "0.4.1"
 # androidX
 ## core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+### splash
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 ## lifecycle
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
