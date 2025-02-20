@@ -12,7 +12,8 @@ import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.domain.usecase.user.RegisterUserUseCase
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -41,7 +42,8 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.OnAddRecord -> {
-                addNewRecord(event.newRecord)
+                setState(currentState.copy(newRecord = event.newRecord))
+                setEffect(HomeEffect.RefreshTrigger)
             }
         }
     }
@@ -81,47 +83,52 @@ class HomeViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            getRecordListUseCase().stateIn(this).collect {
-                when (val result = it) {
-                    is Result.Success -> {
-                        setState(currentState.copy(records = result.data.filterNotNull()))
+            uiEffect.filter { it is HomeEffect.RefreshTrigger }
+                .flatMapLatest { getRecordListUseCase() }.stateIn(this).collect {
+                    when (val result = it) {
+                        is Result.Success -> {
+                            val records = result.data.filterNotNull()
+                            setState(
+                                currentState.copy(
+                                    records = records,
+                                    hasToday = hasRecordOfDay(records, LocalDate.now()),
+                                    hasYesterday = hasRecordOfDay(
+                                        records,
+                                        LocalDate.now().minusDays(1)
+                                    )
+                                )
+                            )
+                        }
+
+                        is Result.Error -> {
+                            // TODO error handling
+                        }
                     }
 
-                    is Result.Error -> {
-                        // TODO error handling
-                    }
                 }
-            }
-        }
+        }.also { setEffect(HomeEffect.RefreshTrigger) }
     }
 
-    private fun addNewRecord(record: Record) {
-        viewModelScope.launch {
-            delay(3000)
-            setState(
-                currentState.copy(
-                    records = currentState.records.toMutableList().apply { add(record) })
-            )
-        }
-    }
-
-    fun hasRecordOfDay(date: LocalDate): Boolean {
-        return currentState.records.any { record ->
-            record.date == date
-        }
+    private fun hasRecordOfDay(records: List<Record>, date: LocalDate): Boolean {
+        return records.any { record -> record.date == date }
     }
 }
 
 data class HomeState(
     val nickname: String = "",
     val records: List<Record> = listOf(),
+    val newRecord: Record? = null,
+    val hasToday: Boolean = false,
+    val hasYesterday: Boolean = false,
     val showTooltip: Boolean = true
 ) : UiState
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
-    data class OnAddRecord(val newRecord: Record) : HomeEvent
+    data class OnAddRecord(val newRecord: Record?) : HomeEvent
 }
 
-sealed class HomeEffect : UiEffect
+sealed interface HomeEffect : UiEffect {
+    data object RefreshTrigger : HomeEffect
+}
 

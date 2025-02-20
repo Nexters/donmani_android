@@ -45,8 +45,8 @@ import com.gowoon.ui.component.TooltipCaretAlignment
 import com.gowoon.ui.component.TooltipDirection
 import com.gowoon.ui.pxToDp
 import com.gowoon.ui.util.rememberHiltJson
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.json.Json
-import java.time.LocalDate
 
 @Composable
 internal fun HomeScreen(
@@ -57,20 +57,16 @@ internal fun HomeScreen(
     onClickAdd: (Boolean, Boolean) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val hasToday by remember { mutableStateOf(viewModel.hasRecordOfDay(LocalDate.now())) }
-    val hasYesterday by remember {
-        mutableStateOf(
-            viewModel.hasRecordOfDay(
-                LocalDate.now().minusDays(1)
-            )
-        )
-    }
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(resultFromRecord) {
+        Napier.d("gowoon result = $resultFromRecord")
         resultFromRecord?.let {
-            viewModel.setEvent(HomeEvent.OnAddRecord(json.decodeFromString<Record>(it)))
+            val record = json.decodeFromString<Record>(it)
+            if (record != state.newRecord) {
+                viewModel.setEvent(HomeEvent.OnAddRecord(record))
+            }
         }
     }
     TransparentScaffold(
@@ -85,18 +81,21 @@ internal fun HomeScreen(
             Spacer(Modifier.height(24.dp))
             Title(text = stringResource(R.string.home_title, state.nickname))
             Spacer(Modifier.height(95.dp))
-            HomeContent(records = state.records)
+            HomeContent(
+                records = state.records,
+                newRecord = state.newRecord
+            )
             HomeFooter(
                 modifier = Modifier.weight(1f),
-                hasToday = hasToday,
-                hasYesterday = hasYesterday,
+                hasToday = state.hasToday,
+                hasYesterday = state.hasYesterday,
                 changedCircleButtonPosition = { tooltipOffset = it },
-                onClickAdd = { onClickAdd(hasToday, hasYesterday) }
+                onClickAdd = { onClickAdd(state.hasToday, state.hasYesterday) }
             )
         }
     }
 
-    if (hasToday && state.showTooltip) {
+    if (state.hasToday && !state.hasYesterday && state.showTooltip) {
         Tooltip(
             modifier = Modifier
                 .padding(
@@ -121,7 +120,8 @@ internal fun HomeScreen(
 @Composable
 private fun HomeContent(
     modifier: Modifier = Modifier,
-    records: List<Record>
+    records: List<Record>,
+    newRecord: Record?,
 ) {
     Box(
         modifier = modifier
@@ -139,9 +139,10 @@ private fun HomeContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 50.dp)
-                .padding(3.dp)
+                .padding(10.dp)
                 .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
-            records = records
+            records = records,
+            newRecord = newRecord
         )
         Image(
             modifier = Modifier.align(Alignment.Center),
