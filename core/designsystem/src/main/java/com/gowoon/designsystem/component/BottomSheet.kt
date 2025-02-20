@@ -1,4 +1,4 @@
-package com.gowoon.ui.component
+package com.gowoon.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.ui.noRippleClickable
+import com.gowoon.designsystem.util.noRippleClickable
 import kotlinx.coroutines.launch
 
 sealed interface BottomSheetButtonType {

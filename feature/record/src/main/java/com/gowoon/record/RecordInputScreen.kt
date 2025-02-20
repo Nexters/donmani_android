@@ -25,7 +25,12 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
+import com.gowoon.designsystem.component.AppBar
+import com.gowoon.designsystem.component.InputField
+import com.gowoon.designsystem.component.RoundedButton
+import com.gowoon.designsystem.component.RoundedButtonRadius
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
@@ -34,11 +39,6 @@ import com.gowoon.record.component.InputCategoryChip
 import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
-import com.gowoon.ui.component.AppBar
-import com.gowoon.ui.component.InputField
-import com.gowoon.ui.component.RoundedButton
-import com.gowoon.ui.component.RoundedButtonRadius
-import com.gowoon.ui.noRippleClickable
 import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.serialization.json.Json
 

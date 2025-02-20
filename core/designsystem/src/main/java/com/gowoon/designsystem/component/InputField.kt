@@ -1,4 +1,4 @@
-package com.gowoon.ui.component
+package com.gowoon.designsystem.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
