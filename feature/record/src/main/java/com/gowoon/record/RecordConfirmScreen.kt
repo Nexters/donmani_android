@@ -30,8 +30,8 @@ import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
-import com.gowoon.record.component.NoConsumptionCard
-import com.gowoon.record.component.RecordCard
+import com.gowoon.ui.component.NoConsumptionCard
+import com.gowoon.ui.component.RecordCard
 
 @Composable
 internal fun RecordConfirmScreen(
@@ -52,9 +52,11 @@ internal fun RecordConfirmScreen(
         ) {
         Title(text = stringResource(R.string.record_confirm_title))
         Spacer(Modifier.height(60.dp))
-        Box(Modifier
-            .fillMaxWidth()
-            .weight(1f)) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
             when (record) {
                 is NoConsumption -> {
                     NoConsumptionCard()

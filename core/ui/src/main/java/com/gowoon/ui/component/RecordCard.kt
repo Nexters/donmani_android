@@ -1,4 +1,4 @@
-package com.gowoon.record.component
+package com.gowoon.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,8 +34,7 @@ import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.getTitle
-import com.gowoon.record.R
-import com.gowoon.ui.component.RecordStar
+import com.gowoon.ui.R
 import com.gowoon.ui.util.getColor
 import com.gowoon.ui.util.getNoConsumptionColor
 import com.gowoon.ui.util.getNoConsumptionResId
@@ -93,7 +92,7 @@ private fun ConsumptionContent(
 }
 
 @Composable
-internal fun EmptyCard(
+fun EmptyCard(
     modifier: Modifier = Modifier,
     type: ConsumptionType,
     onClick: () -> Unit
@@ -126,7 +125,7 @@ internal fun EmptyCard(
 }
 
 @Composable
-internal fun ConsumptionCard(
+fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption,
     onClickEdit: (Consumption) -> Unit
@@ -146,7 +145,7 @@ internal fun ConsumptionCard(
 }
 
 @Composable
-internal fun RecordCard(
+fun RecordCard(
     modifier: Modifier = Modifier,
     record: ConsumptionRecord,
     showEdit: Boolean = true,
@@ -186,7 +185,7 @@ internal fun RecordCard(
 }
 
 @Composable
-internal fun NoConsumptionCard(modifier: Modifier = Modifier) {
+fun NoConsumptionCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()

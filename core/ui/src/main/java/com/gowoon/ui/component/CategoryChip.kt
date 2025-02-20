@@ -1,4 +1,4 @@
-package com.gowoon.record.component
+package com.gowoon.ui.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import com.gowoon.ui.util.getDefaultResId
 import com.gowoon.ui.util.getImageResId
 
 @Composable
-internal fun CardCategoryChip(
+fun CardCategoryChip(
     modifier: Modifier = Modifier,
     category: Category,
 ) {
@@ -35,7 +35,7 @@ internal fun CardCategoryChip(
 }
 
 @Composable
-internal fun CategorySelectChip(
+fun CategorySelectChip(
     modifier: Modifier = Modifier,
     category: Category,
     selected: Boolean = false
@@ -50,7 +50,7 @@ internal fun CategorySelectChip(
 }
 
 @Composable
-internal fun InputCategoryChip(
+fun InputCategoryChip(
     modifier: Modifier = Modifier,
     type: ConsumptionType,
     category: Category?

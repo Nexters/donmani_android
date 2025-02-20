@@ -41,14 +41,14 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
-import com.gowoon.record.component.ConsumptionCard
-import com.gowoon.record.component.EmptyCard
-import com.gowoon.record.component.NoConsumptionCard
-import com.gowoon.record.component.RecordCard
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.ConsumptionCard
+import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
+import com.gowoon.ui.component.NoConsumptionCard
+import com.gowoon.ui.component.RecordCard
 import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.serialization.json.Json
 

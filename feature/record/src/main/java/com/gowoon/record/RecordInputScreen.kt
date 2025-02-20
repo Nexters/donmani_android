@@ -35,10 +35,10 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
-import com.gowoon.record.component.InputCategoryChip
 import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.InputCategoryChip
 import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.serialization.json.Json
 

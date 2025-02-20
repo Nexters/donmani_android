@@ -25,7 +25,7 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
-import com.gowoon.record.component.CategorySelectChip
+import com.gowoon.ui.component.CategorySelectChip
 
 @Composable
 internal fun CategorySelectBottomSheet(
