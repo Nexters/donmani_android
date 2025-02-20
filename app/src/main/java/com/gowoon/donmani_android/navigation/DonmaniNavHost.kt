@@ -10,10 +10,10 @@ import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
-import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.record.navigation.navigateToRecord
 import com.gowoon.record.navigation.navigateToRecordInput
 import com.gowoon.record.navigation.recordGraph
+import com.gowoon.recordlist.navigation.recordListScreen
 import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
 import com.gowoon.ui.util.rememberHiltJson
@@ -52,6 +52,9 @@ fun DonmaniNavHost(
                 )
                 navController.popBackStack()
             }
+        )
+        recordListScreen(
+            onClickBack = navController::popBackStack
         )
         settingScreen(
             onClickBack = navController::popBackStack,
