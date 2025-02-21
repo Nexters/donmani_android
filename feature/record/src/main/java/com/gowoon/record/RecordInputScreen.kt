@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.InputField
+import com.gowoon.designsystem.component.InputFieldHeight
 import com.gowoon.designsystem.component.RoundedButton
 import com.gowoon.designsystem.component.RoundedButtonRadius
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -149,6 +150,7 @@ private fun RecordInputContent(
             color = DonmaniTheme.colors.Common0
         )
         InputField(
+            height = InputFieldHeight.FIXED(95.dp),
             text = memo,
             placeholder = when (type) {
                 ConsumptionType.GOOD -> stringResource(R.string.good_record_input_memo_placeholder)

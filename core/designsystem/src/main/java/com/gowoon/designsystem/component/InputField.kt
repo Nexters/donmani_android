@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -22,12 +23,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
+
+sealed interface InputFieldHeight {
+    data class FIXED(val height: Dp) : InputFieldHeight
+    data object WRAP_CONENT : InputFieldHeight
+}
 
 @Composable
 fun InputField(
     modifier: Modifier = Modifier,
+    height: InputFieldHeight,
     text: TextFieldState,
     placeholder: String? = null,
     textColor: Color = DonmaniTheme.colors.Gray95,
@@ -42,6 +50,7 @@ fun InputField(
             .padding(8.dp)
     ) {
         ScrollableInputField(
+            height = height,
             text = text,
             placeholder = placeholder,
             textColor = textColor,
@@ -63,6 +72,7 @@ fun InputField(
 @Composable
 private fun ScrollableInputField(
     modifier: Modifier = Modifier,
+    height: InputFieldHeight,
     text: TextFieldState,
     placeholder: String?,
     textColor: Color,
@@ -76,6 +86,10 @@ private fun ScrollableInputField(
         handleColor = brushColor,
         backgroundColor = brushColor
     )
+    val heightModifier = when (height) {
+        is InputFieldHeight.FIXED -> Modifier.height(height.height)
+        is InputFieldHeight.WRAP_CONENT -> Modifier.wrapContentHeight()
+    }
     Box {
         if (text.text.isEmpty() && !placeholder.isNullOrEmpty()) {
             Text(
@@ -87,8 +101,8 @@ private fun ScrollableInputField(
         CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
             BasicTextField(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .height(95.dp),
+                    .then(heightModifier)
+                    .fillMaxWidth(),
                 state = text,
                 textStyle = textStyle.copy(color = textColor),
                 cursorBrush = SolidColor(brushColor),
@@ -106,6 +120,7 @@ private fun ScrollableInputField(
 private fun InputFieldPreview() {
     val text = rememberTextFieldState()
     InputField(
+        height = InputFieldHeight.FIXED(95.dp),
         text = text,
         placeholder = "placeholder"
     )

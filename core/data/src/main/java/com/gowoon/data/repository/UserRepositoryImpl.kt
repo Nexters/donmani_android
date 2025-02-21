@@ -5,6 +5,7 @@ import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.UserRepository
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.dto.request.RegisterUserRequest
+import com.gowoon.network.dto.request.UpdateUserRequest
 import com.gowoon.network.service.UserService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -55,5 +56,24 @@ class UserRepositoryImpl @Inject constructor(
         userDataSource.getUserNickname().map { Result.Success(it) }
     } catch (e: Exception) {
         flow { emit(Result.Error(message = e.message)) }
+    }
+
+    override suspend fun updateUserNickname(newNickname: String): Result<String> = try {
+        userService.updateUser(
+            UpdateUserRequest(
+                userKey = deviceId,
+                newUserName = newNickname
+            )
+        ).let { result ->
+            if (result.isSuccessful) {
+                result.body()?.let { body ->
+                    Result.Success(body.updatedUserName)
+                } ?: Result.Error(message = "body is null")
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
     }
 }

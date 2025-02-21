@@ -1,3 +1,6 @@
 <resources>
     <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
+    <string name="bbs_rule_bottom_sheet_title">별별소 기록 규칙</string>
+    <string name="bbs_rule_bottom_sheet_done_btn">이해완료!</string>
+    <string name="bbs_rule_bottom_sheet_additional_msg">규칙은 설정에서 다시 확인할 수 있어요</string>
 </resources>
