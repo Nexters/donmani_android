@@ -37,10 +37,10 @@ sealed interface BottomSheetButtonType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
-    title: String,
-    buttonType: BottomSheetButtonType,
-    content: @Composable () -> Unit,
-    onClick: (Boolean) -> Unit,
+    title: String? = null,
+    buttonType: BottomSheetButtonType? = null,
+    content: @Composable (hide: () -> Unit) -> Unit,
+    onClick: ((Boolean) -> Unit)? = null,
     onDismissRequest: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -65,52 +65,61 @@ fun BottomSheet(
                     onDismissRequest()
                 }
             }
-            Text(
-                text = title,
-                color = DonmaniTheme.colors.Gray95,
-                style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold)
-            )
-            content()
-            when (buttonType) {
-                is BottomSheetButtonType.Single -> {
-                    RoundedButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        type = RoundedButtonRadius.Row,
-                        label = buttonType.title,
-                        enable = buttonType.enable,
-                    ) {
-                        scope.launch {
-                            state.hide()
-                            onClick(true)
-                        }
-                    }
+            title?.let {
+                Text(
+                    text = it,
+                    color = DonmaniTheme.colors.Gray95,
+                    style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold)
+                )
+            }
+            content {
+                scope.launch {
+                    state.hide()
+                    onDismissRequest()
                 }
-
-                is BottomSheetButtonType.Double -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        NegativeButton(
-                            modifier = Modifier.weight(1f),
-                            label = buttonType.negativeTitle
+            }
+            buttonType?.let {
+                when (buttonType) {
+                    is BottomSheetButtonType.Single -> {
+                        RoundedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            type = RoundedButtonRadius.Row,
+                            label = buttonType.title,
+                            enable = buttonType.enable,
                         ) {
                             scope.launch {
                                 state.hide()
-                                onClick(false)
+                                onClick?.invoke(true)
                             }
                         }
-                        PositiveButton(
-                            modifier = Modifier.weight(1f),
-                            label = buttonType.positiveTitle
+                    }
+
+                    is BottomSheetButtonType.Double -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            scope.launch {
-                                state.hide()
-                                onClick(true)
+                            NegativeButton(
+                                modifier = Modifier.weight(1f),
+                                label = buttonType.negativeTitle
+                            ) {
+                                scope.launch {
+                                    state.hide()
+                                    onClick?.invoke(false)
+                                }
+                            }
+                            PositiveButton(
+                                modifier = Modifier.weight(1f),
+                                label = buttonType.positiveTitle
+                            ) {
+                                scope.launch {
+                                    state.hide()
+                                    onClick?.invoke(true)
+                                }
                             }
                         }
                     }

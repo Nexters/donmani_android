@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
+import com.gowoon.setting.component.EditNicknameBottomSheet
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.BBSRuleBottomSheet
 
@@ -55,8 +57,26 @@ internal fun SettingScreen(
             )
         }
     ) {
-        if (state.showDialog) {
-            BBSRuleBottomSheet { viewModel.setEvent(SettingEvent.ShowDialog(false)) }
+        state.dialogState?.let { dialogState ->
+            when (dialogState) {
+                DialogType.BBS_RULE -> {
+                    BBSRuleBottomSheet {
+                        viewModel.setEvent(SettingEvent.ShowDialog(null))
+                    }
+                }
+
+                DialogType.EDIT_NICKNAME -> {
+                    EditNicknameBottomSheet(
+                        currentNickname = state.nickname,
+                        onClickDone = { result, hide ->
+                            viewModel.setEvent(SettingEvent.OnChangeNickName(result) { succeed ->
+                                if (succeed) hide()
+                            })
+                        },
+                        onDismissRequest = { viewModel.setEvent(SettingEvent.ShowDialog(null)) }
+                    )
+                }
+            }
         }
         Column(
             modifier = Modifier
@@ -67,13 +87,15 @@ internal fun SettingScreen(
             Spacer(Modifier.height(30.dp))
             ProfileHeader(
                 nickname = state.nickname
-            ) { }
+            ) {
+                viewModel.setEvent(SettingEvent.ShowDialog(DialogType.EDIT_NICKNAME))
+            }
             Spacer(Modifier.height(60.dp))
             SettingContent(
                 listOf(
                     SettingItem(
                         stringResource(R.string.setting_bbs_rule)
-                    ) { viewModel.setEvent(SettingEvent.ShowDialog(true)) },
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(DialogType.BBS_RULE)) },
                     SettingItem(
                         stringResource(R.string.setting_private_privacy),
                         onClickPrivatePrivacy
@@ -113,14 +135,13 @@ private fun ProfileHeader(
                 color = DonmaniTheme.colors.DeepBlue99,
                 style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
             )
-            // TODO edit
-//            Spacer(Modifier.width(6.dp))
-//            Icon(
-//                modifier = Modifier.size(20.dp),
-//                imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
-//                tint = Color.Unspecified,
-//                contentDescription = null
-//            )
+            Spacer(Modifier.width(6.dp))
+            Icon(
+                modifier = Modifier.size(20.dp),
+                imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
         }
     }
 }
