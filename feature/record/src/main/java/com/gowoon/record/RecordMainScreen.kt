@@ -44,6 +44,7 @@ import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.BBSRuleBottomSheet
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
@@ -121,6 +122,10 @@ internal fun RecordMainScreen(
             }
         ) { padding ->
             val scrollState = rememberScrollState()
+
+            if (state.showRuleBottomSheet) {
+                BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()

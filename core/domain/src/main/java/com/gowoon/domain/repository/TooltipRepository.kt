@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface TooltipRepository {
     suspend fun getNoConsumptionTooltipState(): Flow<Result<Boolean>>
     suspend fun setNoConsumptionTooltipState(state: Boolean): Result<Unit>
+    suspend fun getBBSRuleSheetState(): Flow<Result<Boolean>>
+    suspend fun setBBSRuleSheetState(state: Boolean): Result<Unit>
 }
