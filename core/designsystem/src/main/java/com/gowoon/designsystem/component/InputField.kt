@@ -22,8 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +54,7 @@ fun InputField(
     textStyle: TextStyle = DonmaniTheme.typography.Body1,
     maxLength: Int = 100,
     forceHaptic: Boolean = false,
+    focusRequester: FocusRequester = remember { FocusRequester() },
     showToast: () -> Unit = {}
 ) {
     Column(
@@ -68,6 +72,7 @@ fun InputField(
             textStyle = textStyle,
             maxLength = maxLength,
             forceHaptic = forceHaptic,
+            focusRequester = focusRequester,
             showToast = showToast
         )
         Spacer(Modifier.height(4.dp))
@@ -92,6 +97,7 @@ private fun ScrollableInputField(
     textStyle: TextStyle,
     maxLength: Int,
     forceHaptic: Boolean,
+    focusRequester: FocusRequester,
     showToast: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -130,7 +136,8 @@ private fun ScrollableInputField(
             BasicTextField(
                 modifier = modifier
                     .then(heightModifier)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 state = text,
                 textStyle = textStyle.copy(color = textColor),
                 cursorBrush = SolidColor(brushColor),

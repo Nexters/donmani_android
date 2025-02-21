@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,10 +42,16 @@ fun BottomSheet(
     buttonType: BottomSheetButtonType? = null,
     content: @Composable (hide: () -> Unit) -> Unit,
     onClick: ((Boolean) -> Unit)? = null,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onExpanded: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    LaunchedEffect(state.isVisible) {
+        if (state.isVisible) {
+            onExpanded()
+        }
+    }
     ModalBottomSheet(
         sheetState = state,
         dragHandle = null,

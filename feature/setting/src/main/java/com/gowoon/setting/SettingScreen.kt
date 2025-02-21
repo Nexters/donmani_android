@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -55,6 +56,7 @@ internal fun SettingScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(true) {
         viewModel.uiEffect.collectLatest {
@@ -90,7 +92,8 @@ internal fun SettingScreen(
                             })
                         },
                         onDismissRequest = { viewModel.setEvent(SettingEvent.ShowDialog(null)) },
-                        showToast = { viewModel.showToast(it) }
+                        showToast = { viewModel.showToast(it) },
+                        focusRequester = focusRequester
                     )
                 }
             }

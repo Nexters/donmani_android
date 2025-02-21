@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -62,6 +63,7 @@ internal fun RecordInputScreen(
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val focusRequester = remember { FocusRequester() }
 
     BackHandler {
         if (viewModel.changedRecord()) {
@@ -114,6 +116,7 @@ internal fun RecordInputScreen(
                     }
                 ) {
                     viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(false))
+                    focusRequester.requestFocus()
                 }
             }
 
@@ -127,6 +130,7 @@ internal fun RecordInputScreen(
                     type = state.type,
                     category = state.category,
                     memo = state.memo,
+                    focusRequester = focusRequester,
                     onClickEdit = { viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(true)) },
                     showToast = { viewModel.showToast(context.getString(com.gowoon.ui.R.string.toast_max_length)) }
                 )
@@ -163,6 +167,7 @@ private fun RecordInputContent(
     type: ConsumptionType,
     category: Category?,
     memo: TextFieldState,
+    focusRequester: FocusRequester,
     onClickEdit: () -> Unit,
     showToast: () -> Unit
 ) {
@@ -201,6 +206,7 @@ private fun RecordInputContent(
                 ConsumptionType.BAD -> stringResource(R.string.bad_record_input_memo_placeholder)
             },
             forceHaptic = true,
+            focusRequester = focusRequester,
             showToast = showToast
         )
     }

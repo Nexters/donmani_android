@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import com.gowoon.setting.R
 @Composable
 internal fun EditNicknameBottomSheet(
     currentNickname: String,
+    focusRequester: FocusRequester,
     onClickDone: (result: String, hide: () -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
     showToast: (String) -> Unit
@@ -41,10 +43,14 @@ internal fun EditNicknameBottomSheet(
             EditNicknameContent(
                 initialText = currentNickname,
                 onClickDone = { onClickDone(it, hide) },
-                showToast = showToast
+                showToast = showToast,
+                focusRequester = focusRequester,
             )
         },
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
+        onExpanded = {
+            focusRequester.requestFocus()
+        }
     )
 }
 
@@ -52,7 +58,8 @@ internal fun EditNicknameBottomSheet(
 private fun EditNicknameContent(
     initialText: String,
     onClickDone: (String) -> Unit,
-    showToast: (String) -> Unit
+    showToast: (String) -> Unit,
+    focusRequester: FocusRequester,
 ) {
     val context = LocalContext.current
     val text = rememberTextFieldState(initialText)
@@ -63,6 +70,7 @@ private fun EditNicknameContent(
             showToast(context.getString(com.gowoon.ui.R.string.toast_invalid_character))
         }
     }
+
     Column(
         Modifier
             .fillMaxWidth()
@@ -72,6 +80,7 @@ private fun EditNicknameContent(
             height = InputFieldHeight.WRAPCONENT,
             text = text,
             maxLength = NicknameUtil.NICKNAMEMAX_LENGTH,
+            focusRequester = focusRequester,
             showToast = {
                 showToast(context.getString(com.gowoon.ui.R.string.toast_max_length))
             }
