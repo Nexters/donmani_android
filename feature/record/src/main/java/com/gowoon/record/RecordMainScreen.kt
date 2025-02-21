@@ -1,5 +1,6 @@
 package com.gowoon.record
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.record.navigation.MainToHomeArgumentKey
@@ -90,6 +92,14 @@ internal fun RecordMainScreen(
         }
     }
 
+    BackHandler {
+        if (viewModel.startToRecord()) {
+            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+        } else {
+            onClickBack()
+        }
+    }
+
     if (state.showConfirm) {
         state.records[state.selectedDay.name]?.let { record ->
             RecordConfirmScreen(
@@ -111,7 +121,13 @@ internal fun RecordMainScreen(
         TransparentScaffold(
             topBar = {
                 AppBar(
-                    onClickNavigation = onClickBack,
+                    onClickNavigation = {
+                        if (viewModel.startToRecord()) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+                        } else {
+                            onClickBack()
+                        }
+                    },
                     actionButton = {
                         TodayYesterdayToggle(
                             options = EntryDay.entries.filter { state.records.containsKey(it.name) }
@@ -127,17 +143,31 @@ internal fun RecordMainScreen(
             if (state.showRuleBottomSheet) {
                 BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
             }
-            if (state.showNoConsumptionBottomSheet) {
-                NoConsumptionBottomSheet(
-                    onClick = { isPositive ->
-                        if (isPositive) {
-                            viewModel.setEvent(
-                                RecordMainEvent.OnClickNoConsumptionCheckBox(true)
-                            )
+            state.showBottomSheet?.let {
+                when (it) {
+                    RecordMainDialogType.NO_CONSUMPTION -> {
+                        NoConsumptionBottomSheet(
+                            onClick = { isPositive ->
+                                if (isPositive) {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.OnClickNoConsumptionCheckBox(true)
+                                    )
+                                }
+                            }
+                        ) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
                     }
-                ) {
-                    viewModel.setEvent(RecordMainEvent.ShowNoConsumptionAlert(false))
+
+                    RecordMainDialogType.EXIT_WARNING -> {
+                        ExitWarningBottomSheet(
+                            onClick = { isPositive ->
+                                if (isPositive) onClickBack()
+                            }
+                        ) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
+                        }
+                    }
                 }
             }
             Box(
@@ -167,7 +197,11 @@ internal fun RecordMainScreen(
                             showTooltip = state.showTooltip,
                             onClickCheckBox = { checked ->
                                 if (checked) {
-                                    viewModel.setEvent(RecordMainEvent.ShowNoConsumptionAlert(true))
+                                    viewModel.setEvent(
+                                        RecordMainEvent.ShowBottomSheet(
+                                            RecordMainDialogType.NO_CONSUMPTION
+                                        )
+                                    )
                                 } else {
                                     viewModel.setEvent(
                                         RecordMainEvent.OnClickNoConsumptionCheckBox(false)

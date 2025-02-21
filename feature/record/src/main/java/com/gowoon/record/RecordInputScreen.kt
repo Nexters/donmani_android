@@ -1,5 +1,6 @@
 package com.gowoon.record
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
+import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.navigation.InputToMainArgumentKey
 import com.gowoon.ui.CategoryBackground
 import com.gowoon.ui.TransparentScaffold
@@ -53,16 +55,40 @@ internal fun RecordInputScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val enabled by remember { derivedStateOf { state.category != null && state.memo.text.isNotEmpty() } }
 
+    BackHandler {
+        if (viewModel.changedRecord()) {
+            viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(true))
+        } else {
+            onClickBack()
+        }
+    }
+
     CategoryBackground(state.category) {
         TransparentScaffold(
             topBar = {
                 AppBar(
-                    onClickNavigation = onClickBack,
+                    onClickNavigation = {
+                        if (viewModel.changedRecord()) {
+                            viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(true))
+                        } else {
+                            onClickBack()
+                        }
+                    },
                     title = stringResource(R.string.record_detail_appbar_title, state.type.title)
                 )
             }
         ) {
-            if (state.showDialog) {
+            if (state.showExitWarningBottomSheet) {
+                ExitWarningBottomSheet(
+                    onClick = { isPositive ->
+                        if (isPositive) onClickBack()
+                    }
+                ) {
+                    viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(false))
+                }
+            }
+
+            if (state.showCategoryDialog) {
                 CategorySelectBottomSheet(
                     type = state.type,
                     selected = state.category,
@@ -70,7 +96,7 @@ internal fun RecordInputScreen(
                         viewModel.setEvent(RecordInputEvent.OnChangeCategory(selected))
                     }
                 ) {
-                    viewModel.setEvent(RecordInputEvent.ShowDialog(false))
+                    viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(false))
                 }
             }
 
@@ -85,7 +111,7 @@ internal fun RecordInputScreen(
                     category = state.category,
                     memo = state.memo
                 ) {
-                    viewModel.setEvent(RecordInputEvent.ShowDialog(true))
+                    viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(true))
                 }
                 RoundedButton(
                     modifier = Modifier

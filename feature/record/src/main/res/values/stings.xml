@@ -14,6 +14,8 @@
     <string name="btn_record_confirm">확인 했어요</string>
     <string name="btn_no_consumption_positive">했어요</string>
     <string name="btn_no_consumption_negative">안했어요</string>
+    <string name="btn_exit_warning_positive">다음에 하기</string>
+    <string name="btn_exit_warning_negative">계속하기</string>
 
     <!-- tooltip -->
     <string name="no_consumption_tooltip_message">선택하면 무소비 날도 기록할 수 있어요!</string>
@@ -31,4 +33,6 @@
     <string name="category_select_title">어떤 %s 소비였나요?</string>
     <string name="no_consumption_alert_title">정말 무소비 했나요?</string>
     <string name="no_consumption_alert_message">무소비는 하루 동안 한 번도 소비하지 않았을 때 선택해요.\n지금까지 기록한 내용이 있다면 모두 사라져요!</string>
+    <string name="exit_warning_title">다음에 기록할까요?</string>
+    <string name="exit_warning_message">지금까지 기록한 내용은 저장되지 않아요</string>
 </resources>

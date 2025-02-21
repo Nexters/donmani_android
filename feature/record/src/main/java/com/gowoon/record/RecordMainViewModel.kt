@@ -80,8 +80,8 @@ internal class RecordMainViewModel @Inject constructor(
                 hideBBSRuleSheet()
             }
 
-            is RecordMainEvent.ShowNoConsumptionAlert -> {
-                setState(currentState.copy(showNoConsumptionBottomSheet = event.show))
+            is RecordMainEvent.ShowBottomSheet -> {
+                setState(currentState.copy(showBottomSheet = event.show))
             }
         }
     }
@@ -210,6 +210,19 @@ internal class RecordMainViewModel @Inject constructor(
             EntryDay.Yesterday -> LocalDate.now().minusDays(1)
         }
     }
+
+    fun startToRecord(): Boolean {
+        currentState.records.values.forEach {
+            when (it) {
+                is NoConsumption -> return true
+                is ConsumptionRecord -> {
+                    if (it.goodRecord != null) return true
+                    if (it.badRecord != null) return true
+                }
+            }
+        }
+        return false
+    }
 }
 
 data class RecordMainState(
@@ -218,8 +231,10 @@ data class RecordMainState(
     val showTooltip: Boolean = false,
     val showRuleBottomSheet: Boolean = false,
     val showConfirm: Boolean = false,
-    val showNoConsumptionBottomSheet: Boolean = false
+    val showBottomSheet: RecordMainDialogType? = null
 ) : UiState
+
+enum class RecordMainDialogType { NO_CONSUMPTION, EXIT_WARNING }
 
 sealed interface RecordMainEvent : UiEvent {
     data class OnClickDayToggle(val selected: EntryDay) : RecordMainEvent
@@ -229,7 +244,7 @@ sealed interface RecordMainEvent : UiEvent {
     data class ShowConfirm(val show: Boolean) : RecordMainEvent
     data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent
     data object HideBBSRuleSheet : RecordMainEvent
-    data class ShowNoConsumptionAlert(val show: Boolean) : RecordMainEvent
+    data class ShowBottomSheet(val show: RecordMainDialogType?) : RecordMainEvent
 }
 
 sealed class RecordMainEffect : UiEffect
