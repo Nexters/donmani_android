@@ -5,7 +5,7 @@ import com.gowoon.domain.repository.TooltipRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetNoConsumptionTooltipStateUseCase @Inject constructor(
+class ShowNoConsumptionTooltipUseCase @Inject constructor(
     private val tooltipRepository: TooltipRepository
 ) {
     suspend operator fun invoke(): Flow<Result<Boolean>> =

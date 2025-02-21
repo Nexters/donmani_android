@@ -9,8 +9,10 @@ import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.record.SaveRecordUseCase
-import com.gowoon.domain.usecase.tooltip.GetNoConsumptionTooltipStateUseCase
+import com.gowoon.domain.usecase.tooltip.HideBBSRuleSheetUseCase
 import com.gowoon.domain.usecase.tooltip.HideNoConsumptionTooltipUseCase
+import com.gowoon.domain.usecase.tooltip.ShowBBSRuleSheetUseCase
+import com.gowoon.domain.usecase.tooltip.ShowNoConsumptionTooltipUseCase
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
@@ -28,8 +30,10 @@ import javax.inject.Inject
 @HiltViewModel
 internal class RecordMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getNoConsumptionTooltipStateUseCase: GetNoConsumptionTooltipStateUseCase,
+    private val showNoConsumptionTooltipUseCase: ShowNoConsumptionTooltipUseCase,
     private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase,
+    private val showBBSRuleSheetUseCase: ShowBBSRuleSheetUseCase,
+    private val hideBBSRuleSheetUseCase: HideBBSRuleSheetUseCase,
     private val saveRecordUseCase: SaveRecordUseCase
 ) : BaseViewModel<RecordMainState, RecordMainEvent, RecordMainEffect>() {
     override fun createInitialState(): RecordMainState = RecordMainState()
@@ -71,6 +75,14 @@ internal class RecordMainViewModel @Inject constructor(
             is RecordMainEvent.OnSaveRecord -> {
                 requestSaveRecord(event.record, event.callback)
             }
+
+            is RecordMainEvent.HideBBSRuleSheet -> {
+                hideBBSRuleSheet()
+            }
+
+            is RecordMainEvent.ShowBottomSheet -> {
+                setState(currentState.copy(showBottomSheet = event.show))
+            }
         }
     }
 
@@ -99,10 +111,23 @@ internal class RecordMainViewModel @Inject constructor(
             )
         )
         viewModelScope.launch {
-            getNoConsumptionTooltipStateUseCase().stateIn(this).collect {
+            showNoConsumptionTooltipUseCase().stateIn(this).collect {
                 when (it) {
                     is Result.Success -> {
                         setState(currentState.copy(showTooltip = it.data))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
+            showBBSRuleSheetUseCase().stateIn(this).collect {
+                when (it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(showRuleBottomSheet = it.data))
                     }
 
                     is Result.Error -> {
@@ -154,6 +179,14 @@ internal class RecordMainViewModel @Inject constructor(
         }
     }
 
+    private fun hideBBSRuleSheet() {
+        viewModelScope.launch {
+            if (hideBBSRuleSheetUseCase() is Result.Error) {
+                // TODO error handling
+            }
+        }
+    }
+
     private fun requestSaveRecord(record: Record, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             when (val result = saveRecordUseCase(record)) {
@@ -177,22 +210,41 @@ internal class RecordMainViewModel @Inject constructor(
             EntryDay.Yesterday -> LocalDate.now().minusDays(1)
         }
     }
+
+    fun startToRecord(): Boolean {
+        currentState.records.values.forEach {
+            when (it) {
+                is NoConsumption -> return true
+                is ConsumptionRecord -> {
+                    if (it.goodRecord != null) return true
+                    if (it.badRecord != null) return true
+                }
+            }
+        }
+        return false
+    }
 }
 
 data class RecordMainState(
     val records: Map<String, Record> = mapOf(),
     val selectedDay: EntryDay = EntryDay.Today,
     val showTooltip: Boolean = false,
-    val showConfirm: Boolean = false
+    val showRuleBottomSheet: Boolean = false,
+    val showConfirm: Boolean = false,
+    val showBottomSheet: RecordMainDialogType? = null
 ) : UiState
 
-sealed class RecordMainEvent : UiEvent {
-    data class OnClickDayToggle(val selected: EntryDay) : RecordMainEvent()
-    data class OnClickNoConsumptionCheckBox(val checked: Boolean) : RecordMainEvent()
-    data object OnClickNoConsumptionTooltip : RecordMainEvent()
-    data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent()
-    data class ShowConfirm(val show: Boolean) : RecordMainEvent()
-    data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent()
+enum class RecordMainDialogType { NO_CONSUMPTION, EXIT_WARNING }
+
+sealed interface RecordMainEvent : UiEvent {
+    data class OnClickDayToggle(val selected: EntryDay) : RecordMainEvent
+    data class OnClickNoConsumptionCheckBox(val checked: Boolean) : RecordMainEvent
+    data object OnClickNoConsumptionTooltip : RecordMainEvent
+    data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent
+    data class ShowConfirm(val show: Boolean) : RecordMainEvent
+    data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent
+    data object HideBBSRuleSheet : RecordMainEvent
+    data class ShowBottomSheet(val show: RecordMainDialogType?) : RecordMainEvent
 }
 
 sealed class RecordMainEffect : UiEffect

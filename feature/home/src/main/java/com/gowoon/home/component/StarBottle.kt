@@ -74,7 +74,7 @@ internal fun StarBottle(
 @Composable
 private fun Ball(
     modifier: Modifier = Modifier,
-    size: Dp = 50.dp,
+    size: Dp = 45.dp,
     record: Record
 ) {
     Box(

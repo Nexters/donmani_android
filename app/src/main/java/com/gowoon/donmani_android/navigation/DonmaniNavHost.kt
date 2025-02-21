@@ -22,6 +22,7 @@ import com.gowoon.record.navigation.navigateToRecord
 import com.gowoon.record.navigation.navigateToRecordInput
 import com.gowoon.record.navigation.recordGraph
 import com.gowoon.recordlist.navigation.navigateToRecordList
+import com.gowoon.recordlist.navigation.recordListNavigationRoute
 import com.gowoon.recordlist.navigation.recordListScreen
 import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
@@ -65,7 +66,12 @@ fun DonmaniNavHost(
         homeScreen(
             navigateToSetting = navController::navigateToSetting,
             navigateToCalendar = {},
-            navigateToRecord = navController::navigateToRecord,
+            navigateToRecord = { hasToday, hasYesterday ->
+                navController.navigateToRecord(
+                    hasTodayRecord = hasToday,
+                    hasYesterdayRecord = hasYesterday
+                )
+            },
             navigateToRecordList = navController::navigateToRecordList
         )
         recordGraph(
@@ -88,6 +94,7 @@ fun DonmaniNavHost(
             onClickBack = navController::popBackStack,
             navigateToRecord = {
                 navController.navigateToRecord(
+                    from = recordListNavigationRoute,
                     hasTodayRecord = false,
                     hasYesterdayRecord = false
                 )

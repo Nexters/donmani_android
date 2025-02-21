@@ -1,5 +1,6 @@
 package com.gowoon.record
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,9 +42,12 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.record.component.ExitWarningBottomSheet
+import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.BBSRuleBottomSheet
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
@@ -88,6 +92,14 @@ internal fun RecordMainScreen(
         }
     }
 
+    BackHandler {
+        if (viewModel.startToRecord()) {
+            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+        } else {
+            onClickBack()
+        }
+    }
+
     if (state.showConfirm) {
         state.records[state.selectedDay.name]?.let { record ->
             RecordConfirmScreen(
@@ -109,7 +121,13 @@ internal fun RecordMainScreen(
         TransparentScaffold(
             topBar = {
                 AppBar(
-                    onClickNavigation = onClickBack,
+                    onClickNavigation = {
+                        if (viewModel.startToRecord()) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+                        } else {
+                            onClickBack()
+                        }
+                    },
                     actionButton = {
                         TodayYesterdayToggle(
                             options = EntryDay.entries.filter { state.records.containsKey(it.name) }
@@ -121,6 +139,37 @@ internal fun RecordMainScreen(
             }
         ) { padding ->
             val scrollState = rememberScrollState()
+
+            if (state.showRuleBottomSheet) {
+                BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
+            }
+            state.showBottomSheet?.let {
+                when (it) {
+                    RecordMainDialogType.NO_CONSUMPTION -> {
+                        NoConsumptionBottomSheet(
+                            onClick = { isPositive ->
+                                if (isPositive) {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.OnClickNoConsumptionCheckBox(true)
+                                    )
+                                }
+                            }
+                        ) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
+                        }
+                    }
+
+                    RecordMainDialogType.EXIT_WARNING -> {
+                        ExitWarningBottomSheet(
+                            onClick = { isPositive ->
+                                if (isPositive) onClickBack()
+                            }
+                        ) {
+                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
+                        }
+                    }
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -147,11 +196,17 @@ internal fun RecordMainScreen(
                             finishToRecord = finishToRecord,
                             showTooltip = state.showTooltip,
                             onClickCheckBox = { checked ->
-                                viewModel.setEvent(
-                                    RecordMainEvent.OnClickNoConsumptionCheckBox(
-                                        checked
+                                if (checked) {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.ShowBottomSheet(
+                                            RecordMainDialogType.NO_CONSUMPTION
+                                        )
                                     )
-                                )
+                                } else {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.OnClickNoConsumptionCheckBox(false)
+                                    )
+                                }
                             },
                             onClickEmptyBox = onClickAdd,
                             onClickTooltip = {

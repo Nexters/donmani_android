@@ -15,8 +15,16 @@ const val MainToHomeArgumentKey = "mainToHome"
 @Serializable
 data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
 
-fun NavController.navigateToRecord(hasTodayRecord: Boolean, hasYesterdayRecord: Boolean) {
-    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord))
+fun NavController.navigateToRecord(
+    from: String? = null,
+    hasTodayRecord: Boolean,
+    hasYesterdayRecord: Boolean
+) {
+    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord)){
+        from?.let {
+            popUpTo(it){ inclusive = true }
+        }
+    }
 }
 
 @Serializable

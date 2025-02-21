@@ -13,13 +13,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -29,11 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.AppBar
+import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.BBSRuleBottomSheet
+import kotlinx.coroutines.flow.collectLatest
 
 @Stable
 data class SettingItem(
@@ -49,23 +55,35 @@ internal fun SettingScreen(
     onClickFeedback: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(true) {
+        viewModel.uiEffect.collectLatest {
+            if (it is SettingEffect.ShowToast) {
+                snackbarHostState.showSnackbar(it.message)
+            }
+        }
+    }
+
     TransparentScaffold(
         topBar = {
             AppBar(
                 title = stringResource(R.string.appbar_title),
                 onClickNavigation = onClickBack
             )
-        }
+        },
+        snackbarHost = { CustomSnackBarHost(snackbarHostState) }
     ) {
         state.dialogState?.let { dialogState ->
             when (dialogState) {
-                DialogType.BBS_RULE -> {
+                SettingDialogType.BBS_RULE -> {
                     BBSRuleBottomSheet {
                         viewModel.setEvent(SettingEvent.ShowDialog(null))
                     }
                 }
 
-                DialogType.EDIT_NICKNAME -> {
+                SettingDialogType.EDIT_NICKNAME -> {
                     EditNicknameBottomSheet(
                         currentNickname = state.nickname,
                         onClickDone = { result, hide ->
@@ -73,7 +91,9 @@ internal fun SettingScreen(
                                 if (succeed) hide()
                             })
                         },
-                        onDismissRequest = { viewModel.setEvent(SettingEvent.ShowDialog(null)) }
+                        onDismissRequest = { viewModel.setEvent(SettingEvent.ShowDialog(null)) },
+                        showToast = { viewModel.showToast(it) },
+                        focusRequester = focusRequester
                     )
                 }
             }
@@ -88,14 +108,14 @@ internal fun SettingScreen(
             ProfileHeader(
                 nickname = state.nickname
             ) {
-                viewModel.setEvent(SettingEvent.ShowDialog(DialogType.EDIT_NICKNAME))
+                viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.EDIT_NICKNAME))
             }
             Spacer(Modifier.height(60.dp))
             SettingContent(
                 listOf(
                     SettingItem(
                         stringResource(R.string.setting_bbs_rule)
-                    ) { viewModel.setEvent(SettingEvent.ShowDialog(DialogType.BBS_RULE)) },
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
                     SettingItem(
                         stringResource(R.string.setting_private_privacy),
                         onClickPrivatePrivacy
