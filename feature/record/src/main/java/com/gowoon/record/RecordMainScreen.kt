@@ -41,6 +41,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
@@ -126,6 +127,19 @@ internal fun RecordMainScreen(
             if (state.showRuleBottomSheet) {
                 BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
             }
+            if (state.showNoConsumptionBottomSheet) {
+                NoConsumptionBottomSheet(
+                    onClick = { isPositive ->
+                        if (isPositive) {
+                            viewModel.setEvent(
+                                RecordMainEvent.OnClickNoConsumptionCheckBox(true)
+                            )
+                        }
+                    }
+                ) {
+                    viewModel.setEvent(RecordMainEvent.ShowNoConsumptionAlert(false))
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -152,11 +166,13 @@ internal fun RecordMainScreen(
                             finishToRecord = finishToRecord,
                             showTooltip = state.showTooltip,
                             onClickCheckBox = { checked ->
-                                viewModel.setEvent(
-                                    RecordMainEvent.OnClickNoConsumptionCheckBox(
-                                        checked
+                                if (checked) {
+                                    viewModel.setEvent(RecordMainEvent.ShowNoConsumptionAlert(true))
+                                } else {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.OnClickNoConsumptionCheckBox(false)
                                     )
-                                )
+                                }
                             },
                             onClickEmptyBox = onClickAdd,
                             onClickTooltip = {

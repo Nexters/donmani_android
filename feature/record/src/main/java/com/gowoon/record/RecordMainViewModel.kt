@@ -79,6 +79,10 @@ internal class RecordMainViewModel @Inject constructor(
             is RecordMainEvent.HideBBSRuleSheet -> {
                 hideBBSRuleSheet()
             }
+
+            is RecordMainEvent.ShowNoConsumptionAlert -> {
+                setState(currentState.copy(showNoConsumptionBottomSheet = event.show))
+            }
         }
     }
 
@@ -213,7 +217,8 @@ data class RecordMainState(
     val selectedDay: EntryDay = EntryDay.Today,
     val showTooltip: Boolean = false,
     val showRuleBottomSheet: Boolean = false,
-    val showConfirm: Boolean = false
+    val showConfirm: Boolean = false,
+    val showNoConsumptionBottomSheet: Boolean = false
 ) : UiState
 
 sealed interface RecordMainEvent : UiEvent {
@@ -224,6 +229,7 @@ sealed interface RecordMainEvent : UiEvent {
     data class ShowConfirm(val show: Boolean) : RecordMainEvent
     data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent
     data object HideBBSRuleSheet : RecordMainEvent
+    data class ShowNoConsumptionAlert(val show: Boolean) : RecordMainEvent
 }
 
 sealed class RecordMainEffect : UiEffect

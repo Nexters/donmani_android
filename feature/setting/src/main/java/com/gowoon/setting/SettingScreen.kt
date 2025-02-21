@@ -59,13 +59,13 @@ internal fun SettingScreen(
     ) {
         state.dialogState?.let { dialogState ->
             when (dialogState) {
-                DialogType.BBS_RULE -> {
+                SettingDialogType.BBS_RULE -> {
                     BBSRuleBottomSheet {
                         viewModel.setEvent(SettingEvent.ShowDialog(null))
                     }
                 }
 
-                DialogType.EDIT_NICKNAME -> {
+                SettingDialogType.EDIT_NICKNAME -> {
                     EditNicknameBottomSheet(
                         currentNickname = state.nickname,
                         onClickDone = { result, hide ->
@@ -88,14 +88,14 @@ internal fun SettingScreen(
             ProfileHeader(
                 nickname = state.nickname
             ) {
-                viewModel.setEvent(SettingEvent.ShowDialog(DialogType.EDIT_NICKNAME))
+                viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.EDIT_NICKNAME))
             }
             Spacer(Modifier.height(60.dp))
             SettingContent(
                 listOf(
                     SettingItem(
                         stringResource(R.string.setting_bbs_rule)
-                    ) { viewModel.setEvent(SettingEvent.ShowDialog(DialogType.BBS_RULE)) },
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
                     SettingItem(
                         stringResource(R.string.setting_private_privacy),
                         onClickPrivatePrivacy

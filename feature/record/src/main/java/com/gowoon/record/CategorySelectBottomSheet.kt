@@ -49,7 +49,6 @@ internal fun CategorySelectBottomSheet(
         onClick = { _ ->
             selectedCategory?.let {
                 onChangedValue(it)
-                onDismissRequest()
             }
         },
         onDismissRequest = onDismissRequest

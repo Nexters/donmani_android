@@ -92,6 +92,7 @@ fun BottomSheet(
                             scope.launch {
                                 state.hide()
                                 onClick?.invoke(true)
+                                onDismissRequest()
                             }
                         }
                     }
@@ -110,6 +111,7 @@ fun BottomSheet(
                                 scope.launch {
                                     state.hide()
                                     onClick?.invoke(false)
+                                    onDismissRequest()
                                 }
                             }
                             PositiveButton(
@@ -119,6 +121,7 @@ fun BottomSheet(
                                 scope.launch {
                                     state.hide()
                                     onClick?.invoke(true)
+                                    onDismissRequest()
                                 }
                             }
                         }

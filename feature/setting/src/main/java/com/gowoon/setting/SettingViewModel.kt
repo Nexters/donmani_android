@@ -71,13 +71,13 @@ class SettingViewModel @Inject constructor(
 
 data class SettingState(
     val nickname: String = "",
-    val dialogState: DialogType? = null
+    val dialogState: SettingDialogType? = null
 ) : UiState
 
-enum class DialogType { BBS_RULE, EDIT_NICKNAME }
+enum class SettingDialogType { BBS_RULE, EDIT_NICKNAME }
 
 sealed interface SettingEvent : UiEvent {
-    data class ShowDialog(val type: DialogType?) : SettingEvent
+    data class ShowDialog(val type: SettingDialogType?) : SettingEvent
     data class OnChangeNickName(val nickname: String, val callback: (Boolean) -> Unit) :
         SettingEvent
 }
