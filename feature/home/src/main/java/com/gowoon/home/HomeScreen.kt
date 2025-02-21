@@ -81,7 +81,7 @@ internal fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(24.dp))
-            Title(text = stringResource(R.string.home_title, state.nickname))
+            Title(text = state.nickname)
             Spacer(Modifier.height(95.dp))
             HomeContent(
                 records = state.records,
