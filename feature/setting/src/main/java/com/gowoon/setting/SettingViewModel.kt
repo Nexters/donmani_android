@@ -67,6 +67,9 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun showToast(message: String) {
+        setEffect(SettingEffect.ShowToast(message))
+    }
 }
 
 data class SettingState(
@@ -82,4 +85,6 @@ sealed interface SettingEvent : UiEvent {
         SettingEvent
 }
 
-sealed interface SettingEffect : UiEffect
+sealed interface SettingEffect : UiEffect {
+    data class ShowToast(val message: String) : SettingEffect
+}

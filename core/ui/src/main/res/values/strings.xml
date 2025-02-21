@@ -3,4 +3,7 @@
     <string name="bbs_rule_bottom_sheet_title">별별소 기록 규칙</string>
     <string name="bbs_rule_bottom_sheet_done_btn">이해완료!</string>
     <string name="bbs_rule_bottom_sheet_additional_msg">규칙은 설정에서 다시 확인할 수 있어요</string>
+    <!-- toast -->
+    <string name="toast_max_length">최대로 작성했어요</string>
+    <string name="toast_invalid_character">특수문자는 입력할 수 없어요</string>
 </resources>

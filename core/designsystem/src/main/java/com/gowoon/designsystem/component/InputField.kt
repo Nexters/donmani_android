@@ -24,8 +24,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
@@ -52,7 +50,8 @@ fun InputField(
     brushColor: Color = DonmaniTheme.colors.PurpleBlue70,
     textStyle: TextStyle = DonmaniTheme.typography.Body1,
     maxLength: Int = 100,
-    forceHaptic: Boolean = false
+    forceHaptic: Boolean = false,
+    showToast: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -68,7 +67,8 @@ fun InputField(
             brushColor = brushColor,
             textStyle = textStyle,
             maxLength = maxLength,
-            forceHaptic = forceHaptic
+            forceHaptic = forceHaptic,
+            showToast = showToast
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -91,7 +91,8 @@ private fun ScrollableInputField(
     brushColor: Color,
     textStyle: TextStyle,
     maxLength: Int,
-    forceHaptic: Boolean
+    forceHaptic: Boolean,
+    showToast: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val customTextSelectionColors = TextSelectionColors(
@@ -107,7 +108,7 @@ private fun ScrollableInputField(
     val vibrator = context.getSystemService(Vibrator::class.java)
 
     LaunchedEffect(text.text) {
-        if(text.text.isNotEmpty() && forceHaptic){
+        if (text.text.isNotEmpty() && forceHaptic) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
             } else {
@@ -135,7 +136,10 @@ private fun ScrollableInputField(
                 cursorBrush = SolidColor(brushColor),
                 scrollState = scrollState,
                 inputTransformation = {
-                    takeIf { it.length > maxLength }?.revertAllChanges()
+                    takeIf { it.length > maxLength }?.let {
+                        revertAllChanges()
+                        showToast()
+                    }
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )

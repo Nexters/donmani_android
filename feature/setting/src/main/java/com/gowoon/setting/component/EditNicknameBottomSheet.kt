@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.BottomSheet
@@ -28,13 +33,15 @@ import com.gowoon.setting.R
 internal fun EditNicknameBottomSheet(
     currentNickname: String,
     onClickDone: (result: String, hide: () -> Unit) -> Unit,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    showToast: (String) -> Unit
 ) {
     BottomSheet(
         content = { hide ->
             EditNicknameContent(
                 initialText = currentNickname,
-                onClickDone = { onClickDone(it, hide) }
+                onClickDone = { onClickDone(it, hide) },
+                showToast = showToast
             )
         },
         onDismissRequest = onDismissRequest
@@ -44,9 +51,18 @@ internal fun EditNicknameBottomSheet(
 @Composable
 private fun EditNicknameContent(
     initialText: String,
-    onClickDone: (String) -> Unit
+    onClickDone: (String) -> Unit,
+    showToast: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val text = rememberTextFieldState(initialText)
+    val isValid by remember { derivedStateOf { NicknameUtil.isValid(text.text.toString()) } }
+
+    LaunchedEffect(isValid) {
+        if (!isValid) {
+            showToast(context.getString(com.gowoon.ui.R.string.toast_invalid_character))
+        }
+    }
     Column(
         Modifier
             .fillMaxWidth()
@@ -55,7 +71,10 @@ private fun EditNicknameContent(
         InputField(
             height = InputFieldHeight.WRAPCONENT,
             text = text,
-            maxLength = NicknameUtil.NICKNAMEMAX_LENGTH
+            maxLength = NicknameUtil.NICKNAMEMAX_LENGTH,
+            showToast = {
+                showToast(context.getString(com.gowoon.ui.R.string.toast_max_length))
+            }
         )
         Spacer(Modifier.height(16.dp))
         Row(
@@ -74,7 +93,7 @@ private fun EditNicknameContent(
             RoundedButton(
                 type = RoundedButtonRadius.High,
                 label = stringResource(R.string.btn_edit_nickname_done),
-                enable = NicknameUtil.isValid(text.text.toString()),
+                enable = isValid,
             ) { onClickDone(text.text.toString()) }
         }
     }

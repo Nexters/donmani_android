@@ -75,6 +75,10 @@ class RecordInputViewModel @Inject constructor(
             }
         }
     }
+
+    fun showToast(message: String) {
+        setEffect(RecordInputEffect.ShowToast(message))
+    }
 }
 
 data class RecordInputState(
@@ -92,4 +96,6 @@ sealed interface RecordInputEvent : UiEvent {
     data class ShowExitWaringBottomSheet(val show: Boolean) : RecordInputEvent
 }
 
-sealed interface RecordInputEffect : UiEffect
+sealed interface RecordInputEffect : UiEffect {
+    data class ShowToast(val message: String) : RecordInputEffect
+}
