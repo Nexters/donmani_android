@@ -53,7 +53,7 @@ private fun EditNicknameContent(
             .wrapContentHeight()
     ) {
         InputField(
-            height = InputFieldHeight.WRAP_CONENT,
+            height = InputFieldHeight.WRAPCONENT,
             text = text,
             maxLength = NicknameUtil.NICKNAMEMAX_LENGTH
         )

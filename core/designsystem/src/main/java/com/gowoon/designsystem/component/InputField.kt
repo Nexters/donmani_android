@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -23,19 +24,21 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import com.gowoon.designsystem.theme.DonmaniTheme
 
 sealed interface InputFieldHeight {
     data class FIXED(val height: Dp) : InputFieldHeight
-    data object WRAP_CONENT : InputFieldHeight
+    data object WRAPCONENT : InputFieldHeight
 }
 
 @Composable
@@ -97,10 +100,12 @@ private fun ScrollableInputField(
     )
     val heightModifier = when (height) {
         is InputFieldHeight.FIXED -> Modifier.height(height.height)
-        is InputFieldHeight.WRAP_CONENT -> Modifier.wrapContentHeight()
+        is InputFieldHeight.WRAPCONENT -> Modifier.wrapContentHeight()
     }
+
     val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
+
     LaunchedEffect(text.text) {
         if(text.text.isNotEmpty() && forceHaptic){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -131,7 +136,8 @@ private fun ScrollableInputField(
                 scrollState = scrollState,
                 inputTransformation = {
                     takeIf { it.length > maxLength }?.revertAllChanges()
-                }
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
         }
     }

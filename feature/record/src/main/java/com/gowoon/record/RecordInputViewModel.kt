@@ -66,9 +66,9 @@ data class RecordInputState(
     val memo: TextFieldState = TextFieldState()
 ) : UiState
 
-sealed class RecordInputEvent : UiEvent {
-    data class OnChangeCategory(val category: Category) : RecordInputEvent()
-    data class ShowDialog(val show: Boolean) : RecordInputEvent()
+sealed interface RecordInputEvent : UiEvent {
+    data class OnChangeCategory(val category: Category) : RecordInputEvent
+    data class ShowDialog(val show: Boolean) : RecordInputEvent
 }
 
-sealed class RecordInputEffect : UiEffect
+sealed interface RecordInputEffect : UiEffect
