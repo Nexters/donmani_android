@@ -19,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -136,7 +138,8 @@ private fun HomeContent(
         Image(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .clip(RoundedCornerShape(65.dp)),
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
             contentDescription = null
         )
@@ -150,7 +153,9 @@ private fun HomeContent(
             newRecord = newRecord
         )
         Image(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .graphicsLayer { alpha = 0.8f },
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
             contentDescription = null
         )

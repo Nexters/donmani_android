@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
@@ -38,9 +36,8 @@ fun CategoryBackground(category: Category?, content: @Composable () -> Unit) {
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .aspectRatio(2f)
+                    .aspectRatio(1.5f)
                     .background(
-                        shape = RoundedCornerShape(bottomStart = 35.dp, bottomEnd = 35.dp),
                         brush = Brush.verticalGradient(
                             listOf(
                                 category?.getColor() ?: Color.Transparent,
