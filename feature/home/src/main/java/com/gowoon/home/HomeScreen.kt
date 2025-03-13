@@ -58,7 +58,7 @@ internal fun HomeScreen(
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit,
-    onClickBottle: () -> Unit
+    onClickBottle: (List<Record>) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
@@ -88,7 +88,7 @@ internal fun HomeScreen(
             HomeContent(
                 records = state.records,
                 newRecord = state.newRecord,
-                onClickBottle = onClickBottle
+                onClickBottle = { onClickBottle(state.records) }
             )
             HomeFooter(
                 modifier = Modifier.weight(1f),

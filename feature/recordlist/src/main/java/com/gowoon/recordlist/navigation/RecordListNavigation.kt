@@ -4,18 +4,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.gowoon.recordlist.RecordListScreen
+import kotlinx.serialization.Serializable
 
-const val recordListNavigationRoute = "record_list_route"
+@Serializable
+data class RecordListNavigationRoute(val records: String)
 
-fun NavController.navigateToRecordList() {
-    navigate(route = recordListNavigationRoute)
+fun NavController.navigateToRecordList(records: String) {
+    navigate(route = RecordListNavigationRoute(records))
 }
 
 fun NavGraphBuilder.recordListScreen(
     onClickBack: () -> Unit,
     navigateToRecord: () -> Unit
 ) {
-    composable(route = recordListNavigationRoute) {
+    composable<RecordListNavigationRoute> {
         RecordListScreen(
             onClickBack = onClickBack,
             onClickAdd = navigateToRecord
