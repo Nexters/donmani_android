@@ -11,6 +11,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["appName"] = "@string/app_name"
+        }
+        debug {
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["appName"] = "@string/app_name_dev"
         }
     }
     buildFeatures {
