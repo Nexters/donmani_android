@@ -48,7 +48,6 @@ import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.util.rememberHiltJson
-import io.github.aakira.napier.Napier
 import kotlinx.serialization.json.Json
 
 @Composable
@@ -65,13 +64,15 @@ internal fun HomeScreen(
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(resultFromRecord) {
-        Napier.d("gowoon result = $resultFromRecord")
+        var recordAdded = false
+        var record: Record? = null
         resultFromRecord?.let {
-            val record = json.decodeFromString<Record>(it)
+            record = json.decodeFromString<Record>(it)
             if (record != state.newRecord) {
-                viewModel.setEvent(HomeEvent.OnAddRecord(record))
+                recordAdded = true
             }
         }
+        viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
     TransparentScaffold(
         topBar = { HomeAppBar(onClickSetting = onClickSetting) }
@@ -88,7 +89,8 @@ internal fun HomeScreen(
             HomeContent(
                 records = state.records,
                 newRecord = state.newRecord,
-                onClickBottle = { onClickBottle(state.records) }
+                recordAdded = state.recordAdded,
+                onClickBottle = { onClickBottle(state.records) },
             )
             HomeFooter(
                 modifier = Modifier.weight(1f),
@@ -127,6 +129,7 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     newRecord: Record?,
+    recordAdded: Boolean,
     onClickBottle: () -> Unit
 ) {
     Box(
@@ -150,7 +153,7 @@ private fun HomeContent(
                 .padding(10.dp)
                 .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
             records = records,
-            newRecord = newRecord
+            newRecord = if (recordAdded) newRecord else null
         )
         Image(
             modifier = Modifier

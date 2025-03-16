@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -43,7 +43,7 @@ internal fun StarBottle(
     val simulation = rememberSimulation(rememberClock())
 
     LaunchedEffect(true) {
-        delay(1500)
+        delay(1000)
         show = true
     }
     GravitySensor { (x, y) ->
@@ -58,7 +58,9 @@ internal fun StarBottle(
             }
         }
         Column(
-            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .wrapContentSize()
+                .align(Alignment.BottomCenter)
         ) {
             records.filterNot { it == newRecord }.chunked(COL_COUNT).forEach { rowItems ->
                 Row {

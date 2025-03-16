@@ -42,7 +42,12 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.OnAddRecord -> {
-                setState(currentState.copy(newRecord = event.newRecord))
+                setState(
+                    currentState.copy(
+                        newRecord = event.newRecord,
+                        recordAdded = event.recordAdded
+                    )
+                )
                 setEffect(HomeEffect.RefreshTrigger)
             }
         }
@@ -118,6 +123,7 @@ data class HomeState(
     val nickname: String = "",
     val records: List<Record> = listOf(),
     val newRecord: Record? = null,
+    val recordAdded: Boolean = false,
     val hasToday: Boolean = false,
     val hasYesterday: Boolean = false,
     val showTooltip: Boolean = true
@@ -125,7 +131,7 @@ data class HomeState(
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
-    data class OnAddRecord(val newRecord: Record?) : HomeEvent
+    data class OnAddRecord(val newRecord: Record?, val recordAdded: Boolean) : HomeEvent
 }
 
 sealed interface HomeEffect : UiEffect {
