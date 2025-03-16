@@ -1,5 +1,8 @@
 package com.gowoon.home
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -48,6 +51,7 @@ import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.util.rememberHiltJson
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 
 @Composable
@@ -132,11 +136,27 @@ private fun HomeContent(
     recordAdded: Boolean,
     onClickBottle: () -> Unit
 ) {
+    var isMoved by remember { mutableStateOf(false) }
+    LaunchedEffect(recordAdded) {
+        if (recordAdded) {
+            delay(2000)
+            isMoved = true
+        }
+    }
+    val offsetY by animateFloatAsState(
+        targetValue = if (isMoved) 0f else -50f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioHighBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
     Box(
         modifier = modifier
             .width(300.dp)
             .height(400.dp)
             .noRippleClickable { onClickBottle() }
+            .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
     ) {
         Image(
             modifier = Modifier
