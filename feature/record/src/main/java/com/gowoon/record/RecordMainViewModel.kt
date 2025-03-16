@@ -8,11 +8,11 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.config.HideBBSRuleSheetUseCase
+import com.gowoon.domain.usecase.config.HideNoConsumptionTooltipUseCase
+import com.gowoon.domain.usecase.config.ShowBBSRuleSheetUseCase
+import com.gowoon.domain.usecase.config.ShowNoConsumptionTooltipUseCase
 import com.gowoon.domain.usecase.record.SaveRecordUseCase
-import com.gowoon.domain.usecase.tooltip.HideBBSRuleSheetUseCase
-import com.gowoon.domain.usecase.tooltip.HideNoConsumptionTooltipUseCase
-import com.gowoon.domain.usecase.tooltip.ShowBBSRuleSheetUseCase
-import com.gowoon.domain.usecase.tooltip.ShowNoConsumptionTooltipUseCase
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType

@@ -1,4 +1,4 @@
-package com.gowoon.domain.usecase.tooltip
+package com.gowoon.domain.usecase.config
 
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.ConfigRepository
