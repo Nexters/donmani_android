@@ -1,12 +1,12 @@
 package com.gowoon.domain.usecase.tooltip
 
 import com.gowoon.domain.common.Result
-import com.gowoon.domain.repository.TooltipRepository
+import com.gowoon.domain.repository.ConfigRepository
 import javax.inject.Inject
 
 class HideNoConsumptionTooltipUseCase @Inject constructor(
-    private val tooltipRepository: TooltipRepository
+    private val configRepository: ConfigRepository
 ) {
     suspend operator fun invoke(): Result<Unit> =
-        tooltipRepository.setNoConsumptionTooltipState(false)
+        configRepository.setNoConsumptionTooltipState(false)
 }

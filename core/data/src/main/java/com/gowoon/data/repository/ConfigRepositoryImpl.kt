@@ -1,19 +1,19 @@
 package com.gowoon.data.repository
 
-import com.gowoon.datastore.TooltipDataSource
+import com.gowoon.datastore.ConfigDataSource
 import com.gowoon.domain.common.Result
-import com.gowoon.domain.repository.TooltipRepository
+import com.gowoon.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class TooltipRepositoryImpl @Inject constructor(
-    private val tooltipDataSource: TooltipDataSource
-) : TooltipRepository {
+class ConfigRepositoryImpl @Inject constructor(
+    private val configDataSource: ConfigDataSource
+) : ConfigRepository {
     override suspend fun getNoConsumptionTooltipState(): Flow<Result<Boolean>> =
         try {
-            tooltipDataSource.getNoConsumptionTooltipState().map {
+            configDataSource.getNoConsumptionTooltipState().map {
                 Result.Success(it)
             }
         } catch (e: Exception) {
@@ -22,14 +22,14 @@ class TooltipRepositoryImpl @Inject constructor(
 
     override suspend fun setNoConsumptionTooltipState(state: Boolean): Result<Unit> =
         try {
-            tooltipDataSource.setNoConsumptionTooltipState(state).let { Result.Success(Unit) }
+            configDataSource.setNoConsumptionTooltipState(state).let { Result.Success(Unit) }
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
 
     override suspend fun getBBSRuleSheetState(): Flow<Result<Boolean>> =
         try {
-            tooltipDataSource.getBBSRuleSheetState().map {
+            configDataSource.getBBSRuleSheetState().map {
                 Result.Success(it)
             }
         } catch (e: Exception) {
@@ -39,7 +39,7 @@ class TooltipRepositoryImpl @Inject constructor(
 
     override suspend fun setBBSRuleSheetState(state: Boolean): Result<Unit> =
         try {
-            tooltipDataSource.setBBSRuleSheetState(state).let { Result.Success(Unit) }
+            configDataSource.setBBSRuleSheetState(state).let { Result.Success(Unit) }
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }

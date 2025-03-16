@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class TooltipDataSource @Inject constructor(
+class ConfigDataSource @Inject constructor(
     @TooltipDataStore private val datastore: DataStore<Preferences>
 ) {
     companion object {
