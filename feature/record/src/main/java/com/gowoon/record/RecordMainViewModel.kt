@@ -22,9 +22,12 @@ import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,6 +46,7 @@ internal class RecordMainViewModel @Inject constructor(
 
     init {
         initialState()
+        startCountdown()
     }
 
     override fun handleEvent(event: RecordMainEvent) {
@@ -223,6 +227,21 @@ internal class RecordMainViewModel @Inject constructor(
         }
         return false
     }
+
+
+    private fun startCountdown() {
+        val remainTime = getSecondsUntilMidnight()
+        if (remainTime > (60 * 60 * 2)) return
+        viewModelScope.launch {
+            while ((currentState.remainTime ?: remainTime) >= 0) {
+                delay(1000L)
+                setState(currentState.copy(remainTime = getSecondsUntilMidnight()))
+            }
+        }
+    }
+
+    private fun getSecondsUntilMidnight(): Int =
+        LocalTime.now().until(LocalTime.MIDNIGHT, ChronoUnit.SECONDS).toInt() + 86400
 }
 
 data class RecordMainState(
@@ -231,7 +250,8 @@ data class RecordMainState(
     val showTooltip: Boolean = false,
     val showRuleBottomSheet: Boolean = false,
     val showConfirm: Boolean = false,
-    val showBottomSheet: RecordMainDialogType? = null
+    val showBottomSheet: RecordMainDialogType? = null,
+    val remainTime: Int? = null
 ) : UiState
 
 enum class RecordMainDialogType { NO_CONSUMPTION, EXIT_WARNING }
