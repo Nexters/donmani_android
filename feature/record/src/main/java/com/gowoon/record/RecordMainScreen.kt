@@ -104,8 +104,7 @@ internal fun RecordMainScreen(
     if (state.showConfirm) {
         state.records[state.selectedDay.name]?.let { record ->
             RecordConfirmScreen(
-                modifier = Modifier.zIndex(1f),
-                record = record
+                modifier = Modifier.zIndex(1f), record = record
             ) {
                 if (it) {
                     viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
@@ -119,26 +118,22 @@ internal fun RecordMainScreen(
             }
         }
     } else {
-        TransparentScaffold(
-            topBar = {
-                AppBar(
-                    onClickNavigation = {
-                        if (viewModel.startToRecord()) {
-                            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
-                        } else {
-                            onClickBack()
-                        }
-                    },
-                    actionButton = {
-                        TodayYesterdayToggle(
-                            options = EntryDay.entries.filter { state.records.containsKey(it.name) }
-                                .ifEmpty { EntryDay.entries },
-                            selectedState = state.selectedDay
-                        ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
-                    }
-                )
-            }
-        ) { padding ->
+        TransparentScaffold(topBar = {
+            AppBar(onClickNavigation = {
+                if (viewModel.startToRecord()) {
+                    viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+                } else {
+                    onClickBack()
+                }
+            }, actionButton = {
+                TodayYesterdayToggle(options = EntryDay.entries.filter {
+                    state.records.containsKey(
+                        it.name
+                    )
+                }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
+                ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
+            })
+        }) { padding ->
             val scrollState = rememberScrollState()
 
             if (state.showRuleBottomSheet) {
@@ -147,25 +142,21 @@ internal fun RecordMainScreen(
             state.showBottomSheet?.let {
                 when (it) {
                     RecordMainDialogType.NO_CONSUMPTION -> {
-                        NoConsumptionBottomSheet(
-                            onClick = { isPositive ->
-                                if (isPositive) {
-                                    viewModel.setEvent(
-                                        RecordMainEvent.OnClickNoConsumptionCheckBox(true)
-                                    )
-                                }
+                        NoConsumptionBottomSheet(onClick = { isPositive ->
+                            if (isPositive) {
+                                viewModel.setEvent(
+                                    RecordMainEvent.OnClickNoConsumptionCheckBox(true)
+                                )
                             }
-                        ) {
+                        }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
                     }
 
                     RecordMainDialogType.EXIT_WARNING -> {
-                        ExitWarningBottomSheet(
-                            onClick = { isPositive ->
-                                if (isPositive) onClickBack()
-                            }
-                        ) {
+                        ExitWarningBottomSheet(onClick = { isPositive ->
+                            if (isPositive) onClickBack()
+                        }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
                     }
@@ -185,8 +176,11 @@ internal fun RecordMainScreen(
                     Spacer(Modifier.height(16.dp))
                     Title(
                         text = stringResource(
-                            R.string.record_main_title,
-                            state.selectedDay.title
+                            R.string.record_main_title, if (viewModel.isNoRecordForBothDays()) {
+                                stringResource(R.string.record_main_title_prefix_day)
+                            } else {
+                                state.selectedDay.title
+                            }
                         )
                     )
                     Spacer(Modifier.height(60.dp))
@@ -217,20 +211,17 @@ internal fun RecordMainScreen(
                         )
                     }
                 }
-                RecordMainFooter(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(1f),
+                RecordMainFooter(modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .zIndex(1f),
                     enable = finishToRecord,
-                    remainTime =
-                    if (state.selectedDay == EntryDay.Yesterday) {
+                    remainTime = if (state.selectedDay == EntryDay.Yesterday) {
                         state.remainTime?.let {
                             it.format() + stringResource(R.string.record_bottom_count_down_suffix)
                         }
                     } else {
                         null
-                    }
-                ) {
+                    }) {
                     viewModel.setEvent(RecordMainEvent.ShowConfirm(true))
                 }
             }
@@ -258,8 +249,7 @@ private fun RecordMainContent(
             is ConsumptionRecord -> {
                 if (finishToRecord) {
                     RecordCard(
-                        record = record,
-                        onClickEdit = onClickEdit
+                        record = record, onClickEdit = onClickEdit
                     )
                 } else {
                     if (record.goodRecord == null) {
@@ -267,8 +257,7 @@ private fun RecordMainContent(
                     } else {
                         record.goodRecord?.let {
                             ConsumptionCard(
-                                consumption = it,
-                                onClickEdit = onClickEdit
+                                consumption = it, onClickEdit = onClickEdit
                             )
                         }
                     }
@@ -278,8 +267,7 @@ private fun RecordMainContent(
                     } else {
                         record.badRecord?.let {
                             ConsumptionCard(
-                                consumption = it,
-                                onClickEdit = onClickEdit
+                                consumption = it, onClickEdit = onClickEdit
                             )
                         }
                     }
@@ -306,10 +294,7 @@ private fun RecordMainContent(
 
 @Composable
 private fun RecordMainFooter(
-    modifier: Modifier = Modifier,
-    enable: Boolean,
-    remainTime: String?,
-    onClick: () -> Unit
+    modifier: Modifier = Modifier, enable: Boolean, remainTime: String?, onClick: () -> Unit
 ) {
     val gradientBgColor = Color(0xFF091647)
     Column(
@@ -319,13 +304,11 @@ private fun RecordMainFooter(
             .background(
                 brush = Brush.verticalGradient(
                     colors = arrayListOf(
-                        gradientBgColor.copy(0f),
-                        gradientBgColor
+                        gradientBgColor.copy(0f), gradientBgColor
                     )
                 )
             )
-            .padding(top = 80.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(top = 80.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MessageBox(message = remainTime ?: stringResource(R.string.record_bottom_message_default))
         RoundedButton(

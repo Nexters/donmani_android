@@ -4,6 +4,7 @@
 
     <!-- title  -->
     <string name="record_main_title">%s 소비 정리해 볼까요?</string>
+    <string name="record_main_title_prefix_day">하루</string>
     <string name="record_confirm_title">저장하면 수정할 수 없어요!</string>
 
     <!-- button -->

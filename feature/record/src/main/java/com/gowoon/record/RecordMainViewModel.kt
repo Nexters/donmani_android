@@ -242,6 +242,8 @@ internal class RecordMainViewModel @Inject constructor(
 
     private fun getSecondsUntilMidnight(): Int =
         LocalTime.now().until(LocalTime.MIDNIGHT, ChronoUnit.SECONDS).toInt() + 86400
+
+    fun isNoRecordForBothDays(): Boolean = showYesterday && showToday
 }
 
 data class RecordMainState(
