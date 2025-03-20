@@ -201,10 +201,7 @@ private fun RecordInputContent(
         InputField(
             height = InputFieldHeight.FIXED(120.dp),
             text = memo,
-            placeholder = when (type) {
-                ConsumptionType.GOOD -> stringResource(R.string.good_record_input_memo_placeholder)
-                ConsumptionType.BAD -> stringResource(R.string.bad_record_input_memo_placeholder)
-            },
+            placeholder = stringResource(R.string.category_select_title, type.title),
             forceHaptic = true,
             focusRequester = focusRequester,
             showToast = showToast
