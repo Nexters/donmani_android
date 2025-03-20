@@ -48,11 +48,11 @@ fun Category.getImageResId(): Int = when (val category = this) {
             GoodCategory.ENERGY -> R.drawable.happy_energy
             GoodCategory.GROWTH -> R.drawable.happy_growth
             GoodCategory.HEALING -> R.drawable.happy_healing
-            GoodCategory.HAPPINESS -> R.drawable.happy_sbdh
+            GoodCategory.HAPPINESS -> R.drawable.happy_happiness
             GoodCategory.FLEX -> R.drawable.happy_flex
-            GoodCategory.DIGNITY -> R.drawable.happy_maintenance
-            GoodCategory.AFFECTION -> R.drawable.happy_heart
-            GoodCategory.HEALTH -> R.drawable.happy_healthy
+            GoodCategory.DIGNITY -> R.drawable.happy_dignity
+            GoodCategory.AFFECTION -> R.drawable.happy_affection
+            GoodCategory.HEALTH -> R.drawable.happy_health
             GoodCategory.NONE -> R.drawable.happy_none
         }
     }
@@ -63,10 +63,10 @@ fun Category.getImageResId(): Int = when (val category = this) {
             BadCategory.ADDICTION -> R.drawable.regret_addiction
             BadCategory.LAZINESS -> R.drawable.regret_laziness
             BadCategory.IMPULSE -> R.drawable.regret_impulse
-            BadCategory.MEANINGLESSNESS -> R.drawable.regret_meaningless
-            BadCategory.BOASTFULNESS -> R.drawable.regret_ostentation
-            BadCategory.HABIT -> R.drawable.regret_habitual
-            BadCategory.OVERFRUGALITY -> R.drawable.regret_stingy
+            BadCategory.MEANINGLESSNESS -> R.drawable.regret_meaninglessness
+            BadCategory.BOASTFULNESS -> R.drawable.regret_boastfulness
+            BadCategory.HABIT -> R.drawable.regret_habit
+            BadCategory.OVERFRUGALITY -> R.drawable.regret_overfrugality
             BadCategory.NONE -> R.drawable.regret_none
         }
     }

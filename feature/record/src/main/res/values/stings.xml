@@ -4,6 +4,7 @@
 
     <!-- title  -->
     <string name="record_main_title">%s 소비 정리해 볼까요?</string>
+    <string name="record_main_title_prefix_day">하루</string>
     <string name="record_confirm_title">저장하면 수정할 수 없어요!</string>
 
     <!-- button -->
@@ -27,11 +28,11 @@
     <!-- component -->
     <!-- checkbox -->
     <string name="no_consumption_message">무소비 했어요</string>
-    <!-- input -->
-    <string name="good_record_input_memo_placeholder">소비가 행복했던 이유는?</string>
-    <string name="bad_record_input_memo_placeholder">소비가 후회됐던 이유는?</string>
+    <!--    &lt;!&ndash; input &ndash;&gt;-->
+    <!--    <string name="good_record_input_memo_placeholder">소비가 행복했던 이유는?</string>-->
+    <!--    <string name="bad_record_input_memo_placeholder">소비가 후회됐던 이유는?</string>-->
     <!-- bottom sheet -->
-    <string name="category_select_title">어떤 %s 소비였나요?</string>
+    <string name="category_select_title">소비가 %s했던 이유는?</string>
     <string name="no_consumption_alert_title">정말 무소비 했나요?</string>
     <string name="no_consumption_alert_message">무소비는 하루 동안 한 번도 소비하지 않았을 때 선택해요.\n지금까지 기록한 내용이 있다면 모두 사라져요!</string>
     <string name="exit_warning_title">다음에 기록할까요?</string>

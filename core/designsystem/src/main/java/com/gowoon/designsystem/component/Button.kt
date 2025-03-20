@@ -108,21 +108,16 @@ fun BaseRoundedButton(
     }
 }
 
-enum class CircleButtonSize(val size: Dp) {
-    Small(32.dp), Big(70.dp)
-}
-
 @Composable
-fun CircleButton(
+fun HomeCircleButton(
     modifier: Modifier = Modifier,
-    buttonSize: CircleButtonSize,
     backgroundColor: Color,
     contentColor: Color,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
-            .size(buttonSize.size)
+            .size(70.dp)
             .background(
                 shape = CircleShape,
                 color = backgroundColor

@@ -25,8 +25,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.Card
-import com.gowoon.designsystem.component.CircleButton
-import com.gowoon.designsystem.component.CircleButtonSize
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.Category
@@ -114,11 +112,11 @@ fun EmptyCard(
                 color = DonmaniTheme.colors.Gray95,
                 style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold)
             )
-            CircleButton(
-                buttonSize = CircleButtonSize.Small,
-                backgroundColor = DonmaniTheme.colors.DeepBlue70,
-                contentColor = DonmaniTheme.colors.DeepBlue99,
-                onClick = onClick
+            Icon(
+                modifier = Modifier.noRippleClickable { onClick() },
+                imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.plus_circle),
+                tint = Color.Unspecified,
+                contentDescription = null
             )
         }
     }
