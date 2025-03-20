@@ -36,8 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
-import com.gowoon.designsystem.component.CircleButton
-import com.gowoon.designsystem.component.CircleButtonSize
+import com.gowoon.designsystem.component.HomeCircleButton
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
@@ -199,13 +198,12 @@ private fun HomeFooter(
                 message = stringResource(R.string.footer_message_when_has_today_and_yesterday)
             )
         } else {
-            CircleButton(
+            HomeCircleButton(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .onGloballyPositioned {
                         changedCircleButtonPosition(it.boundsInRoot().topCenter)
                     },
-                buttonSize = CircleButtonSize.Big,
                 backgroundColor = DonmaniTheme.colors.PurpleBlue70,
                 contentColor = DonmaniTheme.colors.PurpleBlue99
             ) { onClickAdd() }
