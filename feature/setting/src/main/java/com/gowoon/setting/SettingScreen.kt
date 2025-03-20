@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.AppBar
-import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
@@ -72,8 +71,7 @@ internal fun SettingScreen(
                 title = stringResource(R.string.appbar_title),
                 onClickNavigation = onClickBack
             )
-        },
-        snackbarHost = { CustomSnackBarHost(snackbarHostState) }
+        }
     ) {
         state.dialogState?.let { dialogState ->
             when (dialogState) {
@@ -93,7 +91,8 @@ internal fun SettingScreen(
                         },
                         onDismissRequest = { viewModel.setEvent(SettingEvent.ShowDialog(null)) },
                         showToast = { viewModel.showToast(it) },
-                        focusRequester = focusRequester
+                        focusRequester = focusRequester,
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

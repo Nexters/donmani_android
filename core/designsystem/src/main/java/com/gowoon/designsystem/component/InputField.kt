@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -35,7 +34,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
@@ -46,7 +44,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.pxToDp
 
@@ -129,7 +126,11 @@ private fun ScrollableInputField(
             it.positionInRoot().y.toDp()
         }
     }
-    var adjustHeight by remember { mutableStateOf((height as? InputFieldHeight.FIXED)?.height ?: 120.dp) }
+    var adjustHeight by remember {
+        mutableStateOf(
+            (height as? InputFieldHeight.FIXED)?.height ?: 120.dp
+        )
+    }
 
     val heightModifier = when (height) {
         is InputFieldHeight.FIXED -> Modifier.height(adjustHeight)
@@ -142,7 +143,7 @@ private fun ScrollableInputField(
     LaunchedEffect(imeHeight, inputFieldOffset) {
         (height as? InputFieldHeight.FIXED)?.let {
             val hiddenHeight = imeHeight - (screenHeight - inputFieldOffset - it.height)
-            adjustHeight = if(imeHeight.value > 0) {
+            adjustHeight = if (imeHeight.value > 0) {
                 it.height - hiddenHeight
             } else {
                 it.height
