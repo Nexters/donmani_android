@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +37,8 @@ internal fun EditNicknameBottomSheet(
     focusRequester: FocusRequester,
     onClickDone: (result: String, hide: () -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
-    showToast: (String) -> Unit
+    showToast: (String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     BottomSheet(
         content = { hide ->
@@ -50,7 +52,8 @@ internal fun EditNicknameBottomSheet(
         onDismissRequest = onDismissRequest,
         onExpanded = {
             focusRequester.requestFocus()
-        }
+        },
+        snackbarHostState = snackbarHostState
     )
 }
 

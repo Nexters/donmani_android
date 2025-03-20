@@ -1,10 +1,13 @@
 package com.gowoon.home
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -19,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -46,7 +51,7 @@ import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.util.rememberHiltJson
-import io.github.aakira.napier.Napier
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 
 @Composable
@@ -56,20 +61,22 @@ internal fun HomeScreen(
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit,
-    onClickBottle: () -> Unit
+    onClickBottle: (List<Record>) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(resultFromRecord) {
-        Napier.d("gowoon result = $resultFromRecord")
+        var recordAdded = false
+        var record: Record? = null
         resultFromRecord?.let {
-            val record = json.decodeFromString<Record>(it)
+            record = json.decodeFromString<Record>(it)
             if (record != state.newRecord) {
-                viewModel.setEvent(HomeEvent.OnAddRecord(record))
+                recordAdded = true
             }
         }
+        viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
     TransparentScaffold(
         topBar = { HomeAppBar(onClickSetting = onClickSetting) }
@@ -77,19 +84,19 @@ internal fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(Modifier.height(24.dp))
             Title(text = state.nickname)
-            Spacer(Modifier.height(95.dp))
             HomeContent(
                 records = state.records,
                 newRecord = state.newRecord,
-                onClickBottle = onClickBottle
+                recordAdded = state.recordAdded,
+                onClickBottle = { onClickBottle(state.records) },
             )
             HomeFooter(
-                modifier = Modifier.weight(1f),
                 hasToday = state.hasToday,
                 hasYesterday = state.hasYesterday,
                 changedCircleButtonPosition = { tooltipOffset = it },
@@ -125,18 +132,36 @@ private fun HomeContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     newRecord: Record?,
+    recordAdded: Boolean,
     onClickBottle: () -> Unit
 ) {
+    var isMoved by remember { mutableStateOf(false) }
+    LaunchedEffect(recordAdded) {
+        if (recordAdded) {
+            delay(2000)
+            isMoved = true
+        }
+    }
+    val offsetY by animateFloatAsState(
+        targetValue = if (isMoved) 0f else -50f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioHighBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
+
     Box(
         modifier = modifier
             .width(300.dp)
             .height(400.dp)
             .noRippleClickable { onClickBottle() }
+            .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
     ) {
         Image(
             modifier = Modifier
                 .fillMaxSize()
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .clip(RoundedCornerShape(65.dp)),
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
             contentDescription = null
         )
@@ -147,10 +172,12 @@ private fun HomeContent(
                 .padding(10.dp)
                 .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
             records = records,
-            newRecord = newRecord
+            newRecord = if (recordAdded) newRecord else null
         )
         Image(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .graphicsLayer { alpha = 0.7f },
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
             contentDescription = null
         )

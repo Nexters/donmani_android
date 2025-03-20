@@ -199,7 +199,7 @@ private fun RecordInputContent(
             color = DonmaniTheme.colors.Common0
         )
         InputField(
-            height = InputFieldHeight.FIXED(80.dp),
+            height = InputFieldHeight.FIXED(120.dp),
             text = memo,
             placeholder = when (type) {
                 ConsumptionType.GOOD -> stringResource(R.string.good_record_input_memo_placeholder)

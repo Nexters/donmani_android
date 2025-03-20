@@ -16,13 +16,16 @@ const val MainToHomeArgumentKey = "mainToHome"
 data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
 
 fun NavController.navigateToRecord(
-    from: String? = null,
     hasTodayRecord: Boolean,
     hasYesterdayRecord: Boolean
 ) {
-    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord)){
-        from?.let {
-            popUpTo(it){ inclusive = true }
+    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord))
+}
+
+fun NavController.navigateToRecordAndPopUpTo() {
+    navigate(route = RecordNavigationRoute(false, false)) {
+        currentBackStackEntry?.destination?.id?.let {
+            popUpTo(it) { inclusive = true }
         }
     }
 }

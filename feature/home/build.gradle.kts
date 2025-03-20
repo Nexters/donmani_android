@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(libs.physics.layout.compose)
+    implementation(libs.play.review)
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)
 }

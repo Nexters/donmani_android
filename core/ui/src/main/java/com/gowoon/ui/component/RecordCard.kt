@@ -157,8 +157,8 @@ fun RecordCard(
                 modifier = modifier.fillMaxWidth(),
                 backgroundColor = Brush.linearGradient(
                     listOf(
-                        good.category.getColor(),
-                        bad.category.getColor()
+                        good.category.getColor().copy(alpha = 0.5f),
+                        bad.category.getColor().copy(alpha = 0.5f)
                     )
                 )
             ) {

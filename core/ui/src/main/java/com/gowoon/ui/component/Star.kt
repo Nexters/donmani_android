@@ -18,13 +18,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
-import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Category
-import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.ui.util.getColor
 import com.gowoon.ui.util.getNoConsumptionColor
@@ -47,7 +43,9 @@ fun Star(
         when (record) {
             is Record.NoConsumption -> {
                 Icon(
-                    modifier = Modifier.fillMaxSize().align(Alignment.Center),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center),
                     imageVector = ImageVector.vectorResource(R.drawable.star_shape),
                     tint = getNoConsumptionColor(),
                     contentDescription = null

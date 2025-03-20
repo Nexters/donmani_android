@@ -31,7 +31,6 @@ fun CustomSnackBarHost(
         modifier = modifier,
         hostState = snackbarHostState,
         snackbar = { data ->
-
             CustomSnackBar(data)
         }
     )

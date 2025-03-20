@@ -23,7 +23,8 @@ fun BBSRuleBottomSheet(
         title = stringResource(R.string.bbs_rule_bottom_sheet_title),
         buttonType = BottomSheetButtonType.Single(stringResource(R.string.bbs_rule_bottom_sheet_done_btn)),
         content = { BBSRuleContent() },
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
+        canDismiss = false
     )
 }
 

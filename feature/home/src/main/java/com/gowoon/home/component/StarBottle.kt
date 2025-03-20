@@ -4,8 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -43,11 +44,11 @@ internal fun StarBottle(
     val simulation = rememberSimulation(rememberClock())
 
     LaunchedEffect(true) {
-        delay(1500)
+        delay(1000)
         show = true
     }
     GravitySensor { (x, y) ->
-        simulation.setGravity(Offset(-x, y).times(3f))
+        simulation.setGravity(Offset(-x, y).times(6f))
     }
     PhysicsLayout(
         modifier = modifier, simulation = simulation, shape = bottleShape
@@ -58,7 +59,9 @@ internal fun StarBottle(
             }
         }
         Column(
-            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .wrapContentSize()
+                .align(Alignment.BottomCenter)
         ) {
             records.filterNot { it == newRecord }.chunked(COL_COUNT).forEach { rowItems ->
                 Row {
@@ -84,7 +87,8 @@ private fun Ball(
                 dragConfig = DragConfig(),
             )
             .size(size)
-            .background(Color.Transparent, CircleShape),
+            .background(Color.Transparent, CircleShape)
+            .padding(0.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Star(

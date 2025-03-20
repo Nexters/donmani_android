@@ -22,6 +22,7 @@
 
     <!-- message -->
     <string name="record_bottom_message_default">기록하고 별사탕 받자!</string>
+    <string name="record_bottom_count_down_suffix">안에 별사탕 받자!</string>
 
     <!-- component -->
     <!-- checkbox -->

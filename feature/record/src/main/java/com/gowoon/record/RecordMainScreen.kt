@@ -36,6 +36,7 @@ import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
+import com.gowoon.domain.util.format
 import com.gowoon.model.common.EntryDay
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
@@ -220,7 +221,15 @@ internal fun RecordMainScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .zIndex(1f),
-                    enable = finishToRecord
+                    enable = finishToRecord,
+                    remainTime =
+                    if (state.selectedDay == EntryDay.Yesterday) {
+                        state.remainTime?.let {
+                            it.format() + stringResource(R.string.record_bottom_count_down_suffix)
+                        }
+                    } else {
+                        null
+                    }
                 ) {
                     viewModel.setEvent(RecordMainEvent.ShowConfirm(true))
                 }
@@ -299,9 +308,9 @@ private fun RecordMainContent(
 private fun RecordMainFooter(
     modifier: Modifier = Modifier,
     enable: Boolean,
+    remainTime: String?,
     onClick: () -> Unit
 ) {
-    // TODO message 문구 로직 > timer
     val gradientBgColor = Color(0xFF091647)
     Column(
         modifier = modifier
@@ -318,7 +327,7 @@ private fun RecordMainFooter(
             .padding(top = 80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MessageBox(message = stringResource(R.string.record_bottom_message_default))
+        MessageBox(message = remainTime ?: stringResource(R.string.record_bottom_message_default))
         RoundedButton(
             modifier = Modifier
                 .fillMaxWidth()
