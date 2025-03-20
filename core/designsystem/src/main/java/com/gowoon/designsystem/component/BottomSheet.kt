@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -43,10 +45,15 @@ fun BottomSheet(
     content: @Composable (hide: () -> Unit) -> Unit,
     onClick: ((Boolean) -> Unit)? = null,
     onDismissRequest: () -> Unit,
-    onExpanded: () -> Unit = {}
+    onExpanded: () -> Unit = {},
+    canDismiss: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val state =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { canDismiss }
+        )
     LaunchedEffect(state.isVisible) {
         if (state.isVisible) {
             onExpanded()
@@ -66,11 +73,15 @@ fun BottomSheet(
                 .padding(top = 12.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            CloseButton(modifier = Modifier.align(Alignment.End)) {
-                scope.launch {
-                    state.hide()
-                    onDismissRequest()
+            if (canDismiss) {
+                CloseButton(modifier = Modifier.align(Alignment.End)) {
+                    scope.launch {
+                        state.hide()
+                        onDismissRequest()
+                    }
                 }
+            } else {
+                Spacer(Modifier.height(20.dp))
             }
             title?.let {
                 Text(

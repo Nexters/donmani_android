@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -47,7 +48,7 @@ internal fun StarBottle(
         show = true
     }
     GravitySensor { (x, y) ->
-        simulation.setGravity(Offset(-x, y).times(3f))
+        simulation.setGravity(Offset(-x, y).times(6f))
     }
     PhysicsLayout(
         modifier = modifier, simulation = simulation, shape = bottleShape
@@ -86,7 +87,8 @@ private fun Ball(
                 dragConfig = DragConfig(),
             )
             .size(size)
-            .background(Color.Transparent, CircleShape),
+            .background(Color.Transparent, CircleShape)
+            .padding(0.5.dp),
         contentAlignment = Alignment.Center
     ) {
         Star(

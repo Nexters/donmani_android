@@ -5,9 +5,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -84,12 +84,12 @@ internal fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
+                .padding(vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(Modifier.height(24.dp))
             Title(text = state.nickname)
-            Spacer(Modifier.height(95.dp))
             HomeContent(
                 records = state.records,
                 newRecord = state.newRecord,
@@ -97,7 +97,6 @@ internal fun HomeScreen(
                 onClickBottle = { onClickBottle(state.records) },
             )
             HomeFooter(
-                modifier = Modifier.weight(1f),
                 hasToday = state.hasToday,
                 hasYesterday = state.hasYesterday,
                 changedCircleButtonPosition = { tooltipOffset = it },
@@ -178,7 +177,7 @@ private fun HomeContent(
         Image(
             modifier = Modifier
                 .align(Alignment.Center)
-                .graphicsLayer { alpha = 0.8f },
+                .graphicsLayer { alpha = 0.7f },
             painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
             contentDescription = null
         )
