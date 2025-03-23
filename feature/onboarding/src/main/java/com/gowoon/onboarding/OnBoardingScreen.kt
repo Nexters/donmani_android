@@ -16,6 +16,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,20 +35,54 @@ import com.gowoon.designsystem.component.RoundedButton
 import com.gowoon.designsystem.component.RoundedButtonRadius
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.onboarding.component.OnBoardingConfirmBottomSheet
 import com.gowoon.onboarding.component.SubTitle
+import kotlinx.coroutines.launch
+
+enum class Step { INTRO, GUIDE }
+enum class Route { HOME, RECORD }
 
 @Composable
-internal fun OnBoardingScreen() {
+internal fun OnBoardingScreen(
+    navigateToHome: () -> Unit,
+    navigateToRecord: () -> Unit
+) {
+    var step by remember { mutableStateOf(Step.INTRO) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var navigateRoute by remember { mutableStateOf<Route?>(null) }
+    if (showBottomSheet) {
+        OnBoardingConfirmBottomSheet {
+            showBottomSheet = false
+            navigateRoute?.let {
+                when (it) {
+                    Route.HOME -> navigateToHome()
+                    Route.RECORD -> navigateToRecord()
+                }
+            }
+        }
+    }
     Box(
         Modifier
             .fillMaxSize()
             .background(DonmaniTheme.colors.DeepBlue20)
     ) {
+        when (step) {
+            Step.INTRO -> {
+                GuideIntro { step = Step.GUIDE }
+            }
+
+            Step.GUIDE -> {
+                GuideScreen { route ->
+                    showBottomSheet = true
+                    navigateRoute = route
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun GuideIntro() {
+private fun GuideIntro(onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,16 +107,16 @@ private fun GuideIntro() {
         RoundedButton(
             modifier = Modifier.fillMaxWidth(),
             type = RoundedButtonRadius.Row,
-            label = stringResource(R.string.onboarding_intro_btn)
-        ) {
-            // TODO onClick
-        }
+            label = stringResource(R.string.onboarding_intro_btn),
+            onClick = onClick
+        )
     }
 }
 
 @Composable
-private fun GuideScreen() {
+private fun GuideScreen(onClick: (Route) -> Unit) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { 5 }
     Column(
         Modifier
@@ -131,15 +170,11 @@ private fun GuideScreen() {
                 NegativeButton(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.onboarding_btn_go_home)
-                ) {
-                    // TODO
-                }
+                ) { onClick(Route.HOME) }
                 PositiveButton(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.onboarding_btn_go_record)
-                ) {
-                    // TODO
-                }
+                ) { onClick(Route.RECORD) }
             }
         } else {
             RoundedButton(
@@ -149,7 +184,9 @@ private fun GuideScreen() {
                 type = RoundedButtonRadius.Row,
                 label = stringResource(R.string.onboarding_btn_next)
             ) {
-                // TODO onClick
+                scope.launch {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                }
             }
         }
     }
@@ -167,4 +204,10 @@ private fun Indicator(pageCount: Int, selectedIndex: Int) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun Preview() {
+    OnBoardingScreen({}) { }
 }

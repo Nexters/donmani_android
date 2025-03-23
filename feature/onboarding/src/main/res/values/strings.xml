@@ -15,4 +15,6 @@
     <string name="onboarding_btn_next">다음</string>
     <string name="onboarding_btn_go_home">홈으로</string>
     <string name="onboarding_btn_go_record">기록해 보기</string>
+    <string name="onboarding_confirm_bottomsheet_title">규칙은 설정 페이지에서\n언제든지 다시 볼 수 있어!</string>
+    <string name="onboarding_confirm_bottomsheet_btn">확인했어요</string>
 </resources>
