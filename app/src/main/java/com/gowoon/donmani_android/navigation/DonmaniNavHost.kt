@@ -46,12 +46,18 @@ fun DonmaniNavHost(
         modifier = modifier
     ) {
         splashScreen(
-            navigateToHome = { navController.navigateToHome(SplashNavigationRoute) },
+            navigateToHome = navController::navigateToHome,
             navigateToOnBoarding = navController::navigateToOnBoarding
         )
         onBoardingScreen(
-            navigateToHome = { navController.navigateToHome(it) },
-            navigateToRecord = { navController.navigateToRecord(false, false) }
+            navigateToHome = navController::navigateToHome,
+            navigateToRecord = {
+                navController.navigateToRecord(
+                    hasTodayRecord = false,
+                    hasYesterdayRecord = false,
+                    fromStart = true
+                )
+            }
         )
         homeScreen(
             navigateToSetting = navController::navigateToSetting,
@@ -66,7 +72,9 @@ fun DonmaniNavHost(
             }
         )
         recordGraph(
+            navController = navController,
             onClickBack = navController::popBackStack,
+            navigateToHome = navController::navigateToHome,
             navigateToRecordInput = {
                 navController.navigateToRecordInput(type = it)
             },

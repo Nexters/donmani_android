@@ -9,11 +9,10 @@ import com.gowoon.model.record.Record
 const val MainToHomeArgumentKey = "mainToHome"
 const val homeNavigationRoute = "home_route"
 
-fun NavController.navigateToHome(from: String? = null) {
+fun NavController.navigateToHome() {
     navigate(route = homeNavigationRoute) {
-        from?.let {
-            popUpTo(it) { inclusive = true }
-        }
+        popUpTo(0) { inclusive = true }
+        launchSingleTop = true
     }
 }
 

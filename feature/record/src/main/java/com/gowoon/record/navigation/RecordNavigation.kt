@@ -17,9 +17,14 @@ data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRe
 
 fun NavController.navigateToRecord(
     hasTodayRecord: Boolean,
-    hasYesterdayRecord: Boolean
+    hasYesterdayRecord: Boolean,
+    fromStart: Boolean = false
 ) {
-    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord))
+    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord)) {
+        if (fromStart) {
+            popUpTo(graph.startDestinationId) { inclusive = true }
+        }
+    }
 }
 
 fun NavController.navigateToRecordAndPopUpTo() {
@@ -44,7 +49,9 @@ fun NavController.navigateToRecordInput(
 }
 
 fun NavGraphBuilder.recordGraph(
+    navController: NavController,
     onClickBack: () -> Unit,
+    navigateToHome: () -> Unit,
     navigateToRecordInput: (ConsumptionType) -> Unit,
     navigateToRecordInputWithData: (Consumption) -> Unit,
     popBackStackWithArgument: (key: String, data: String) -> Unit,
@@ -52,7 +59,9 @@ fun NavGraphBuilder.recordGraph(
     composable<RecordNavigationRoute> { backStackEntry ->
         val result = backStackEntry.savedStateHandle.get<String>(InputToMainArgumentKey)
         RecordMainScreen(
+            navController = navController,
             resultFromInput = result,
+            navgateToHome = navigateToHome,
             onClickBack = onClickBack,
             onClickAdd = navigateToRecordInput,
             onClickEdit = navigateToRecordInputWithData,

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CheckBoxWithTitle
@@ -61,7 +62,9 @@ import kotlinx.serialization.json.Json
 internal fun RecordMainScreen(
     viewModel: RecordMainViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
+    navController: NavController,
     resultFromInput: String? = null,
+    navgateToHome: () -> Unit,
     onClickBack: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
     onClickEdit: (Consumption) -> Unit,
@@ -81,6 +84,18 @@ internal fun RecordMainScreen(
         }
     }
 
+    val onClickBackEvent = {
+        if (viewModel.startToRecord()) {
+            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+        } else {
+            if (navController.previousBackStackEntry == null) {
+                navgateToHome()
+            } else {
+                onClickBack()
+            }
+        }
+    }
+
     LaunchedEffect(resultFromInput) {
         resultFromInput?.let {
             viewModel.setEvent(
@@ -94,11 +109,7 @@ internal fun RecordMainScreen(
     }
 
     BackHandler {
-        if (viewModel.startToRecord()) {
-            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
-        } else {
-            onClickBack()
-        }
+        onClickBackEvent()
     }
 
     if (state.showConfirm) {
@@ -119,20 +130,16 @@ internal fun RecordMainScreen(
         }
     } else {
         TransparentScaffold(topBar = {
-            AppBar(onClickNavigation = {
-                if (viewModel.startToRecord()) {
-                    viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
-                } else {
-                    onClickBack()
-                }
-            }, actionButton = {
-                TodayYesterdayToggle(options = EntryDay.entries.filter {
-                    state.records.containsKey(
-                        it.name
-                    )
-                }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
-                ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
-            })
+            AppBar(
+                onClickNavigation = onClickBackEvent,
+                actionButton = {
+                    TodayYesterdayToggle(options = EntryDay.entries.filter {
+                        state.records.containsKey(
+                            it.name
+                        )
+                    }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
+                    ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
+                })
         }) { padding ->
             val scrollState = rememberScrollState()
 

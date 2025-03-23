@@ -12,12 +12,12 @@ fun NavController.navigateToOnBoarding() {
 }
 
 fun NavGraphBuilder.onBoardingScreen(
-    navigateToHome: (String) -> Unit,
+    navigateToHome: () -> Unit,
     navigateToRecord: () -> Unit
 ) {
     composable(route = OnBoardingNavigationRoute) {
         OnBoardingScreen(
-            navigateToHome = { navigateToHome(OnBoardingNavigationRoute) },
+            navigateToHome = navigateToHome,
             navigateToRecord = navigateToRecord
         )
     }
