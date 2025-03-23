@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.feature.setting)
     implementation(projects.feature.recordlist)
     implementation(projects.feature.onboarding)
+    implementation(projects.feature.splash)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)

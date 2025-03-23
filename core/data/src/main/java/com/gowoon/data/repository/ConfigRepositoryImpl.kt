@@ -43,4 +43,16 @@ class ConfigRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+    override suspend fun getOnBoardingState(): Result<Boolean> = try {
+        Result.Success(configDataSource.getOnBoardingState())
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun setOnBoardingState(state: Boolean): Result<Unit> = try {
+        Result.Success(configDataSource.setOnBoardingState(state))
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
 }

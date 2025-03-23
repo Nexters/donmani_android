@@ -19,7 +19,6 @@ fun NavController.navigateToHome(from: String? = null) {
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
-    navigateToCalendar: () -> Unit,
     navigateToRecord: (Boolean, Boolean) -> Unit,
     navigateToRecordList: (list: List<Record>) -> Unit
 ) {

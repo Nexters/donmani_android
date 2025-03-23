@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -65,6 +66,7 @@ internal fun OnBoardingScreen(
         Modifier
             .fillMaxSize()
             .background(DonmaniTheme.colors.DeepBlue20)
+            .safeDrawingPadding()
     ) {
         when (step) {
             Step.INTRO -> {
