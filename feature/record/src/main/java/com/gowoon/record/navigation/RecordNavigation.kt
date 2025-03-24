@@ -62,7 +62,6 @@ fun NavGraphBuilder.recordGraph(
             navController = navController,
             resultFromInput = result,
             navigateToHome = { navigateToHome(null) },
-            onClickBack = onClickBack,
             onClickAdd = navigateToRecordInput,
             onClickEdit = navigateToRecordInputWithData,
             onSave = navigateToHome

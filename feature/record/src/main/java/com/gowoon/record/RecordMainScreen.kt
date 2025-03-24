@@ -47,7 +47,6 @@ import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
-import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.BBSRuleBottomSheet
 import com.gowoon.ui.component.ConsumptionCard
@@ -65,7 +64,6 @@ internal fun RecordMainScreen(
     navController: NavController,
     resultFromInput: String? = null,
     navigateToHome: () -> Unit,
-    onClickBack: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
     onClickEdit: (Consumption) -> Unit,
     onSave: (String) -> Unit
@@ -88,11 +86,7 @@ internal fun RecordMainScreen(
         if (viewModel.startToRecord()) {
             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
         } else {
-            if (navController.previousBackStackEntry == null) {
-                navigateToHome()
-            } else {
-                onClickBack()
-            }
+            navigateToHome()
         }
     }
 
@@ -162,7 +156,7 @@ internal fun RecordMainScreen(
 
                     RecordMainDialogType.EXIT_WARNING -> {
                         ExitWarningBottomSheet(onClick = { isPositive ->
-                            if (isPositive) onClickBack()
+                            if (isPositive) navigateToHome()
                         }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }

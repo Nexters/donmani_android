@@ -44,7 +44,7 @@ internal fun RecordListScreen(
     TransparentScaffold(
         topBar = {
             AppBar(
-                title = stringResource(R.string.appbar_title),
+                title = stringResource(R.string.record_list_appbar_title),
                 onClickNavigation = onClickBack
             )
         }

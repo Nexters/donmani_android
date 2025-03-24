@@ -18,18 +18,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
 import com.gowoon.designsystem.component.RoundedButton
@@ -37,24 +35,24 @@ import com.gowoon.designsystem.component.RoundedButtonRadius
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.onboarding.component.OnBoardingConfirmBottomSheet
+import com.gowoon.onboarding.component.OnBoardingEvent
+import com.gowoon.onboarding.component.OnBoardingViewModel
+import com.gowoon.onboarding.component.Route
+import com.gowoon.onboarding.component.Step
 import com.gowoon.onboarding.component.SubTitle
 import kotlinx.coroutines.launch
 
-enum class Step { INTRO, GUIDE }
-enum class Route { HOME, RECORD }
-
 @Composable
 internal fun OnBoardingScreen(
+    viewModel: OnBoardingViewModel = hiltViewModel(),
     navigateToHome: () -> Unit,
     navigateToRecord: () -> Unit
 ) {
-    var step by remember { mutableStateOf(Step.INTRO) }
-    var showBottomSheet by remember { mutableStateOf(false) }
-    var navigateRoute by remember { mutableStateOf<Route?>(null) }
-    if (showBottomSheet) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    if (state.showBottomSheet) {
         OnBoardingConfirmBottomSheet {
-            showBottomSheet = false
-            navigateRoute?.let {
+            viewModel.setEvent(OnBoardingEvent.ShowBottomSheet(false))
+            state.route?.let {
                 when (it) {
                     Route.HOME -> navigateToHome()
                     Route.RECORD -> navigateToRecord()
@@ -68,15 +66,15 @@ internal fun OnBoardingScreen(
             .background(DonmaniTheme.colors.DeepBlue20)
             .safeDrawingPadding()
     ) {
-        when (step) {
+        when (state.step) {
             Step.INTRO -> {
-                GuideIntro { step = Step.GUIDE }
+                GuideIntro { viewModel.setEvent(OnBoardingEvent.GoToGuide) }
             }
 
             Step.GUIDE -> {
                 GuideScreen { route ->
-                    showBottomSheet = true
-                    navigateRoute = route
+                    viewModel.setEvent(OnBoardingEvent.ShowBottomSheet(true))
+                    viewModel.setEvent(OnBoardingEvent.UpdateNextRoute(route))
                 }
             }
         }
@@ -206,10 +204,4 @@ private fun Indicator(pageCount: Int, selectedIndex: Int) {
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    OnBoardingScreen({}) { }
 }

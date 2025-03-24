@@ -68,7 +68,7 @@ internal fun SettingScreen(
     TransparentScaffold(
         topBar = {
             AppBar(
-                title = stringResource(R.string.appbar_title),
+                title = stringResource(R.string.setting_appbar_title),
                 onClickNavigation = onClickBack
             )
         }
