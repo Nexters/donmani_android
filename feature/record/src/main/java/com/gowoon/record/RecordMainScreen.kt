@@ -72,7 +72,7 @@ internal fun RecordMainScreen(
                 when (record) {
                     is NoConsumption -> true
                     is ConsumptionRecord -> {
-                        record.goodRecord != null && record.badRecord != null
+                        record.goodRecord != null || record.badRecord != null
                     }
                 }
             } ?: false
@@ -182,7 +182,6 @@ internal fun RecordMainScreen(
                         RecordMainContent(
                             modifier = Modifier.padding(bottom = 140.dp),
                             record = it,
-                            finishToRecord = finishToRecord,
                             showTooltip = state.showTooltip,
                             onClickCheckBox = { checked ->
                                 if (checked) {
@@ -227,7 +226,6 @@ internal fun RecordMainScreen(
 private fun RecordMainContent(
     modifier: Modifier = Modifier,
     record: Record,
-    finishToRecord: Boolean,
     showTooltip: Boolean,
     onClickCheckBox: (Boolean) -> Unit,
     onClickEmptyBox: (ConsumptionType) -> Unit,
@@ -241,7 +239,7 @@ private fun RecordMainContent(
             }
 
             is ConsumptionRecord -> {
-                if (finishToRecord) {
+                if (record.goodRecord != null && record.badRecord != null) {
                     RecordCard(
                         record = record, onClickEdit = onClickEdit
                     )

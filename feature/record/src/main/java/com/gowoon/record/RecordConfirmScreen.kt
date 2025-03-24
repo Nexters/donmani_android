@@ -30,6 +30,7 @@ import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
 
@@ -63,10 +64,19 @@ internal fun RecordConfirmScreen(
                 }
 
                 is ConsumptionRecord -> {
-                    RecordCard(
-                        record = record,
-                        showEdit = false
-                    ) { }
+                    if (record.goodRecord != null && record.badRecord != null) {
+                        RecordCard(
+                            record = record,
+                            showEdit = false
+                        ) { }
+                    } else {
+                        record.goodRecord?.let {
+                            ConsumptionCard(consumption = it) { }
+                        }
+                        record.badRecord?.let {
+                            ConsumptionCard(consumption = it) { }
+                        }
+                    }
                 }
             }
         }
