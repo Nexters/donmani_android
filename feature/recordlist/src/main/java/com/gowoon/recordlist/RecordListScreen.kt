@@ -30,6 +30,7 @@ import com.gowoon.domain.util.toKorean
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
 import com.gowoon.ui.component.Star
@@ -104,10 +105,19 @@ private fun RecordListItem(record: Record) {
             }
 
             is ConsumptionRecord -> {
-                RecordCard(
-                    record = record,
-                    showEdit = false
-                ) { }
+                if (record.goodRecord != null && record.badRecord != null) {
+                    RecordCard(
+                        record = record,
+                        showEdit = false
+                    ) { }
+                } else {
+                    record.goodRecord?.let {
+                        ConsumptionCard(consumption = it, showEdit = false) { }
+                    }
+                    record.badRecord?.let {
+                        ConsumptionCard(consumption = it, showEdit = false) { }
+                    }
+                }
             }
         }
     }

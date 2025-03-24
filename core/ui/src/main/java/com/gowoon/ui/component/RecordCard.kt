@@ -129,6 +129,7 @@ fun EmptyCard(
 fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption,
+    showEdit: Boolean = true,
     onClickEdit: (Consumption) -> Unit
 ) {
     Card(
@@ -145,6 +146,7 @@ fun ConsumptionCard(
             title = consumption.category.getTitle(consumption.type),
             category = consumption.category,
             memo = consumption.description,
+            showEdit = showEdit,
             onClickEdit = { onClickEdit(consumption) }
         )
     }
