@@ -48,7 +48,8 @@ fun BottomSheet(
     onDismissRequest: () -> Unit,
     onExpanded: () -> Unit = {},
     canDismiss: Boolean = true,
-    snackbarHostState: SnackbarHostState? = null
+    snackbarHostState: SnackbarHostState? = null,
+    isSpaceBetweenBtn: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     val state =
@@ -74,7 +75,7 @@ fun BottomSheet(
                 .padding(horizontal = DonmaniTheme.dimens.Margin20)
                 .padding(top = 12.dp, bottom = 8.dp),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column {
                 if (canDismiss) {
                     CloseButton(modifier = Modifier.align(Alignment.End)) {
                         scope.launch {
@@ -85,6 +86,7 @@ fun BottomSheet(
                 } else {
                     Spacer(Modifier.height(20.dp))
                 }
+                Spacer(Modifier.height(24.dp))
                 title?.let {
                     Text(
                         text = it,
@@ -92,19 +94,24 @@ fun BottomSheet(
                         style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold)
                     )
                 }
+                Spacer(Modifier.height(24.dp))
                 content {
                     scope.launch {
                         state.hide()
                         onDismissRequest()
                     }
                 }
+                if (isSpaceBetweenBtn) Spacer(Modifier.height(24.dp))
                 buttonType?.let {
                     when (buttonType) {
                         is BottomSheetButtonType.Single -> {
                             RoundedButton(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
+                                    .padding(
+                                        bottom = 8.dp,
+                                        top = if (isSpaceBetweenBtn) 8.dp else 0.dp
+                                    ),
                                 type = RoundedButtonRadius.Row,
                                 label = buttonType.title,
                                 enable = buttonType.enable,

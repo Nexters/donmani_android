@@ -46,9 +46,7 @@ import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
-import com.gowoon.record.navigation.MainToHomeArgumentKey
 import com.gowoon.ui.TransparentScaffold
-import com.gowoon.ui.component.BBSRuleBottomSheet
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
@@ -62,10 +60,10 @@ internal fun RecordMainScreen(
     viewModel: RecordMainViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromInput: String? = null,
-    onClickBack: () -> Unit,
+    navigateToHome: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
     onClickEdit: (Consumption) -> Unit,
-    onSave: (String, String) -> Unit
+    onSave: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val finishToRecord by remember {
@@ -78,6 +76,14 @@ internal fun RecordMainScreen(
                     }
                 }
             } ?: false
+        }
+    }
+
+    val onClickBackEvent = {
+        if (viewModel.startToRecord()) {
+            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+        } else {
+            navigateToHome()
         }
     }
 
@@ -94,11 +100,7 @@ internal fun RecordMainScreen(
     }
 
     BackHandler {
-        if (viewModel.startToRecord()) {
-            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
-        } else {
-            onClickBack()
-        }
+        onClickBackEvent()
     }
 
     if (state.showConfirm) {
@@ -109,7 +111,7 @@ internal fun RecordMainScreen(
                 if (it) {
                     viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
                         if (succeed) {
-                            onSave(MainToHomeArgumentKey, json.encodeToString(record))
+                            onSave(json.encodeToString(record))
                         }
                     })
                 } else {
@@ -119,26 +121,18 @@ internal fun RecordMainScreen(
         }
     } else {
         TransparentScaffold(topBar = {
-            AppBar(onClickNavigation = {
-                if (viewModel.startToRecord()) {
-                    viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
-                } else {
-                    onClickBack()
-                }
-            }, actionButton = {
-                TodayYesterdayToggle(options = EntryDay.entries.filter {
-                    state.records.containsKey(
-                        it.name
-                    )
-                }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
-                ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
-            })
+            AppBar(
+                onClickNavigation = onClickBackEvent,
+                actionButton = {
+                    TodayYesterdayToggle(options = EntryDay.entries.filter {
+                        state.records.containsKey(
+                            it.name
+                        )
+                    }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
+                    ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
+                })
         }) { padding ->
             val scrollState = rememberScrollState()
-
-            if (state.showRuleBottomSheet) {
-                BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
-            }
             state.showBottomSheet?.let {
                 when (it) {
                     RecordMainDialogType.NO_CONSUMPTION -> {
@@ -155,7 +149,7 @@ internal fun RecordMainScreen(
 
                     RecordMainDialogType.EXIT_WARNING -> {
                         ExitWarningBottomSheet(onClick = { isPositive ->
-                            if (isPositive) onClickBack()
+                            if (isPositive) navigateToHome()
                         }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }

@@ -6,8 +6,8 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.gowoon.donmani_android.navigation.splashNavigationRoute
 import com.gowoon.home.navigation.homeNavigationRoute
+import com.gowoon.splash.navigation.SplashNavigationRoute
 
 @Composable
 fun rememberAppState(navController: NavController): AppState =
@@ -21,5 +21,5 @@ class AppState(private val navController: NavController) {
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     val isBeforeHome: Boolean
-        @Composable get() = (currentDestination?.route == homeNavigationRoute || currentDestination?.route == splashNavigationRoute)
+        @Composable get() = (currentDestination?.route == homeNavigationRoute || currentDestination?.route == SplashNavigationRoute)
 }
