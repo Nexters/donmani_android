@@ -1,5 +1,6 @@
 package com.gowoon.ui.component
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -129,7 +131,13 @@ fun ConsumptionCard(
     onClickEdit: (Consumption) -> Unit
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = 2.dp,
+                color = Color.White.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(24.dp)
+            ),
         backgroundColor = consumption.category.getColor().copy(alpha = 0.5f)
     ) {
         ConsumptionContent(
@@ -152,7 +160,13 @@ fun RecordCard(
     record.goodRecord?.let { good ->
         record.badRecord?.let { bad ->
             Card(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 2.dp,
+                        color = Color.White.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(24.dp)
+                    ),
                 backgroundColor = Brush.linearGradient(
                     listOf(
                         good.category.getColor().copy(alpha = 0.5f),
@@ -187,7 +201,12 @@ fun NoConsumptionCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .border(
+                width = 2.dp,
+                color = Color.White.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(24.dp)
+            ),
         backgroundColor = getNoConsumptionColor()
     ) {
         Column(

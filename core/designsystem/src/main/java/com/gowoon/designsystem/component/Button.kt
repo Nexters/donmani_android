@@ -103,7 +103,7 @@ fun BaseRoundedButton(
             modifier = Modifier.align(Alignment.Center),
             text = label,
             color = contentColor,
-            style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold)
+            style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -76,7 +77,7 @@ private fun CategoryGrid(
             CategoryGridItem(
                 type = type,
                 category = it,
-                selected == it,
+                selected = selected,
                 onClickItem = onClickItem
             )
         }
@@ -87,7 +88,7 @@ private fun CategoryGrid(
 private fun CategoryGridItem(
     type: ConsumptionType,
     category: Category,
-    selected: Boolean = false,
+    selected: Category?,
     onClickItem: (Category) -> Unit
 ) {
     Column(
@@ -96,12 +97,13 @@ private fun CategoryGridItem(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         CategorySelectChip(
+            modifier = Modifier.alpha(if (selected == null || category == selected) 1f else 0.4f),
             category = category,
-            selected = selected
+            selected = category == selected
         )
         Text(
             text = category.getTitle(type),
-            color = if (selected) DonmaniTheme.colors.DeepBlue99 else DonmaniTheme.colors.DeepBlue90,
+            color = if (category == selected) DonmaniTheme.colors.DeepBlue99 else DonmaniTheme.colors.DeepBlue90,
             style = DonmaniTheme.typography.Body2.copy(fontWeight = FontWeight.SemiBold)
         )
     }
