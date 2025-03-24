@@ -41,8 +41,8 @@ internal fun SplashScreen(
         delay(200)
         navigate = true
     }
-    LaunchedEffect(navigate, state.nextRoute) {
-        if (navigate) {
+    LaunchedEffect(navigate, state.nextRoute, state.registerSucceed) {
+        if (navigate && state.registerSucceed) {
             state.nextRoute?.let {
                 when (it) {
                     Route.Home -> navigateToHome()

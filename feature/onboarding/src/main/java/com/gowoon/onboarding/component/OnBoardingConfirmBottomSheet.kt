@@ -26,6 +26,6 @@ internal fun OnBoardingConfirmBottomSheet(
         },
         onDismissRequest = onDismissRequest,
         canDismiss = false,
-        isSpaceBetweenBtn = true
+        isSpaceBetweenBtn = false
     )
 }

@@ -49,7 +49,7 @@ fun BottomSheet(
     onExpanded: () -> Unit = {},
     canDismiss: Boolean = true,
     snackbarHostState: SnackbarHostState? = null,
-    isSpaceBetweenBtn: Boolean = false
+    isSpaceBetweenBtn: Boolean = true
 ) {
     val scope = rememberCoroutineScope()
     val state =
@@ -101,14 +101,17 @@ fun BottomSheet(
                         onDismissRequest()
                     }
                 }
-                if(isSpaceBetweenBtn) Spacer(Modifier.height(24.dp))
+                if (isSpaceBetweenBtn) Spacer(Modifier.height(24.dp))
                 buttonType?.let {
                     when (buttonType) {
                         is BottomSheetButtonType.Single -> {
                             RoundedButton(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
+                                    .padding(
+                                        bottom = 8.dp,
+                                        top = if (isSpaceBetweenBtn) 8.dp else 0.dp
+                                    ),
                                 type = RoundedButtonRadius.Row,
                                 label = buttonType.title,
                                 enable = buttonType.enable,

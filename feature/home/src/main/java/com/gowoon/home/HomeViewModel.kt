@@ -7,9 +7,7 @@ import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
-import com.gowoon.domain.usecase.user.GetRegistrationStateUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
-import com.gowoon.domain.usecase.user.RegisterUserUseCase
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filter
@@ -21,17 +19,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getRegistrationStateUseCase: GetRegistrationStateUseCase,
-    private val registerUserUseCase: RegisterUserUseCase,
     private val getUserNicknameUseCase: GetUserNicknameUseCase,
     private val getRecordListUseCase: GetRecordListUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
+
     override fun createInitialState(): HomeState {
         return HomeState()
     }
 
     init {
-        registerUser()
         initialState()
     }
 
@@ -49,24 +45,6 @@ class HomeViewModel @Inject constructor(
                     )
                 )
                 setEffect(HomeEffect.RefreshTrigger)
-            }
-        }
-    }
-
-    private fun registerUser() {
-        viewModelScope.launch {
-            when (val state = getRegistrationStateUseCase()) {
-                is Result.Success -> {
-                    if (!state.data) {
-                        if (registerUserUseCase() is Result.Error) {
-                            // TODO error handling
-                        }
-                    }
-                }
-
-                is Result.Error -> {
-                    // TODO error handling
-                }
             }
         }
     }

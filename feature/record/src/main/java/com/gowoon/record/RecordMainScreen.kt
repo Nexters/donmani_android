@@ -64,11 +64,11 @@ internal fun RecordMainScreen(
     @FeatureJson json: Json = rememberHiltJson(),
     navController: NavController,
     resultFromInput: String? = null,
-    navgateToHome: () -> Unit,
+    navigateToHome: () -> Unit,
     onClickBack: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
     onClickEdit: (Consumption) -> Unit,
-    onSave: (String, String) -> Unit
+    onSave: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val finishToRecord by remember {
@@ -89,7 +89,7 @@ internal fun RecordMainScreen(
             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
         } else {
             if (navController.previousBackStackEntry == null) {
-                navgateToHome()
+                navigateToHome()
             } else {
                 onClickBack()
             }
@@ -120,7 +120,7 @@ internal fun RecordMainScreen(
                 if (it) {
                     viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
                         if (succeed) {
-                            onSave(MainToHomeArgumentKey, json.encodeToString(record))
+                            onSave(json.encodeToString(record))
                         }
                     })
                 } else {

@@ -51,7 +51,7 @@ fun NavController.navigateToRecordInput(
 fun NavGraphBuilder.recordGraph(
     navController: NavController,
     onClickBack: () -> Unit,
-    navigateToHome: () -> Unit,
+    navigateToHome: (data: String?) -> Unit,
     navigateToRecordInput: (ConsumptionType) -> Unit,
     navigateToRecordInputWithData: (Consumption) -> Unit,
     popBackStackWithArgument: (key: String, data: String) -> Unit,
@@ -61,11 +61,11 @@ fun NavGraphBuilder.recordGraph(
         RecordMainScreen(
             navController = navController,
             resultFromInput = result,
-            navgateToHome = navigateToHome,
+            navigateToHome = { navigateToHome(null) },
             onClickBack = onClickBack,
             onClickAdd = navigateToRecordInput,
             onClickEdit = navigateToRecordInputWithData,
-            onSave = popBackStackWithArgument
+            onSave = navigateToHome
         )
     }
     composable<RecordInputNavigationRoute> {
