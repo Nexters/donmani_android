@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CheckBoxWithTitle
@@ -48,7 +47,6 @@ import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
 import com.gowoon.ui.TransparentScaffold
-import com.gowoon.ui.component.BBSRuleBottomSheet
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
@@ -61,7 +59,6 @@ import kotlinx.serialization.json.Json
 internal fun RecordMainScreen(
     viewModel: RecordMainViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
-    navController: NavController,
     resultFromInput: String? = null,
     navigateToHome: () -> Unit,
     onClickAdd: (ConsumptionType) -> Unit,
@@ -136,10 +133,6 @@ internal fun RecordMainScreen(
                 })
         }) { padding ->
             val scrollState = rememberScrollState()
-
-            if (state.showRuleBottomSheet) {
-                BBSRuleBottomSheet { viewModel.setEvent(RecordMainEvent.HideBBSRuleSheet) }
-            }
             state.showBottomSheet?.let {
                 when (it) {
                     RecordMainDialogType.NO_CONSUMPTION -> {

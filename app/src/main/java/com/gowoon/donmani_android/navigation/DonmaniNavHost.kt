@@ -72,7 +72,6 @@ fun DonmaniNavHost(
             }
         )
         recordGraph(
-            navController = navController,
             onClickBack = navController::popBackStack,
             navigateToHome = navController::navigateToHome,
             navigateToRecordInput = {

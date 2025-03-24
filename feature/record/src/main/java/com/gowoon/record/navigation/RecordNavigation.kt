@@ -49,7 +49,6 @@ fun NavController.navigateToRecordInput(
 }
 
 fun NavGraphBuilder.recordGraph(
-    navController: NavController,
     onClickBack: () -> Unit,
     navigateToHome: (data: String?) -> Unit,
     navigateToRecordInput: (ConsumptionType) -> Unit,
@@ -59,7 +58,6 @@ fun NavGraphBuilder.recordGraph(
     composable<RecordNavigationRoute> { backStackEntry ->
         val result = backStackEntry.savedStateHandle.get<String>(InputToMainArgumentKey)
         RecordMainScreen(
-            navController = navController,
             resultFromInput = result,
             navigateToHome = { navigateToHome(null) },
             onClickAdd = navigateToRecordInput,

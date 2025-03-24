@@ -27,23 +27,6 @@ class ConfigRepositoryImpl @Inject constructor(
             Result.Error(message = e.message)
         }
 
-    override suspend fun getBBSRuleSheetState(): Flow<Result<Boolean>> =
-        try {
-            configDataSource.getBBSRuleSheetState().map {
-                Result.Success(it)
-            }
-        } catch (e: Exception) {
-            flow { emit(Result.Error(message = e.message)) }
-        }
-
-
-    override suspend fun setBBSRuleSheetState(state: Boolean): Result<Unit> =
-        try {
-            configDataSource.setBBSRuleSheetState(state).let { Result.Success(Unit) }
-        } catch (e: Exception) {
-            Result.Error(message = e.message)
-        }
-
     override suspend fun getOnBoardingState(): Result<Boolean> = try {
         Result.Success(configDataSource.getOnBoardingState())
     } catch (e: Exception) {

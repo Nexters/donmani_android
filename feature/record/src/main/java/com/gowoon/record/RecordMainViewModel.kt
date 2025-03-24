@@ -8,9 +8,7 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
-import com.gowoon.domain.usecase.config.HideBBSRuleSheetUseCase
 import com.gowoon.domain.usecase.config.HideNoConsumptionTooltipUseCase
-import com.gowoon.domain.usecase.config.ShowBBSRuleSheetUseCase
 import com.gowoon.domain.usecase.config.ShowNoConsumptionTooltipUseCase
 import com.gowoon.domain.usecase.record.SaveRecordUseCase
 import com.gowoon.model.common.EntryDay
@@ -35,8 +33,6 @@ internal class RecordMainViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val showNoConsumptionTooltipUseCase: ShowNoConsumptionTooltipUseCase,
     private val hideNoConsumptionTooltipUseCase: HideNoConsumptionTooltipUseCase,
-    private val showBBSRuleSheetUseCase: ShowBBSRuleSheetUseCase,
-    private val hideBBSRuleSheetUseCase: HideBBSRuleSheetUseCase,
     private val saveRecordUseCase: SaveRecordUseCase
 ) : BaseViewModel<RecordMainState, RecordMainEvent, RecordMainEffect>() {
     override fun createInitialState(): RecordMainState = RecordMainState()
@@ -80,10 +76,6 @@ internal class RecordMainViewModel @Inject constructor(
                 requestSaveRecord(event.record, event.callback)
             }
 
-            is RecordMainEvent.HideBBSRuleSheet -> {
-                hideBBSRuleSheet()
-            }
-
             is RecordMainEvent.ShowBottomSheet -> {
                 setState(currentState.copy(showBottomSheet = event.show))
             }
@@ -119,19 +111,6 @@ internal class RecordMainViewModel @Inject constructor(
                 when (it) {
                     is Result.Success -> {
                         setState(currentState.copy(showTooltip = it.data))
-                    }
-
-                    is Result.Error -> {
-                        // TODO error handling
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            showBBSRuleSheetUseCase().stateIn(this).collect {
-                when (it) {
-                    is Result.Success -> {
-                        setState(currentState.copy(showRuleBottomSheet = it.data))
                     }
 
                     is Result.Error -> {
@@ -178,14 +157,6 @@ internal class RecordMainViewModel @Inject constructor(
     private fun hideTooltip() {
         viewModelScope.launch {
             if (hideNoConsumptionTooltipUseCase() is Result.Error) {
-                // TODO error handling
-            }
-        }
-    }
-
-    private fun hideBBSRuleSheet() {
-        viewModelScope.launch {
-            if (hideBBSRuleSheetUseCase() is Result.Error) {
                 // TODO error handling
             }
         }
@@ -250,7 +221,6 @@ data class RecordMainState(
     val records: Map<String, Record> = mapOf(),
     val selectedDay: EntryDay = EntryDay.Today,
     val showTooltip: Boolean = false,
-    val showRuleBottomSheet: Boolean = false,
     val showConfirm: Boolean = false,
     val showBottomSheet: RecordMainDialogType? = null,
     val remainTime: Int? = null
@@ -265,7 +235,6 @@ sealed interface RecordMainEvent : UiEvent {
     data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent
     data class ShowConfirm(val show: Boolean) : RecordMainEvent
     data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent
-    data object HideBBSRuleSheet : RecordMainEvent
     data class ShowBottomSheet(val show: RecordMainDialogType?) : RecordMainEvent
 }
 

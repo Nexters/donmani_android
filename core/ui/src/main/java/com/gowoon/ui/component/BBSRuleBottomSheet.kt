@@ -2,11 +2,8 @@ package com.gowoon.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.BottomSheet
@@ -32,12 +29,6 @@ fun BBSRuleBottomSheet(
 private fun BBSRuleContent() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         bbsRule.forEach { BBSRuleItem(it) }
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = stringResource(R.string.bbs_rule_bottom_sheet_additional_msg),
-            color = DonmaniTheme.colors.DeepBlue90,
-            style = DonmaniTheme.typography.Body2
-        )
     }
 }
 

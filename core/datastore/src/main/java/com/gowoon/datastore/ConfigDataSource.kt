@@ -15,7 +15,6 @@ class ConfigDataSource @Inject constructor(
 ) {
     companion object {
         private val NO_CONSUMPTION_TOOLTIP_KEY = booleanPreferencesKey("no_consumption_tooltip_key")
-        private val BBS_RULE_SHEET_KEY = booleanPreferencesKey("bbs_rule_sheet_key")
         private val ON_BOARDING_KEY = booleanPreferencesKey("onboarding_key")
     }
 
@@ -26,16 +25,6 @@ class ConfigDataSource @Inject constructor(
     suspend fun setNoConsumptionTooltipState(state: Boolean) {
         datastore.edit { preference ->
             preference[NO_CONSUMPTION_TOOLTIP_KEY] = state
-        }
-    }
-
-    fun getBBSRuleSheetState(): Flow<Boolean> = datastore.data.map { preference ->
-        preference[BBS_RULE_SHEET_KEY] ?: true
-    }
-
-    suspend fun setBBSRuleSheetState(state: Boolean) {
-        datastore.edit { preference ->
-            preference[BBS_RULE_SHEET_KEY] = state
         }
     }
 
