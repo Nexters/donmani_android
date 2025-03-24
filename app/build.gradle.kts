@@ -35,7 +35,7 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.record)
     implementation(projects.feature.setting)
-    implementation(projects.feature.recordlist)
+    implementation(projects.feature.summary)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.splash)
     implementation(projects.feature.starbottlelist)
