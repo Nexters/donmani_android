@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 sealed interface Category
 
 @Serializable
-enum class GoodCategory(val title: String) : Category {
+enum class GoodCategory(val title: String, val deleted: Boolean = false) : Category {
     ENERGY("활력"),
     GROWTH("성장"),
     HEALING("힐링"),
@@ -15,11 +15,12 @@ enum class GoodCategory(val title: String) : Category {
     DIGNITY("품위유지"),
     AFFECTION("마음전달"),
     HEALTH("건강"),
-    NONE("없음")
+    SAVING("절약"),
+    NONE("없음", true)
 }
 
 @Serializable
-enum class BadCategory(val title: String) : Category {
+enum class BadCategory(val title: String, val deleted: Boolean = false) : Category {
     GREED("욕심"),
     ADDICTION("중독"),
     LAZINESS("게으름"),
@@ -28,7 +29,8 @@ enum class BadCategory(val title: String) : Category {
     BOASTFULNESS("과시"),
     HABIT("습관반복"),
     OVERFRUGALITY("과한절약"),
-    NONE("없음")
+    MISS("선택미스"),
+    NONE("없음", true)
 }
 
 fun Category.getTitle(type: ConsumptionType): String = when (type) {

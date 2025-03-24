@@ -7,7 +7,7 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 
-fun ConsumptionType.getDefaultResId(): Int = when(this){
+fun ConsumptionType.getDefaultResId(): Int = when (this) {
     ConsumptionType.GOOD -> R.drawable.happy_default
     ConsumptionType.BAD -> R.drawable.regret_default
 }
@@ -23,7 +23,8 @@ fun Category.getColor(): Color = when (val category = this) {
             GoodCategory.DIGNITY -> Color(0xffC4C4FF)
             GoodCategory.AFFECTION -> Color(0xffFFB8B9)
             GoodCategory.HEALTH -> Color(0xffAAE1C8)
-            GoodCategory.NONE -> Color(0xff8E92A0)
+            GoodCategory.SAVING -> Color(0xffA4C3FF)
+            GoodCategory.NONE -> Color.Unspecified
         }
     }
 
@@ -37,7 +38,8 @@ fun Category.getColor(): Color = when (val category = this) {
             BadCategory.BOASTFULNESS -> Color(0xffFBDA92)
             BadCategory.HABIT -> Color(0xffD9CDBD)
             BadCategory.OVERFRUGALITY -> Color(0xffAAE1C8)
-            BadCategory.NONE -> Color(0xff8E92A0)
+            BadCategory.MISS -> Color(0xffA7B0CF)
+            BadCategory.NONE -> Color.Unspecified
         }
     }
 }
@@ -53,6 +55,7 @@ fun Category.getImageResId(): Int = when (val category = this) {
             GoodCategory.DIGNITY -> R.drawable.happy_dignity
             GoodCategory.AFFECTION -> R.drawable.happy_affection
             GoodCategory.HEALTH -> R.drawable.happy_health
+            GoodCategory.SAVING -> R.drawable.happy_saving
             GoodCategory.NONE -> R.drawable.happy_none
         }
     }
@@ -67,6 +70,7 @@ fun Category.getImageResId(): Int = when (val category = this) {
             BadCategory.BOASTFULNESS -> R.drawable.regret_boastfulness
             BadCategory.HABIT -> R.drawable.regret_habit
             BadCategory.OVERFRUGALITY -> R.drawable.regret_overfrugality
+            BadCategory.MISS -> R.drawable.regret_miss
             BadCategory.NONE -> R.drawable.regret_none
         }
     }
