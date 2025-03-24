@@ -48,7 +48,9 @@ private fun ConsumptionContent(
     showEdit: Boolean = true,
     onClickEdit: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .noRippleClickable { onClickEdit() }) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -61,7 +63,6 @@ private fun ConsumptionContent(
             )
             if (showEdit) {
                 Icon(
-                    modifier = Modifier.noRippleClickable { onClickEdit() },
                     imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
                     tint = Color.Unspecified,
                     contentDescription = null
