@@ -68,8 +68,8 @@ internal fun RecordListScreen(
     TransparentScaffold(
         topBar = {
             AppBar(
-                title = stringResource(R.string.record_list_appbar_title),
-                onClickNavigation = onClickBack,
+                title = stringResource(R.string.record_list_appbar_title, state.year, state.month),
+                onClickNavigation = onClickBack
                 actionButton = {
                     if (showActionButton) {
                         Icon(

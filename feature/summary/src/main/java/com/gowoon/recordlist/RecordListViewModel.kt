@@ -15,6 +15,7 @@ import com.gowoon.recordlist.navigation.RecordListNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +27,8 @@ class RecordListViewModel @Inject constructor(
 ) : BaseViewModel<RecordListState, RecordListEvent, RecordListEffect>() {
     override fun createInitialState(): RecordListState = RecordListState()
     private val recordList = savedStateHandle.toRoute<RecordListNavigationRoute>().records
+    private val year = savedStateHandle.toRoute<RecordListNavigationRoute>().year
+    private val month = savedStateHandle.toRoute<RecordListNavigationRoute>().month
 
     init {
         initialState()
@@ -38,6 +41,13 @@ class RecordListViewModel @Inject constructor(
     }
 
     private fun initialState() {
+        setState(
+            currentState.copy(
+                records = json.decodeFromString<List<Record>>(recordList),
+                year = year.toString().takeLast(2),
+                month = month
+            )
+        )
         viewModelScope.launch {
             showStarBottleListTooltipUseCase().collect {
                 when (val result = it) {
@@ -51,7 +61,6 @@ class RecordListViewModel @Inject constructor(
                 }
             }
         }
-        setState(currentState.copy(records = json.decodeFromString<List<Record>>(recordList)))
     }
 
     private fun hideTooltip() {
@@ -71,6 +80,8 @@ class RecordListViewModel @Inject constructor(
 
 data class RecordListState(
     val records: List<Record> = listOf(),
+    val year: String = LocalDate.now().year.toString().takeLast(2),
+    val month: Int = LocalDate.now().monthValue
     val showTooltip: Boolean = false
 ) : UiState
 

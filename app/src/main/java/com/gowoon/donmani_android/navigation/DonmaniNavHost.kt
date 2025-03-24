@@ -64,8 +64,8 @@ fun DonmaniNavHost(
                     hasYesterdayRecord = hasYesterday
                 )
             },
-            navigateToRecordList = { records ->
-                navController.navigateToRecordList(json.encodeToString(records))
+            navigateToRecordList = { records, year, month ->
+                navController.navigateToRecordList(json.encodeToString(records), year, month)
             },
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
