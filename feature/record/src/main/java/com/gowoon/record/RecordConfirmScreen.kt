@@ -45,6 +45,7 @@ import com.gowoon.ui.component.RecordCard
 internal fun RecordConfirmScreen(
     modifier: Modifier = Modifier,
     record: Record,
+    onClickEdit: (Consumption) -> Unit,
     onClick: (Boolean) -> Unit
 ) {
     Column(
@@ -64,7 +65,8 @@ internal fun RecordConfirmScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            record = record
+            record = record,
+            onClickEdit = onClickEdit
         )
         RecordConfirmFooter(
             modifier = Modifier.fillMaxWidth(),
@@ -85,7 +87,8 @@ internal fun RecordConfirmScreen(
 @Composable
 private fun RecordConfirmContent(
     modifier: Modifier = Modifier,
-    record: Record
+    record: Record,
+    onClickEdit: (Consumption) -> Unit
 ) {
     Box(modifier = modifier) {
         when (record) {
@@ -97,14 +100,23 @@ private fun RecordConfirmContent(
                 if (record.goodRecord != null && record.badRecord != null) {
                     RecordCard(
                         record = record,
-                        showEdit = false
-                    ) { }
+                        showEdit = true,
+                        onClickEdit = onClickEdit
+                    )
                 } else {
                     record.goodRecord?.let {
-                        ConsumptionCard(consumption = it) { }
+                        ConsumptionCard(
+                            consumption = it,
+                            showEdit = true,
+                            onClickEdit = onClickEdit
+                        )
                     }
                     record.badRecord?.let {
-                        ConsumptionCard(consumption = it) { }
+                        ConsumptionCard(
+                            consumption = it,
+                            showEdit = true,
+                            onClickEdit = onClickEdit
+                        )
                     }
                 }
             }
@@ -173,6 +185,7 @@ private fun IncompleteRecordBanner(
                 style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold),
                 color = DonmaniTheme.colors.Gray99
             )
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.incomplete_record_banner_description),
                 style = DonmaniTheme.typography.Body2,
@@ -180,15 +193,4 @@ private fun IncompleteRecordBanner(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun RecordConfirmPreview() {
-//    val record: Record = NoConsumption
-    val record: Record = ConsumptionRecord(
-        goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.FLEX, "아아아아아아"),
-        badRecord = Consumption(ConsumptionType.BAD, BadCategory.GREED, "우우우우우우우"),
-    )
-    RecordConfirmScreen(record = record) {}
 }

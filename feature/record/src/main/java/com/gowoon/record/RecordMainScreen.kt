@@ -106,7 +106,7 @@ internal fun RecordMainScreen(
     if (state.showConfirm) {
         state.records[state.selectedDay.name]?.let { record ->
             RecordConfirmScreen(
-                modifier = Modifier.zIndex(1f), record = record
+                modifier = Modifier.zIndex(1f), record = record, onClickEdit = onClickEdit
             ) {
                 if (it) {
                     viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
