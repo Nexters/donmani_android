@@ -23,16 +23,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.model.record.BadCategory
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
-import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
@@ -55,7 +52,7 @@ internal fun RecordConfirmScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = DonmaniTheme.dimens.Margin20)
-            .padding(top = 120.dp, bottom = 10.dp),
+            .padding(top = 72.dp, bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
