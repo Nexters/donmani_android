@@ -66,6 +66,19 @@ fun InputCategoryChip(
 }
 
 @Composable
+fun StatisticsCategoryChip(
+    modifier: Modifier = Modifier,
+    category: Category
+){
+    CategoryChip(
+        modifier = modifier,
+        resId = category.getImageResId(),
+        size = 32.dp,
+        radius = 8.dp
+    )
+}
+
+@Composable
 private fun CategoryChip(
     modifier: Modifier = Modifier,
     resId: Int,
