@@ -48,7 +48,21 @@ internal class RecordMainViewModel @Inject constructor(
     override fun handleEvent(event: RecordMainEvent) {
         when (event) {
             is RecordMainEvent.OnClickDayToggle -> {
-                setState(currentState.copy(selectedDay = event.selected))
+                setState(
+                    currentState.copy(
+                        selectedDay = event.selected,
+                        records = currentState.records.toMutableMap().apply {
+                            get(currentState.selectedDay.name)?.let {
+                                put(
+                                    currentState.selectedDay.name,
+                                    ConsumptionRecord(
+                                        consumptionDate = it.date
+                                    )
+                                )
+                            }
+                        }
+                    )
+                )
             }
 
             is RecordMainEvent.OnClickNoConsumptionCheckBox -> {
@@ -77,7 +91,9 @@ internal class RecordMainViewModel @Inject constructor(
             }
 
             is RecordMainEvent.ShowBottomSheet -> {
-                setState(currentState.copy(showBottomSheet = event.show))
+                setState(
+                    currentState.copy(showBottomSheet = event.show)
+                )
             }
         }
     }
@@ -222,7 +238,7 @@ data class RecordMainState(
     val selectedDay: EntryDay = EntryDay.Today,
     val showTooltip: Boolean = false,
     val showConfirm: Boolean = false,
-    val showBottomSheet: RecordMainDialogType? = null,
+    val showBottomSheet: Pair<RecordMainDialogType, (() -> Unit)>? = null,
     val remainTime: Int? = null
 ) : UiState
 
@@ -235,7 +251,8 @@ sealed interface RecordMainEvent : UiEvent {
     data class OnChangedConsumption(val consumption: Consumption) : RecordMainEvent
     data class ShowConfirm(val show: Boolean) : RecordMainEvent
     data class OnSaveRecord(val record: Record, val callback: (Boolean) -> Unit) : RecordMainEvent
-    data class ShowBottomSheet(val show: RecordMainDialogType?) : RecordMainEvent
+    data class ShowBottomSheet(val show: Pair<RecordMainDialogType, (() -> Unit)>? = null) :
+        RecordMainEvent
 }
 
 sealed class RecordMainEffect : UiEffect

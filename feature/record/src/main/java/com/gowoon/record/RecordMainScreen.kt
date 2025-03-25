@@ -81,7 +81,14 @@ internal fun RecordMainScreen(
 
     val onClickBackEvent = {
         if (viewModel.startToRecord()) {
-            viewModel.setEvent(RecordMainEvent.ShowBottomSheet(RecordMainDialogType.EXIT_WARNING))
+            viewModel.setEvent(
+                RecordMainEvent.ShowBottomSheet(
+                    Pair(
+                        RecordMainDialogType.EXIT_WARNING,
+                        navigateToHome
+                    )
+                )
+            )
         } else {
             navigateToHome()
         }
@@ -129,18 +136,30 @@ internal fun RecordMainScreen(
                             it.name
                         )
                     }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
-                    ) { selected -> viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected)) }
+                    ) { selected ->
+                        if (viewModel.startToRecord()) {
+                            viewModel.setEvent(
+                                RecordMainEvent.ShowBottomSheet(
+                                    Pair(RecordMainDialogType.EXIT_WARNING) {
+                                        viewModel.setEvent(
+                                            RecordMainEvent.OnClickDayToggle(selected)
+                                        )
+                                    }
+                                )
+                            )
+                        } else {
+                            viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                        }
+                    }
                 })
         }) { padding ->
             val scrollState = rememberScrollState()
             state.showBottomSheet?.let {
-                when (it) {
+                when (it.first) {
                     RecordMainDialogType.NO_CONSUMPTION -> {
                         NoConsumptionBottomSheet(onClick = { isPositive ->
                             if (isPositive) {
-                                viewModel.setEvent(
-                                    RecordMainEvent.OnClickNoConsumptionCheckBox(true)
-                                )
+                                it.second()
                             }
                         }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
@@ -149,7 +168,9 @@ internal fun RecordMainScreen(
 
                     RecordMainDialogType.EXIT_WARNING -> {
                         ExitWarningBottomSheet(onClick = { isPositive ->
-                            if (isPositive) navigateToHome()
+                            if (isPositive) {
+                                it.second()
+                            }
                         }) {
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
@@ -187,7 +208,13 @@ internal fun RecordMainScreen(
                                 if (checked) {
                                     viewModel.setEvent(
                                         RecordMainEvent.ShowBottomSheet(
-                                            RecordMainDialogType.NO_CONSUMPTION
+                                            Pair(RecordMainDialogType.NO_CONSUMPTION) {
+                                                viewModel.setEvent(
+                                                    RecordMainEvent.OnClickNoConsumptionCheckBox(
+                                                        true
+                                                    )
+                                                )
+                                            }
                                         )
                                     )
                                 } else {
