@@ -37,6 +37,7 @@ import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.ui.component.ConsumptionCard
+import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
 
@@ -68,11 +69,13 @@ internal fun RecordConfirmScreen(
         RecordConfirmFooter(
             modifier = Modifier.fillMaxWidth(),
             incompleteType = (record as? ConsumptionRecord)?.let {
-                if(it.goodRecord == null) {
+                if (it.goodRecord == null) {
                     ConsumptionType.GOOD
-                } else if(it.badRecord == null) {
+                } else if (it.badRecord == null) {
                     ConsumptionType.BAD
-                } else { null }
+                } else {
+                    null
+                }
             },
             onClick = onClick
         )
@@ -115,12 +118,17 @@ private fun RecordConfirmFooter(
     incompleteType: ConsumptionType?,
     onClick: (Boolean) -> Unit
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         incompleteType?.let {
             IncompleteRecordBanner(
                 modifier = Modifier.fillMaxWidth(),
                 incompleteType = it
             )
+        } ?: run {
+            MessageBox(message = stringResource(R.string.record_bottom_message_default))
         }
         Row(
             modifier = Modifier
