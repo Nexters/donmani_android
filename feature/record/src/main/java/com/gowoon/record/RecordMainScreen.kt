@@ -131,24 +131,28 @@ internal fun RecordMainScreen(
             AppBar(
                 onClickNavigation = onClickBackEvent,
                 actionButton = {
-                    TodayYesterdayToggle(options = EntryDay.entries.filter {
-                        state.records.containsKey(
-                            it.name
-                        )
-                    }.ifEmpty { EntryDay.entries }, selectedState = state.selectedDay
-                    ) { selected ->
-                        if (viewModel.startToRecord()) {
-                            viewModel.setEvent(
-                                RecordMainEvent.ShowBottomSheet(
-                                    Pair(RecordMainDialogType.EXIT_WARNING) {
-                                        viewModel.setEvent(
-                                            RecordMainEvent.OnClickDayToggle(selected)
-                                        )
-                                    }
+                    if (viewModel.isNoRecordForBothDays()) {
+                        TodayYesterdayToggle(
+                            options = EntryDay.entries.filter {
+                                state.records.containsKey(
+                                    it.name
                                 )
-                            )
-                        } else {
-                            viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                            }.ifEmpty { EntryDay.entries },
+                            selectedState = state.selectedDay
+                        ) { selected ->
+                            if (viewModel.startToRecord()) {
+                                viewModel.setEvent(
+                                    RecordMainEvent.ShowBottomSheet(
+                                        Pair(RecordMainDialogType.EXIT_WARNING) {
+                                            viewModel.setEvent(
+                                                RecordMainEvent.OnClickDayToggle(selected)
+                                            )
+                                        }
+                                    )
+                                )
+                            } else {
+                                viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                            }
                         }
                     }
                 })
