@@ -20,12 +20,14 @@ fun NavController.navigateToRecordList(records: String, year: Int, month: Int) {
 fun NavGraphBuilder.recordListScreen(
     onClickBack: () -> Unit,
     navigateToRecord: () -> Unit,
+    navigateToStatistics: (String, Int) -> Unit,
     navigateToStarBottleList: () -> Unit
 ) {
     composable<RecordListNavigationRoute> {
         RecordListScreen(
             onClickBack = onClickBack,
             onClickAdd = navigateToRecord,
+            onClickSummary = navigateToStatistics,
             onClickActionButton = navigateToStarBottleList
         )
     }

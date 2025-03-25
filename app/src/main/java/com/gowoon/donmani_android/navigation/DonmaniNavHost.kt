@@ -22,6 +22,8 @@ import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
 import com.gowoon.splash.navigation.SplashNavigationRoute
 import com.gowoon.splash.navigation.splashScreen
+import com.gowoon.statistics.navigation.navigateToStatistics
+import com.gowoon.statistics.navigation.statisticsScreen
 import com.gowoon.starbottlelist.navigation.navigateToStarBottle
 import com.gowoon.starbottlelist.navigation.navigateToStarBottleList
 import com.gowoon.starbottlelist.navigation.starBottleListScreen
@@ -88,6 +90,11 @@ fun DonmaniNavHost(
         )
         recordListScreen(
             onClickBack = navController::popBackStack,
+            navigateToRecord = navController::navigateToRecordAndPopUpTo,
+            navigateToStatistics = navController::navigateToStatistics
+        )
+        statisticsScreen(
+            onClickBack = navController::popBackStack
             navigateToRecord = navController::navigateToRecordAndPopUpTo,
             navigateToStarBottleList = navController::navigateToStarBottleList
         )

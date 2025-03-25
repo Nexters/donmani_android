@@ -65,13 +65,13 @@ import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
-import com.gowoon.ui.component.Star
 
 @Composable
 internal fun RecordListScreen(
     viewModel: RecordListViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
+    onClickSummary: (String, Int) -> Unit,
     onClickActionButton: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -125,7 +125,7 @@ internal fun RecordListScreen(
                 records = state.records,
                 month = state.month
             ) {
-                // TODO navigate to statistics
+                onClickSummary(state.year, state.month)
             }
         }
     }
@@ -179,16 +179,12 @@ private fun RecordListContent(
 @Composable
 private fun RecordListItem(record: Record) {
     Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Star(size = 32.dp, record = record)
-            record.date?.let { date ->
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "${date.month.value}월 ${date.dayOfMonth}일 ${date.dayOfWeek.toKorean()}",
-                    color = DonmaniTheme.colors.Gray95,
-                    style = DonmaniTheme.typography.Body2
-                )
-            }
+        record.date?.let { date ->
+            Text(
+                text = "${date.month.value}월 ${date.dayOfMonth}일 ${date.dayOfWeek.toKorean()}",
+                color = DonmaniTheme.colors.Gray95,
+                style = DonmaniTheme.typography.Body2
+            )
         }
         Spacer(Modifier.height(16.dp))
         when (record) {

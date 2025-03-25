@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,8 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
@@ -36,28 +38,24 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
 import com.gowoon.statistics.component.PercentageIndicator
-import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.StatisticsCategoryChip
-import java.time.LocalDate
 
 @Composable
-internal fun StatisticsScreen() {
-    // 넘어올 때 navigation으로 받을 값
-    val year: Int = LocalDate.now().year
-    val month: Int = LocalDate.now().monthValue
-
+internal fun StatisticsScreen(
+    viewModel: StatisticsViewModel = hiltViewModel(),
+    onClickBack: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
         topBar = {
             AppBar(
                 title = stringResource(
                     R.string.statistics_app_bar_title,
-                    year.toString().takeLast(2),
-                    month
+                    state.year,
+                    state.month
                 ),
-                onClickNavigation = {
-                    // TODO 백버튼
-                }
+                onClickNavigation = onClickBack
             )
         }
     ) {
@@ -232,14 +230,5 @@ private fun StatisticsCategoryItem(
                 textAlign = TextAlign.End
             )
         }
-    }
-}
-
-
-@Preview
-@Composable
-private fun StatisticsPreview() {
-    GradientBackground {
-        StatisticsScreen()
     }
 }
