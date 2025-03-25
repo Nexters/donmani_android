@@ -38,6 +38,7 @@ dependencies {
     implementation(projects.feature.recordlist)
     implementation(projects.feature.onboarding)
     implementation(projects.feature.splash)
+    implementation(projects.feature.statistics)
     implementation(projects.feature.starbottlelist)
 
     implementation(libs.androidx.core.splashscreen)
