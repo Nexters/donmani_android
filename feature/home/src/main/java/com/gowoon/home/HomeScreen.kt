@@ -137,12 +137,12 @@ private fun HomeContent(
     var isMoved by remember { mutableStateOf(false) }
     LaunchedEffect(recordAdded) {
         if (recordAdded) {
-            delay(2000)
+            delay(3000)
             isMoved = true
         }
     }
     val offsetY by animateFloatAsState(
-        targetValue = if (isMoved) 0f else -50f,
+        targetValue = if (isMoved) 0f else -70f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioHighBouncy,
             stiffness = Spring.StiffnessLow
