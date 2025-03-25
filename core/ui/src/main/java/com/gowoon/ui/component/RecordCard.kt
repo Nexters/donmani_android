@@ -48,7 +48,9 @@ private fun ConsumptionContent(
     showEdit: Boolean = true,
     onClickEdit: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .noRippleClickable { onClickEdit() }) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -61,7 +63,6 @@ private fun ConsumptionContent(
             )
             if (showEdit) {
                 Icon(
-                    modifier = Modifier.noRippleClickable { onClickEdit() },
                     imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.edit),
                     tint = Color.Unspecified,
                     contentDescription = null
@@ -128,6 +129,7 @@ fun EmptyCard(
 fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption,
+    showEdit: Boolean = true,
     onClickEdit: (Consumption) -> Unit
 ) {
     Card(
@@ -144,6 +146,7 @@ fun ConsumptionCard(
             title = consumption.category.getTitle(consumption.type),
             category = consumption.category,
             memo = consumption.description,
+            showEdit = showEdit,
             onClickEdit = { onClickEdit(consumption) }
         )
     }

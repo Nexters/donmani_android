@@ -8,9 +8,6 @@ import com.gowoon.home.HomeScreen
 import com.gowoon.model.record.Record
 import kotlinx.serialization.Serializable
 
-const val MainToHomeArgumentKey = "mainToHome"
-const val homeNavigationRoute = "home_route"
-
 @Serializable
 data class HomeNavigationRoute(val addedRecord: String?)
 

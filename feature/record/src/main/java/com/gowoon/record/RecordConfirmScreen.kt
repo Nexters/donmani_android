@@ -12,11 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.NegativeButton
@@ -30,6 +36,8 @@ import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.ui.component.ConsumptionCard
+import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
 
@@ -37,6 +45,7 @@ import com.gowoon.ui.component.RecordCard
 internal fun RecordConfirmScreen(
     modifier: Modifier = Modifier,
     record: Record,
+    onClickEdit: (Consumption) -> Unit,
     onClick: (Boolean) -> Unit
 ) {
     Column(
@@ -52,23 +61,86 @@ internal fun RecordConfirmScreen(
         ) {
         Title(text = stringResource(R.string.record_confirm_title))
         Spacer(Modifier.height(60.dp))
-        Box(
-            Modifier
+        RecordConfirmContent(
+            modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-        ) {
-            when (record) {
-                is NoConsumption -> {
-                    NoConsumptionCard()
+                .weight(1f),
+            record = record,
+            onClickEdit = onClickEdit
+        )
+        RecordConfirmFooter(
+            modifier = Modifier.fillMaxWidth(),
+            incompleteType = (record as? ConsumptionRecord)?.let {
+                if (it.goodRecord == null) {
+                    ConsumptionType.GOOD
+                } else if (it.badRecord == null) {
+                    ConsumptionType.BAD
+                } else {
+                    null
                 }
+            },
+            onClick = onClick
+        )
+    }
+}
 
-                is ConsumptionRecord -> {
+@Composable
+private fun RecordConfirmContent(
+    modifier: Modifier = Modifier,
+    record: Record,
+    onClickEdit: (Consumption) -> Unit
+) {
+    Box(modifier = modifier) {
+        when (record) {
+            is NoConsumption -> {
+                NoConsumptionCard()
+            }
+
+            is ConsumptionRecord -> {
+                if (record.goodRecord != null && record.badRecord != null) {
                     RecordCard(
                         record = record,
-                        showEdit = false
-                    ) { }
+                        showEdit = true,
+                        onClickEdit = onClickEdit
+                    )
+                } else {
+                    record.goodRecord?.let {
+                        ConsumptionCard(
+                            consumption = it,
+                            showEdit = true,
+                            onClickEdit = onClickEdit
+                        )
+                    }
+                    record.badRecord?.let {
+                        ConsumptionCard(
+                            consumption = it,
+                            showEdit = true,
+                            onClickEdit = onClickEdit
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun RecordConfirmFooter(
+    modifier: Modifier = Modifier,
+    incompleteType: ConsumptionType?,
+    onClick: (Boolean) -> Unit
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        incompleteType?.let {
+            IncompleteRecordBanner(
+                modifier = Modifier.fillMaxWidth(),
+                incompleteType = it
+            )
+        } ?: run {
+            MessageBox(message = stringResource(R.string.record_bottom_message_default))
         }
         Row(
             modifier = Modifier
@@ -92,13 +164,33 @@ internal fun RecordConfirmScreen(
     }
 }
 
-@Preview
 @Composable
-private fun RecordConfirmPreview() {
-//    val record: Record = NoConsumption
-    val record: Record = ConsumptionRecord(
-        goodRecord = Consumption(ConsumptionType.GOOD, GoodCategory.FLEX, "아아아아아아"),
-        badRecord = Consumption(ConsumptionType.BAD, BadCategory.GREED, "우우우우우우우"),
-    )
-    RecordConfirmScreen(record = record) {}
+private fun IncompleteRecordBanner(
+    modifier: Modifier = Modifier,
+    incompleteType: ConsumptionType
+) {
+    Row(modifier = modifier.padding(16.dp)) {
+        Icon(
+            imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.notice),
+            tint = Color.Unspecified,
+            contentDescription = null
+        )
+        Spacer(Modifier.width(8.dp))
+        Column {
+            Text(
+                text = stringResource(
+                    R.string.incomplete_record_banner_title,
+                    incompleteType.title
+                ),
+                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold),
+                color = DonmaniTheme.colors.Gray99
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.incomplete_record_banner_description),
+                style = DonmaniTheme.typography.Body2,
+                color = DonmaniTheme.colors.Gray99
+            )
+        }
+    }
 }

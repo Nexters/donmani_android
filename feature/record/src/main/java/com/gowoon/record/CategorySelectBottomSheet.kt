@@ -70,8 +70,8 @@ private fun CategoryGrid(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         val items = when (type) {
-            ConsumptionType.GOOD -> GoodCategory.entries
-            ConsumptionType.BAD -> BadCategory.entries
+            ConsumptionType.GOOD -> GoodCategory.entries.filterNot { it.deleted }
+            ConsumptionType.BAD -> BadCategory.entries.filterNot { it.deleted }
         }
         items(items) {
             CategoryGridItem(

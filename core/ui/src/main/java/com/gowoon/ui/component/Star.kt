@@ -53,30 +53,38 @@ fun Star(
             }
 
             is Record.ConsumptionRecord -> {
-                val brushGradient =
-                    Brush.linearGradient(
-                        listOf(
-                            record.goodRecord?.category?.getColor() ?: Color.Unspecified,
-                            record.badRecord?.category?.getColor() ?: Color.Unspecified
-                        )
-                    )
-                Icon(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                        .graphicsLayer {
-                            compositingStrategy = CompositingStrategy.Offscreen
-                        }
-                        .drawWithCache {
-                            onDrawWithContent {
-                                drawContent()
-                                drawRect(brushGradient, blendMode = BlendMode.SrcAtop)
+                val goodColor = record.goodRecord?.category?.getColor()
+                val badColor = record.badRecord?.category?.getColor()
+                if(goodColor != null && badColor != null){
+                    val brushGradient = Brush.linearGradient(listOf(goodColor, badColor))
+                    Icon(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center)
+                            .graphicsLayer {
+                                compositingStrategy = CompositingStrategy.Offscreen
                             }
-                        },
-                    tint = Color.Unspecified,
-                    imageVector = ImageVector.vectorResource(R.drawable.star_shape),
-                    contentDescription = null
-                )
+                            .drawWithCache {
+                                onDrawWithContent {
+                                    drawContent()
+                                    drawRect(brushGradient, blendMode = BlendMode.SrcAtop)
+                                }
+                            },
+                        tint = Color.Unspecified,
+                        imageVector = ImageVector.vectorResource(R.drawable.star_shape),
+                        contentDescription = null
+                    )
+                } else {
+                    val color = goodColor ?: badColor
+                    Icon(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                        imageVector = ImageVector.vectorResource(R.drawable.star_shape),
+                        tint = color ?: Color.Unspecified,
+                        contentDescription = null
+                    )
+                }
             }
         }
         Image(

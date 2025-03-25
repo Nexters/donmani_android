@@ -2,14 +2,12 @@ package com.gowoon.donmani_android.navigation
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
-import com.gowoon.home.navigation.homeNavigationRoute
 import com.gowoon.home.navigation.homeScreen
 import com.gowoon.home.navigation.navigateToHome
 import com.gowoon.onboarding.navigation.navigateToOnBoarding
@@ -35,11 +33,7 @@ fun DonmaniNavHost(
     val json = rememberHiltJson()
     val context = LocalContext.current
 
-    val startDestination = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        SplashNavigationRoute
-    } else {
-        homeNavigationRoute
-    }
+    val startDestination = SplashNavigationRoute
     NavHost(
         navController = navController,
         startDestination = startDestination,

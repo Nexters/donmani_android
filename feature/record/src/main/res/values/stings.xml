@@ -24,13 +24,12 @@
     <!-- message -->
     <string name="record_bottom_message_default">기록하고 별사탕 받자!</string>
     <string name="record_bottom_count_down_suffix">안에 별사탕 받자!</string>
+    <string name="incomplete_record_banner_title">%s 소비를 작성하지 않았어요!</string>
+    <string name="incomplete_record_banner_description">돌아가기를 누르면 기록할 수 있어요</string>
 
     <!-- component -->
     <!-- checkbox -->
     <string name="no_consumption_message">무소비 했어요</string>
-    <!--    &lt;!&ndash; input &ndash;&gt;-->
-    <!--    <string name="good_record_input_memo_placeholder">소비가 행복했던 이유는?</string>-->
-    <!--    <string name="bad_record_input_memo_placeholder">소비가 후회됐던 이유는?</string>-->
     <!-- bottom sheet -->
     <string name="category_select_title">소비가 %s했던 이유는?</string>
     <string name="no_consumption_alert_title">정말 무소비 했나요?</string>
