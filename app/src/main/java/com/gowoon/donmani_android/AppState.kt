@@ -21,5 +21,13 @@ class AppState(private val navController: NavController) {
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     val isBeforeHome: Boolean
-        @Composable get() = (currentDestination?.route?.contains(HomeNavigationRoute::class.simpleName.toString()) == true || currentDestination?.route == SplashNavigationRoute)
+        @Composable get() = isSpecialScreen()
+
+    @Composable
+    private fun isSpecialScreen(): Boolean {
+        return run {
+            currentDestination?.route?.contains(HomeNavigationRoute::class.simpleName.toString()) == true
+                    || currentDestination?.route == SplashNavigationRoute
+        }
+    }
 }

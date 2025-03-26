@@ -39,6 +39,7 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
 import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.NoticeBanner
 
 sealed class BottleState {
     data class OPENED(val count: Int, val total: Int) : BottleState()
@@ -75,20 +76,7 @@ internal fun StarBottleListScreen() {
 
 @Composable
 private fun StarBottleListHeader(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = DonmaniTheme.colors.DeepBlue60, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier.size(24.dp),
-            imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.notice),
-            tint = Color.Unspecified,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(8.dp))
+    NoticeBanner {
         Text(
             modifier = Modifier.weight(1f),
             text = stringResource(R.string.star_bottle_list_header_notice_message),
