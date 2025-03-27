@@ -1,5 +1,6 @@
 package com.gowoon.setting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -29,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +39,7 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
+import com.gowoon.setting.component.Reddot
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.BBSRuleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
@@ -43,6 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Stable
 data class SettingItem(
     val title: String,
+    val showReddot: Boolean = false,
     val onClick: () -> Unit
 )
 
@@ -50,6 +55,7 @@ data class SettingItem(
 internal fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
+    onClickNotice: () -> Unit,
     onClickPrivatePrivacy: () -> Unit,
     onClickFeedback: () -> Unit
 ) {
@@ -113,15 +119,20 @@ internal fun SettingScreen(
             SettingContent(
                 listOf(
                     SettingItem(
-                        stringResource(R.string.setting_bbs_rule)
-                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
-                    SettingItem(
-                        stringResource(R.string.setting_private_privacy),
-                        onClickPrivatePrivacy
+                        title = stringResource(R.string.setting_notice),
+                        showReddot = state.newNotice,
+                        onClick = onClickNotice
                     ),
                     SettingItem(
-                        stringResource(R.string.setting_feedback),
-                        onClickFeedback
+                        title = stringResource(R.string.setting_bbs_rule)
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
+                    SettingItem(
+                        title = stringResource(R.string.setting_private_privacy),
+                        onClick = onClickPrivatePrivacy
+                    ),
+                    SettingItem(
+                        title = stringResource(R.string.setting_feedback),
+                        onClick = onClickFeedback
                     )
                 )
             )
@@ -173,6 +184,7 @@ private fun SettingContent(
         settingItems.forEach {
             SettingContentItem(
                 title = it.title,
+                showReddot = it.showReddot,
                 onClick = it.onClick
             )
         }
@@ -182,6 +194,7 @@ private fun SettingContent(
 @Composable
 private fun SettingContentItem(
     title: String,
+    showReddot: Boolean,
     onClick: () -> Unit,
     button: (@Composable BoxScope.() -> Unit)? = null
 ) {
@@ -191,12 +204,17 @@ private fun SettingContentItem(
             .height(56.dp)
             .noRippleClickable { onClick() }
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterStart),
-            text = title,
-            color = DonmaniTheme.colors.DeepBlue99,
-            style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
-        )
+        Row(modifier = Modifier.align(Alignment.CenterStart)) {
+            Text(
+                text = title,
+                color = DonmaniTheme.colors.DeepBlue99,
+                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
+            )
+            if(showReddot) {
+                Spacer(Modifier.width(4.dp))
+                Reddot()
+            }
+        }
         button?.let { it() }
     }
 }

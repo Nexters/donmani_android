@@ -74,7 +74,8 @@ class SettingViewModel @Inject constructor(
 
 data class SettingState(
     val nickname: String = "",
-    val dialogState: SettingDialogType? = null
+    val dialogState: SettingDialogType? = null,
+    val newNotice: Boolean = true // TODO 서버 연결
 ) : UiState
 
 enum class SettingDialogType { BBS_RULE, EDIT_NICKNAME }

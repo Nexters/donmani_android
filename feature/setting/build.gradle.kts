@@ -12,6 +12,11 @@ android {
     defaultConfig {
         buildConfigField(
             "String",
+            "NOTICE_URL",
+            gradleLocalProperties(rootDir, providers).getProperty("PRIVATE_PRIVACY_URL")
+        )
+        buildConfigField(
+            "String",
             "PRIVATE_PRIVACY_URL",
             gradleLocalProperties(rootDir, providers).getProperty("PRIVATE_PRIVACY_URL")
         )
