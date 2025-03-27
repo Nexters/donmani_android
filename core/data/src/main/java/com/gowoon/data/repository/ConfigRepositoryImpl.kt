@@ -52,4 +52,18 @@ class ConfigRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+    override suspend fun getStarBottleListTooltipState(): Flow<Result<Boolean>> =
+        try {
+            configDataSource.getStarBottleListTooltipState().map { Result.Success(it) }
+        } catch (e: Exception) {
+            flow { emit(Result.Error(message = e.message)) }
+        }
+
+    override suspend fun setStarBottleListTooltipState(state: Boolean): Result<Unit> =
+        try {
+            Result.Success(configDataSource.setStarBottleListTooltipState(state))
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }

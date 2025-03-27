@@ -10,4 +10,6 @@ interface ConfigRepository {
     suspend fun setOnBoardingState(state: Boolean): Result<Unit>
     suspend fun getYesterdayTooltipLastCheckedDay(): Flow<Result<String>>
     suspend fun setYesterdayTooltipLastCheckedDay(date: String): Result<Unit>
+    suspend fun getStarBottleListTooltipState(): Flow<Result<Boolean>>
+    suspend fun setStarBottleListTooltipState(state: Boolean): Result<Unit>
 }

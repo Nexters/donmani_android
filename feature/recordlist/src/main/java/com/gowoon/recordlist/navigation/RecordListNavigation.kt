@@ -15,12 +15,14 @@ fun NavController.navigateToRecordList(records: String) {
 
 fun NavGraphBuilder.recordListScreen(
     onClickBack: () -> Unit,
-    navigateToRecord: () -> Unit
+    navigateToRecord: () -> Unit,
+    navigateToStarBottleList: () -> Unit
 ) {
     composable<RecordListNavigationRoute> {
         RecordListScreen(
             onClickBack = onClickBack,
-            onClickAdd = navigateToRecord
+            onClickAdd = navigateToRecord,
+            onClickActionButton = navigateToStarBottleList
         )
     }
 }

@@ -22,6 +22,8 @@ import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
 import com.gowoon.splash.navigation.SplashNavigationRoute
 import com.gowoon.splash.navigation.splashScreen
+import com.gowoon.starbottlelist.navigation.navigateToStarBottleList
+import com.gowoon.starbottlelist.navigation.starBottleListScreen
 import com.gowoon.ui.util.rememberHiltJson
 
 @Composable
@@ -84,8 +86,10 @@ fun DonmaniNavHost(
         )
         recordListScreen(
             onClickBack = navController::popBackStack,
-            navigateToRecord = navController::navigateToRecordAndPopUpTo
+            navigateToRecord = navController::navigateToRecordAndPopUpTo,
+            navigateToStarBottleList = navController::navigateToStarBottleList
         )
+        starBottleListScreen()
         settingScreen(
             onClickBack = navController::popBackStack,
             navigateToWebView = {
