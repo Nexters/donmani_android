@@ -11,8 +11,10 @@ fun NavController.navigateToStarBottleList() {
     navigate(StarBottleListNavigationRoute)
 }
 
-fun NavGraphBuilder.starBottleListScreen() {
+fun NavGraphBuilder.starBottleListScreen(
+    onClickBack: () -> Unit
+) {
     composable(route = StarBottleListNavigationRoute) {
-        StarBottleListScreen()
+        StarBottleListScreen(onClickBack = onClickBack)
     }
 }

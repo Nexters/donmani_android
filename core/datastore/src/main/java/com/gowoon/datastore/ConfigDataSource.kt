@@ -19,7 +19,8 @@ class ConfigDataSource @Inject constructor(
         private val ON_BOARDING_KEY = booleanPreferencesKey("onboarding_key")
         private val YESTERDAY_TOOLTIP_KEY =
             stringPreferencesKey("yesterday_tooltip_last_checked_key")
-        private val STAR_BOTTLE_LIST_TOOLTIP = booleanPreferencesKey("star_bottle_list_tooltip")
+        private val STAR_BOTTLE_LIST_TOOLTIP = booleanPreferencesKey("star_bottle_list_tooltip_key")
+        private val STAR_BOTTLE_LIST_BANNER = booleanPreferencesKey("star_bottle_list_banner_key")
     }
 
     fun getNoConsumptionTooltipState(): Flow<Boolean> = datastore.data.map { preference ->
@@ -56,6 +57,16 @@ class ConfigDataSource @Inject constructor(
     suspend fun setStarBottleListTooltipState(state: Boolean) {
         datastore.edit { preference ->
             preference[STAR_BOTTLE_LIST_TOOLTIP] = state
+        }
+    }
+
+    fun getStarBottleListBannerState(): Flow<Boolean> = datastore.data.map { preference ->
+        preference[STAR_BOTTLE_LIST_BANNER] ?: true
+    }
+
+    suspend fun setStarBottleListBannerState(state: Boolean) {
+        datastore.edit { preference ->
+            preference[STAR_BOTTLE_LIST_BANNER] = state
         }
     }
 }

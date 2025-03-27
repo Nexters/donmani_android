@@ -89,7 +89,9 @@ fun DonmaniNavHost(
             navigateToRecord = navController::navigateToRecordAndPopUpTo,
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
-        starBottleListScreen()
+        starBottleListScreen(
+            onClickBack = navController::popBackStack
+        )
         settingScreen(
             onClickBack = navController::popBackStack,
             navigateToWebView = {

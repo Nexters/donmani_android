@@ -66,4 +66,18 @@ class ConfigRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+    override suspend fun getStarBottleListBannerState(): Flow<Result<Boolean>> =
+        try {
+            configDataSource.getStarBottleListBannerState().map { Result.Success(it) }
+        } catch (e: Exception) {
+            flow { emit(Result.Error(message = e.message)) }
+        }
+
+    override suspend fun setStarBottleListBannerState(state: Boolean): Result<Unit> =
+        try {
+            Result.Success(configDataSource.setStarBottleListBannerState(state))
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }
