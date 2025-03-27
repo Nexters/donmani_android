@@ -66,10 +66,11 @@ private fun EditNicknameContent(
 ) {
     val context = LocalContext.current
     val text = rememberTextFieldState(initialText)
-    val isValid by remember { derivedStateOf { NicknameUtil.isValid(text.text.toString()) } }
+    val isValidCharacter by remember { derivedStateOf { NicknameUtil.isValidCharacter(text.text.toString()) } }
+    val isValid by remember { derivedStateOf { NicknameUtil.isValidLength(text.text.toString()) && isValidCharacter } }
 
-    LaunchedEffect(isValid) {
-        if (!isValid) {
+    LaunchedEffect(isValidCharacter) {
+        if (!isValidCharacter) {
             showToast(context.getString(com.gowoon.ui.R.string.toast_invalid_character))
         }
     }

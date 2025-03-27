@@ -114,7 +114,7 @@ internal fun HomeScreen(
                 .onSizeChanged { tooltipSize = it }
                 .offset(
                     x = -(tooltipSize / 2).width.pxToDp(),
-                    y = (-45).dp // calculated with button size and margin
+                    y = (-40).dp // calculated with button size and tooltip size
                 ),
             direction = TooltipDirection.TopOf,
             caretAlignment = TooltipCaretAlignment.Center,
