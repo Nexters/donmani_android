@@ -36,6 +36,7 @@ import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.HomeAppBar
+import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.MessageBox
@@ -51,11 +52,18 @@ internal fun HomeScreen(
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit,
-    onClickBottle: (List<Record>) -> Unit
+    onClickBottle: (List<Record>) -> Unit,
+    onClickGoToStarBottle: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
+
+    // TODO 조건 정리되면 작업 필요
+    var showBottomSheet by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        showBottomSheet = true
+    }
 
     LaunchedEffect(resultFromRecord) {
         var recordAdded = false
@@ -71,6 +79,12 @@ internal fun HomeScreen(
     TransparentScaffold(
         topBar = { HomeAppBar(onClickSetting = onClickSetting) }
     ) { padding ->
+        if (showBottomSheet) {
+            StarBottleOpenBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                onClickGoToStarBottle = onClickGoToStarBottle
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()

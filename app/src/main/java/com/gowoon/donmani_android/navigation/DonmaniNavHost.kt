@@ -65,7 +65,8 @@ fun DonmaniNavHost(
             },
             navigateToRecordList = { records ->
                 navController.navigateToRecordList(json.encodeToString(records))
-            }
+            },
+            navigateToStarBottleList = navController::navigateToStarBottleList
         )
         recordGraph(
             onClickBack = navController::popBackStack,
