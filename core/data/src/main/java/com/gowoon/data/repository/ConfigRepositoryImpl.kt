@@ -38,4 +38,18 @@ class ConfigRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Result.Error(message = e.message)
     }
+
+    override suspend fun getYesterdayTooltipLastCheckedDay(): Flow<Result<String>> =
+        try {
+            configDataSource.getYesterdayTooltipLastCheckedDay().map { Result.Success(it) }
+        } catch (e: Exception) {
+            flow { emit(Result.Error(message = e.message)) }
+        }
+
+    override suspend fun setYesterdayTooltipLastCheckedDay(date: String): Result<Unit> =
+        try {
+            Result.Success(configDataSource.setYesterdayTooltipLastCheckedDay(date))
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }

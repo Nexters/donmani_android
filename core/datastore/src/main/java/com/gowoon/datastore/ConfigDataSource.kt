@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gowoon.datastore.di.TooltipDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -16,6 +17,8 @@ class ConfigDataSource @Inject constructor(
     companion object {
         private val NO_CONSUMPTION_TOOLTIP_KEY = booleanPreferencesKey("no_consumption_tooltip_key")
         private val ON_BOARDING_KEY = booleanPreferencesKey("onboarding_key")
+        private val YESTERDAY_TOOLTIP_KEY =
+            stringPreferencesKey("yesterday_tooltip_last_checked_key")
     }
 
     fun getNoConsumptionTooltipState(): Flow<Boolean> = datastore.data.map { preference ->
@@ -36,4 +39,13 @@ class ConfigDataSource @Inject constructor(
         }
     }
 
+    fun getYesterdayTooltipLastCheckedDay(): Flow<String> = datastore.data.map { preference ->
+        preference[YESTERDAY_TOOLTIP_KEY] ?: ""
+    }
+
+    suspend fun setYesterdayTooltipLastCheckedDay(date: String) {
+        datastore.edit { preference ->
+            preference[YESTERDAY_TOOLTIP_KEY] = date
+        }
+    }
 }
