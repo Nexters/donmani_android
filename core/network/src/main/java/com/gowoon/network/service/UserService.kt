@@ -1,5 +1,6 @@
 package com.gowoon.network.service
 
+import com.gowoon.network.dto.common.BaseDto
 import com.gowoon.network.dto.request.RegisterUserRequest
 import com.gowoon.network.dto.request.UpdateUserRequest
 import com.gowoon.network.dto.response.RegisterUserResponse
@@ -10,14 +11,14 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 
 interface UserService {
-    @POST("/users/register")
+    @POST("user/register")
     suspend fun registerUser(
         @Body requestBody: RegisterUserRequest
-    ): Response<RegisterUserResponse>
+    ): Response<BaseDto<RegisterUserResponse>>
 
-    @PUT("users/update")
+    @PUT("user/update")
     suspend fun updateUser(
         @Body requestBody: UpdateUserRequest
-    ): Response<UpdateUserResponse>
+    ): Response<BaseDto<UpdateUserResponse>>
 
 }

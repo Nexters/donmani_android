@@ -2,7 +2,6 @@ package com.gowoon.domain.usecase.user
 
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.UserRepository
-import com.gowoon.domain.util.NicknameUtil
 import javax.inject.Inject
 
 class RegisterUserUseCase @Inject constructor(
@@ -12,7 +11,7 @@ class RegisterUserUseCase @Inject constructor(
         return when (val registerUserResult = userRepository.registerUser()) {
             is Result.Success -> {
                 when (val registerNicknameResult =
-                    userRepository.registerUserNickname(registerUserResult.data + NicknameUtil.DEFAULT_SUFFIX)) {
+                    userRepository.registerUserNickname(registerUserResult.data)) {
                     is Result.Success -> {
                         userRepository.setRegisterUserState(true)
                     }

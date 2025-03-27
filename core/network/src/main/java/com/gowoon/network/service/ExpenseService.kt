@@ -1,5 +1,6 @@
 package com.gowoon.network.service
 
+import com.gowoon.network.dto.common.BaseDto
 import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.dto.response.ExpenseListResponse
 import retrofit2.Response
@@ -10,15 +11,15 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ExpenseService {
-    @GET("/expenses/list/{userKey}")
+    @GET("expenses/list/{userKey}")
     suspend fun getExpenseList(
         @Path("userKey") userKey: String,
         @Query("year") year: Int,
         @Query("month") month: Int,
-    ): Response<ExpenseListResponse>
+    ): Response<BaseDto<ExpenseListResponse>>
 
-    @POST("/expenses")
+    @POST("expenses")
     suspend fun postExpense(
         @Body requestBody: PostRecordRequest
-    ): Response<Unit>
+    ): Response<BaseDto<Unit>>
 }
