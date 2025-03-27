@@ -1,6 +1,7 @@
 package com.gowoon.network.service
 
 import com.gowoon.network.dto.common.BaseDto
+import com.gowoon.network.dto.common.EmptyBaseDto
 import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.dto.response.ExpenseListResponse
 import retrofit2.Response
@@ -21,5 +22,5 @@ interface ExpenseService {
     @POST("expenses")
     suspend fun postExpense(
         @Body requestBody: PostRecordRequest
-    ): Response<BaseDto<Unit>>
+    ): Response<EmptyBaseDto>
 }

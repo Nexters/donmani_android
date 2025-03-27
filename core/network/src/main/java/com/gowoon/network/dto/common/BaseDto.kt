@@ -12,3 +12,11 @@ data class BaseDto<T>(
     @SerialName("responseData")
     val responseData: T
 )
+
+@Serializable
+data class EmptyBaseDto(
+    @SerialName("statusCode")
+    val statusCode: Int,
+    @SerialName("responseMessage")
+    val responseMessage: String
+)
