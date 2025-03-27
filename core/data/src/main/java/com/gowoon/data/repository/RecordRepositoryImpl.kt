@@ -30,7 +30,7 @@ class RecordRepositoryImpl @Inject constructor(
                     if (result.isSuccessful) {
                         result.body()?.let { body ->
                             Result.Success(
-                                body.records.map { record ->
+                                body.responseData.records.map { record ->
                                     record.toModel()
                                 }
                             )

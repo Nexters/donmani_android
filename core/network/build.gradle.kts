@@ -17,6 +17,11 @@ android {
             "SERVER_URL",
             gradleLocalProperties(rootDir, providers).getProperty("SERVER_URL")
         )
+        buildConfigField(
+            "String",
+            "SERVER_VERSION",
+            "\"${libs.versions.apiVersion.get()}\""
+        )
     }
 }
 
