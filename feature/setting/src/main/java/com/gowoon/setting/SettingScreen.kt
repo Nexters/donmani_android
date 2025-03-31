@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -151,7 +152,7 @@ private fun ProfileHeader(
             modifier = Modifier
                 .size(100.dp)
                 .clip(RoundedCornerShape(28.dp)),
-            imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.app_icon),
+            painter = painterResource(com.gowoon.designsystem.R.drawable.profile_default),
             tint = Color.Unspecified,
             contentDescription = null
         )

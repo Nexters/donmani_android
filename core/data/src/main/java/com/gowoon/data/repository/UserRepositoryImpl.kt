@@ -36,7 +36,7 @@ class UserRepositoryImpl @Inject constructor(
         userService.registerUser(RegisterUserRequest(deviceId)).let { result ->
             if (result.isSuccessful) {
                 result.body()?.let { body ->
-                    Result.Success(body.userName)
+                    Result.Success(body.responseData.userName)
                 } ?: Result.Error(message = "empty body")
             } else {
                 Result.Error(code = result.code(), message = result.message())
@@ -67,7 +67,7 @@ class UserRepositoryImpl @Inject constructor(
         ).let { result ->
             if (result.isSuccessful) {
                 result.body()?.let { body ->
-                    Result.Success(body.updatedUserName)
+                    Result.Success(body.responseData.updatedUserName)
                 } ?: Result.Error(message = "body is null")
             } else {
                 Result.Error(code = result.code(), message = result.message())

@@ -6,6 +6,8 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
+import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.model.record.Record
@@ -20,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getUserNicknameUseCase: GetUserNicknameUseCase,
-    private val getRecordListUseCase: GetRecordListUseCase
+    private val getRecordListUseCase: GetRecordListUseCase,
+    private val showYesterdayTooltipUseCase: ShowYesterdayTooltipUseCase,
+    private val hideYesterdayTooltipUseCase: HideYesterdayTooltipUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
 
     override fun createInitialState(): HomeState {
@@ -34,7 +38,7 @@ class HomeViewModel @Inject constructor(
     override fun handleEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.HideTooltip -> {
-                setState(currentState.copy(showTooltip = false))
+                hideTooltip()
             }
 
             is HomeEvent.OnAddRecord -> {
@@ -90,6 +94,27 @@ class HomeViewModel @Inject constructor(
 
                 }
         }.also { setEffect(HomeEffect.RefreshTrigger) }
+        viewModelScope.launch {
+            showYesterdayTooltipUseCase().collect {
+                when (it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(showTooltip = it.data))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+    }
+
+    private fun hideTooltip() {
+        viewModelScope.launch {
+            if (hideYesterdayTooltipUseCase() is Result.Error) {
+                // TODO error handling
+            }
+        }
     }
 
     private fun hasRecordOfDay(records: List<Record>, date: LocalDate): Boolean {

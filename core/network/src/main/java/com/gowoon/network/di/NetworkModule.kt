@@ -84,7 +84,7 @@ object NetworkModule {
     ): Retrofit {
         return Retrofit.Builder()
             .client(httpClient)
-            .baseUrl(BuildConfig.SERVER_URL)
+            .baseUrl(BuildConfig.SERVER_URL + "/api/${BuildConfig.SERVER_VERSION}/")
             .addConverterFactory(converterFactory)
             .build()
     }
