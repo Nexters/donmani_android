@@ -80,4 +80,17 @@ class ConfigRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+    override suspend fun getStarBottleOpenShownMonth(): Flow<Result<Int>> = try {
+        configDataSource.getStarBottleOpenSheetShownMonth().map { Result.Success(it) }
+    } catch (e: Exception) {
+        flow { emit(Result.Error(message = e.message)) }
+    }
+
+    override suspend fun setStarBottleOpenShownMonth(month: Int): Result<Unit> =
+        try {
+            Result.Success(configDataSource.setStarBottleOpenSheetShownMonth(month))
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }

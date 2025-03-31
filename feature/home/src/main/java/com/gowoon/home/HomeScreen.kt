@@ -59,12 +59,6 @@ internal fun HomeScreen(
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
-    // TODO 조건 정리되면 작업 필요
-    var showBottomSheet by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        showBottomSheet = true
-    }
-
     LaunchedEffect(resultFromRecord) {
         var recordAdded = false
         var record: Record? = null
@@ -79,9 +73,9 @@ internal fun HomeScreen(
     TransparentScaffold(
         topBar = { HomeAppBar(onClickSetting = onClickSetting) }
     ) { padding ->
-        if (showBottomSheet) {
+        if (state.showBottomSheet && state.records.isEmpty()) {
             StarBottleOpenBottomSheet(
-                onDismissRequest = { showBottomSheet = false },
+                onDismissRequest = { viewModel.setEvent(HomeEvent.HideBottomSheet) },
                 onClickGoToStarBottle = onClickGoToStarBottle
             )
         }
