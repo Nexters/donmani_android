@@ -10,4 +10,6 @@ interface UserRepository {
     suspend fun registerUserNickname(nickname: String): Result<Unit>
     suspend fun getUserNickname(): Flow<Result<String?>>
     suspend fun updateUserNickname(newNickname: String): Result<String>
+    suspend fun getNoticeStatus(): Result<Boolean>
+    suspend fun updateNoticeStatus(): Result<Unit>
 }

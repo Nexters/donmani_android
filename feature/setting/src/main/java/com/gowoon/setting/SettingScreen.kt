@@ -37,6 +37,7 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
+import com.gowoon.setting.component.Reddot
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.BBSRuleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Stable
 data class SettingItem(
     val title: String,
+    val showReddot: Boolean = false,
     val onClick: () -> Unit
 )
 
@@ -51,6 +53,7 @@ data class SettingItem(
 internal fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
+    onClickNotice: () -> Unit,
     onClickPrivatePrivacy: () -> Unit,
     onClickFeedback: () -> Unit
 ) {
@@ -114,15 +117,23 @@ internal fun SettingScreen(
             SettingContent(
                 listOf(
                     SettingItem(
-                        stringResource(R.string.setting_bbs_rule)
-                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
-                    SettingItem(
-                        stringResource(R.string.setting_private_privacy),
-                        onClickPrivatePrivacy
+                        title = stringResource(R.string.setting_notice),
+                        showReddot = state.newNotice,
+                        onClick = {
+                            viewModel.setEvent(SettingEvent.UpdateNoticeStatusAsRead)
+                            onClickNotice()
+                        }
                     ),
                     SettingItem(
-                        stringResource(R.string.setting_feedback),
-                        onClickFeedback
+                        title = stringResource(R.string.setting_bbs_rule)
+                    ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
+                    SettingItem(
+                        title = stringResource(R.string.setting_private_privacy),
+                        onClick = onClickPrivatePrivacy
+                    ),
+                    SettingItem(
+                        title = stringResource(R.string.setting_feedback),
+                        onClick = onClickFeedback
                     )
                 )
             )
@@ -174,6 +185,7 @@ private fun SettingContent(
         settingItems.forEach {
             SettingContentItem(
                 title = it.title,
+                showReddot = it.showReddot,
                 onClick = it.onClick
             )
         }
@@ -183,6 +195,7 @@ private fun SettingContent(
 @Composable
 private fun SettingContentItem(
     title: String,
+    showReddot: Boolean,
     onClick: () -> Unit,
     button: (@Composable BoxScope.() -> Unit)? = null
 ) {
@@ -192,12 +205,17 @@ private fun SettingContentItem(
             .height(56.dp)
             .noRippleClickable { onClick() }
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterStart),
-            text = title,
-            color = DonmaniTheme.colors.DeepBlue99,
-            style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
-        )
+        Row(modifier = Modifier.align(Alignment.CenterStart)) {
+            Text(
+                text = title,
+                color = DonmaniTheme.colors.DeepBlue99,
+                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
+            )
+            if (showReddot) {
+                Spacer(Modifier.width(4.dp))
+                Reddot()
+            }
+        }
         button?.let { it() }
     }
 }
