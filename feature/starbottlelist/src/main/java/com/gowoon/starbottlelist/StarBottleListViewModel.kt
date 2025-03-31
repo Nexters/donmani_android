@@ -88,6 +88,10 @@ class StarBottleListViewModel @Inject constructor(
             }
         }
     }
+
+    fun showToast(message: String) {
+        setEffect(StarBottleListEffect.ShowToast(message))
+    }
 }
 
 data class StarBottleListState(
@@ -99,4 +103,6 @@ sealed interface StarBottleListEvent : UiEvent {
     data object HideBanner : StarBottleListEvent
 }
 
-sealed interface StarBottleListEffect : UiEffect
+sealed interface StarBottleListEffect : UiEffect {
+    data class ShowToast(val message: String) : StarBottleListEffect
+}

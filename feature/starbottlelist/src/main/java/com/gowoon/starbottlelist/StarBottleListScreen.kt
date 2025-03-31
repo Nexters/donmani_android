@@ -14,13 +14,17 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -34,12 +38,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.designsystem.component.AppBar
+import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.BottleState
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun StarBottleListScreen(
@@ -47,14 +53,26 @@ internal fun StarBottleListScreen(
     onClickBack: () -> Unit,
     onClickBottle: (Int, String) -> Unit
 ) {
+    val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEffect.collectLatest {
+            if (it is StarBottleListEffect.ShowToast) {
+                snackbarHostState.showSnackbar(it.message)
+            }
+        }
+    }
+
     TransparentScaffold(
         topBar = {
             AppBar(
                 title = stringResource(R.string.star_bottle_list_app_bar_title),
                 onClickNavigation = onClickBack
             )
-        }
+        },
+        snackbarHost = { CustomSnackBarHost(snackbarHostState) }
     ) {
         LazyVerticalGrid(
             modifier = Modifier.padding(it),
@@ -72,7 +90,7 @@ internal fun StarBottleListScreen(
                     when (val state = it.second) {
                         is BottleState.OPENED -> {
                             if (state.count == 0) {
-                                // TODO show snackbar
+                                viewModel.showToast(context.getString(R.string.star_bottle_list_no_record_toast_message))
                             } else {
                                 onClickBottle(
                                     it.first,
