@@ -71,7 +71,10 @@ class HomeViewModel @Inject constructor(
         }
         viewModelScope.launch {
             uiEffect.filter { it is HomeEffect.RefreshTrigger }
-                .flatMapLatest { getRecordListUseCase() }.stateIn(this).collect {
+                .flatMapLatest {
+                    val today = LocalDate.now()
+                    getRecordListUseCase(today.year, today.monthValue)
+                }.stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
                             val records = result.data.filterNotNull()

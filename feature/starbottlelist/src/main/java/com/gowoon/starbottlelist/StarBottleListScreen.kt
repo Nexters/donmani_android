@@ -37,13 +37,15 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
 import com.gowoon.designsystem.util.noRippleClickable
+import com.gowoon.model.record.BottleState
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 
 @Composable
 internal fun StarBottleListScreen(
     viewModel: StarBottleListViewModel = hiltViewModel(),
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickBottle: (Int, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
@@ -66,7 +68,27 @@ internal fun StarBottleListScreen(
                 }
             }
             items(state.monthlySummaryList) {
-                StarBottleListItem(it.first, it.second)
+                StarBottleListItem(it.first, it.second) {
+                    when (val state = it.second) {
+                        is BottleState.OPENED -> {
+                            if (state.count == 0) {
+                                // TODO show snackbar
+                            } else {
+                                onClickBottle(
+                                    it.first,
+                                    BottleState.OPENED::class.simpleName ?: "OPENED"
+                                )
+                            }
+                        }
+
+                        is BottleState.LOCKED -> {
+                            onClickBottle(
+                                it.first,
+                                BottleState.LOCKED::class.simpleName ?: "LOCKED"
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -95,13 +117,15 @@ private fun StarBottleListHeader(modifier: Modifier = Modifier, onClick: () -> U
 @Composable
 private fun StarBottleListItem(
     month: Int,
-    state: BottleState
+    state: BottleState,
+    onClick: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             Modifier
                 .width(100.dp)
                 .height(116.dp)
+                .noRippleClickable { onClick() }
         ) {
             when (state) {
                 is BottleState.LOCKED -> {

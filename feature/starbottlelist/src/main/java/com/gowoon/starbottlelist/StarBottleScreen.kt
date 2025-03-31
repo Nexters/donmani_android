@@ -9,34 +9,38 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Record
-import com.gowoon.ui.BGMode
-import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StarBottle
 
 @Composable
-internal fun StarBottleScreen() {
-    val year = "25"
-    val month = 3
-    val records = null
+internal fun StarBottleScreen(
+    viewModel: StarBottleViewModel = hiltViewModel(),
+    onClickBack: () -> Unit,
+    onClickBottle: (List<Record>) -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
     TransparentScaffold(
         topBar = {
             AppBar(
-                title = stringResource(R.string.star_bottle_app_bar_title, year, month),
-                onClickNavigation = {
-                    // TODO
-                }
+                title = stringResource(
+                    R.string.star_bottle_app_bar_title,
+                    state.year.toString().takeLast(2),
+                    state.month ?: -1
+                ),
+                onClickNavigation = onClickBack
             )
         }
     ) {
@@ -45,15 +49,13 @@ internal fun StarBottleScreen() {
                 .fillMaxSize()
                 .padding(it)
         ) {
-            if (records == null) {
+            if (state.records.isEmpty()) {
                 StarBottleHeader(modifier = Modifier.fillMaxWidth())
             }
             StarBottleContent(
                 modifier = Modifier.align(Alignment.Center),
-                records = records
-            ) {
-                // TODO
-            }
+                records = state.records
+            ) { onClickBottle(state.records) }
         }
     }
 }
@@ -61,16 +63,16 @@ internal fun StarBottleScreen() {
 @Composable
 private fun StarBottleContent(
     modifier: Modifier = Modifier,
-    records: List<Record>? = null,
+    records: List<Record>,
     onClickBottle: () -> Unit
 ) {
-    records?.let {
+    if (records.isNotEmpty()) {
         StarBottle(
             modifier = modifier,
-            records = it,
+            records = records,
             onClickBottle = onClickBottle
         )
-    } ?: run {
+    } else {
         Icon(
             modifier = modifier
                 .width(300.dp)
@@ -90,13 +92,5 @@ private fun StarBottleHeader(modifier: Modifier = Modifier) {
             style = DonmaniTheme.typography.Body1,
             color = DonmaniTheme.colors.Gray95
         )
-    }
-}
-
-@Preview
-@Composable
-private fun StarBottlePreview() {
-    GradientBackground(mode = BGMode.SPECIAL) {
-        StarBottleScreen()
     }
 }

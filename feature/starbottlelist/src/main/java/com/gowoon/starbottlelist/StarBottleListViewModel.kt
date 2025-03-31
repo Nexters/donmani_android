@@ -9,6 +9,7 @@ import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideStarBottleListBannerUseCase
 import com.gowoon.domain.usecase.config.ShowStarBottleListBannerUseCase
 import com.gowoon.domain.usecase.record.GetMonthlySummaryUseCase
+import com.gowoon.model.record.BottleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -87,11 +88,6 @@ class StarBottleListViewModel @Inject constructor(
             }
         }
     }
-}
-
-sealed class BottleState {
-    data class OPENED(val count: Int, val total: Int) : BottleState()
-    data object LOCKED : BottleState()
 }
 
 data class StarBottleListState(
