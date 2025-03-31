@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,11 +40,6 @@ import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 
-sealed class BottleState {
-    data class OPENED(val count: Int, val total: Int) : BottleState()
-    data object LOCKED : BottleState()
-}
-
 @Composable
 internal fun StarBottleListScreen(
     viewModel: StarBottleListViewModel = hiltViewModel(),
@@ -69,9 +65,8 @@ internal fun StarBottleListScreen(
                     StarBottleListHeader { viewModel.setEvent(StarBottleListEvent.HideBanner) }
                 }
             }
-            items(8) {
-                val state = if (it < 4) BottleState.OPENED(3, 30) else BottleState.LOCKED
-                StarBottleListItem(it + 1, state)
+            items(state.monthlySummaryList) {
+                StarBottleListItem(it.first, it.second)
             }
         }
     }
