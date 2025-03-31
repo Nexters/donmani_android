@@ -3,6 +3,7 @@ package com.gowoon.statistics.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.gowoon.statistics.BuildConfig
 import com.gowoon.statistics.StatisticsScreen
 import kotlinx.serialization.Serializable
 
@@ -17,9 +18,15 @@ fun NavController.navigateToStatistics(year: String, month: Int) {
 }
 
 fun NavGraphBuilder.statisticsScreen(
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    navigateToWebView: (String) -> Unit
 ) {
     composable<StatisticsNavigation> {
-        StatisticsScreen(onClickBack = onClickBack)
+        StatisticsScreen(
+            onClickBack = onClickBack,
+            onClickRequest = {
+                navigateToWebView(BuildConfig.REQUEST_URL)
+            }
+        )
     }
 }

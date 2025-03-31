@@ -95,7 +95,11 @@ fun DonmaniNavHost(
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
         statisticsScreen(
-            onClickBack = navController::popBackStack
+            onClickBack = navController::popBackStack,
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            }
         )
         starBottleListScreen(
             onClickBack = navController::popBackStack,

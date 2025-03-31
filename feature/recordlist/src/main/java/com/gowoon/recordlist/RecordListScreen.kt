@@ -255,13 +255,15 @@ private fun SummaryCardHeader(
                 color = DonmaniTheme.colors.Gray99
             )
             onClick?.let {
-                Spacer(Modifier.width(4.dp))
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.arrow_right),
-                    tint = DonmaniTheme.colors.Gray99,
-                    contentDescription = null
-                )
+                if (goodCount + badCount > 0) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.arrow_right),
+                        tint = DonmaniTheme.colors.Gray99,
+                        contentDescription = null
+                    )
+                }
             }
         }
         Row(

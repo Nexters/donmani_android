@@ -39,12 +39,14 @@ import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
 import com.gowoon.statistics.component.PercentageIndicator
 import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StatisticsCategoryChip
 
 @Composable
 internal fun StatisticsScreen(
     viewModel: StatisticsViewModel = hiltViewModel(),
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickRequest: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     TransparentScaffold(
@@ -66,9 +68,7 @@ internal fun StatisticsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(Modifier.height(16.dp))
-            HeaderNoticeBanner {
-                // TODO 기능 요청하기
-            }
+            HeaderNoticeBanner(onClick = onClickRequest)
             Spacer(Modifier.height(24.dp))
             StatisticsContent()
             Spacer(Modifier.height(118.dp))
@@ -82,18 +82,7 @@ private fun HeaderNoticeBanner(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = DonmaniTheme.colors.DeepBlue60, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.notice),
-            tint = Color.Unspecified,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(8.dp))
+    NoticeBanner(modifier = modifier) {
         Column {
             Text(
                 text = stringResource(R.string.notice_banner_title),
