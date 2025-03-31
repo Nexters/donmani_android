@@ -1,6 +1,5 @@
 package com.gowoon.setting
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -32,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -122,7 +119,10 @@ internal fun SettingScreen(
                     SettingItem(
                         title = stringResource(R.string.setting_notice),
                         showReddot = state.newNotice,
-                        onClick = onClickNotice
+                        onClick = {
+                            viewModel.setEvent(SettingEvent.UpdateNoticeStatusAsRead)
+                            onClickNotice()
+                        }
                     ),
                     SettingItem(
                         title = stringResource(R.string.setting_bbs_rule)
@@ -211,7 +211,7 @@ private fun SettingContentItem(
                 color = DonmaniTheme.colors.DeepBlue99,
                 style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
             )
-            if(showReddot) {
+            if (showReddot) {
                 Spacer(Modifier.width(4.dp))
                 Reddot()
             }

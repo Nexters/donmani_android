@@ -76,4 +76,31 @@ class UserRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Result.Error(message = e.message)
     }
+
+    override suspend fun getNoticeStatus(): Result<Boolean> = try {
+        userService.getNoticeStatus(deviceId).let { result ->
+            if (result.isSuccessful) {
+                result.body()?.let { body ->
+                    Result.Success(body.read)
+                } ?: Result.Error(message = "body is null")
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun updateNoticeStatus(): Result<Unit> = try {
+        userService.updateNoticeStatus(deviceId).let { result ->
+            if (result.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
 }

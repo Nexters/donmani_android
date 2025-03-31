@@ -6,7 +6,9 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.user.GetNoticeStatusUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
+import com.gowoon.domain.usecase.user.UpdateNoticeStatusUseCase
 import com.gowoon.domain.usecase.user.UpdateUserNicknameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.stateIn
@@ -16,7 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val getUserNicknameUseCase: GetUserNicknameUseCase,
-    private val updateUserNicknameUseCase: UpdateUserNicknameUseCase
+    private val updateUserNicknameUseCase: UpdateUserNicknameUseCase,
+    private val getNoticeStatusUseCase: GetNoticeStatusUseCase,
+    private val updateNoticeStatusUseCase: UpdateNoticeStatusUseCase
 ) : BaseViewModel<SettingState, SettingEvent, SettingEffect>() {
     override fun createInitialState(): SettingState = SettingState()
 
@@ -33,6 +37,10 @@ class SettingViewModel @Inject constructor(
             is SettingEvent.OnChangeNickName -> {
                 updateUserNickname(event.nickname, event.callback)
             }
+
+            is SettingEvent.UpdateNoticeStatusAsRead -> {
+                updateNoticeStatus()
+            }
         }
     }
 
@@ -47,6 +55,17 @@ class SettingViewModel @Inject constructor(
                     is Result.Error -> {
                         // TODO error handling
                     }
+                }
+            }
+        }
+        viewModelScope.launch {
+            when (val result = getNoticeStatusUseCase()) {
+                is Result.Success -> {
+                    setState(currentState.copy(newNotice = result.data))
+                }
+
+                is Result.Error -> {
+                    // TODO error handling
                 }
             }
         }
@@ -67,6 +86,20 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    private fun updateNoticeStatus() {
+        viewModelScope.launch {
+            when (updateNoticeStatusUseCase()) {
+                is Result.Success -> {
+                    setState(currentState.copy(newNotice = false))
+                }
+
+                is Result.Error -> {
+                    // TODO error handling
+                }
+            }
+        }
+    }
+
     fun showToast(message: String) {
         setEffect(SettingEffect.ShowToast(message))
     }
@@ -75,7 +108,7 @@ class SettingViewModel @Inject constructor(
 data class SettingState(
     val nickname: String = "",
     val dialogState: SettingDialogType? = null,
-    val newNotice: Boolean = true // TODO 서버 연결
+    val newNotice: Boolean = false
 ) : UiState
 
 enum class SettingDialogType { BBS_RULE, EDIT_NICKNAME }
@@ -84,6 +117,8 @@ sealed interface SettingEvent : UiEvent {
     data class ShowDialog(val type: SettingDialogType?) : SettingEvent
     data class OnChangeNickName(val nickname: String, val callback: (Boolean) -> Unit) :
         SettingEvent
+
+    data object UpdateNoticeStatusAsRead : SettingEvent
 }
 
 sealed interface SettingEffect : UiEffect {
