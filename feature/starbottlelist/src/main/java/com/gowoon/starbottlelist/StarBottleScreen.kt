@@ -29,7 +29,7 @@ import com.gowoon.ui.component.StarBottle
 internal fun StarBottleScreen(
     viewModel: StarBottleViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    onClickBottle: (List<Record>) -> Unit
+    onClickBottle: (List<Record>, Int, Int) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     TransparentScaffold(
@@ -55,7 +55,7 @@ internal fun StarBottleScreen(
             StarBottleContent(
                 modifier = Modifier.align(Alignment.Center),
                 records = state.records
-            ) { onClickBottle(state.records) }
+            ) { onClickBottle(state.records, state.year, state.month ?: -1) }
         }
     }
 }

@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -54,7 +50,6 @@ import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.domain.util.toKorean
@@ -83,7 +78,7 @@ internal fun RecordListScreen(
         topBar = {
             AppBar(
                 title = stringResource(R.string.record_list_appbar_title, state.year, state.month),
-                onClickNavigation = onClickBack
+                onClickNavigation = onClickBack,
                 actionButton = {
                     if (showActionButton) {
                         Icon(
