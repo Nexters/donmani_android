@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
             DonmaniTheme {
                 val navController = rememberNavController()
                 val appState = rememberAppState(navController)
-                GradientBackground(if (appState.isBeforeHome) BGMode.MAIN else BGMode.DEFAULT) {
+                GradientBackground(if (appState.isBeforeHome) BGMode.SPECIAL else BGMode.DEFAULT) {
                     DonmaniNavHost(navController = navController)
                 }
             }

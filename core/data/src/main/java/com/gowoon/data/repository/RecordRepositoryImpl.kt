@@ -4,6 +4,7 @@ import com.gowoon.data.mapper.toDto
 import com.gowoon.data.mapper.toModel
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RecordRepository
+import com.gowoon.model.record.MonthlySummary
 import com.gowoon.model.record.Record
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.dto.request.PostRecordRequest
@@ -63,4 +64,25 @@ class RecordRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Result.Error(message = e.message)
     }
+
+    override suspend fun getMonthlySummaryList(year: Int): Flow<Result<List<MonthlySummary>>> =
+        flow {
+            try {
+                recordService.getExpensesSummary(userKey = deviceId, year = year).let { result ->
+                    emit(
+                        if (result.isSuccessful) {
+                            result.body()?.let { body ->
+                                Result.Success(
+                                    body.monthlyRecords.map { summary -> summary.toModel() }
+                                )
+                            } ?: Result.Error(message = "empty body")
+                        } else {
+                            Result.Error(code = result.code(), message = result.message())
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                emit(Result.Error(message = e.message))
+            }
+        }
 }

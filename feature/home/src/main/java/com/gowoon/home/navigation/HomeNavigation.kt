@@ -21,7 +21,8 @@ fun NavController.navigateToHome(addedRecord: String? = null) {
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
     navigateToRecord: (Boolean, Boolean) -> Unit,
-    navigateToRecordList: (list: List<Record>) -> Unit
+    navigateToRecordList: (list: List<Record>) -> Unit,
+    navigateToStarBottleList: () -> Unit
 ) {
     composable<HomeNavigationRoute> { backStackEntry ->
         val result = backStackEntry.toRoute<HomeNavigationRoute>().addedRecord
@@ -29,7 +30,8 @@ fun NavGraphBuilder.homeScreen(
             resultFromRecord = result,
             onClickSetting = navigateToSetting,
             onClickAdd = navigateToRecord,
-            onClickBottle = navigateToRecordList
+            onClickBottle = navigateToRecordList,
+            onClickGoToStarBottle = navigateToStarBottleList
         )
     }
 }

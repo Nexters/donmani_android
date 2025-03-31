@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gowoon.datastore.di.TooltipDataStore
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,9 @@ class ConfigDataSource @Inject constructor(
         private val ON_BOARDING_KEY = booleanPreferencesKey("onboarding_key")
         private val YESTERDAY_TOOLTIP_KEY =
             stringPreferencesKey("yesterday_tooltip_last_checked_key")
+        private val STAR_BOTTLE_LIST_TOOLTIP = booleanPreferencesKey("star_bottle_list_tooltip_key")
+        private val STAR_BOTTLE_LIST_BANNER = booleanPreferencesKey("star_bottle_list_banner_key")
+        private val STAR_BOTTLE_OPEN_SHEET = intPreferencesKey("star_bottle_open_sheet_key")
     }
 
     fun getNoConsumptionTooltipState(): Flow<Boolean> = datastore.data.map { preference ->
@@ -46,6 +50,36 @@ class ConfigDataSource @Inject constructor(
     suspend fun setYesterdayTooltipLastCheckedDay(date: String) {
         datastore.edit { preference ->
             preference[YESTERDAY_TOOLTIP_KEY] = date
+        }
+    }
+
+    fun getStarBottleListTooltipState(): Flow<Boolean> = datastore.data.map { preference ->
+        preference[STAR_BOTTLE_LIST_TOOLTIP] ?: true
+    }
+
+    suspend fun setStarBottleListTooltipState(state: Boolean) {
+        datastore.edit { preference ->
+            preference[STAR_BOTTLE_LIST_TOOLTIP] = state
+        }
+    }
+
+    fun getStarBottleListBannerState(): Flow<Boolean> = datastore.data.map { preference ->
+        preference[STAR_BOTTLE_LIST_BANNER] ?: true
+    }
+
+    suspend fun setStarBottleListBannerState(state: Boolean) {
+        datastore.edit { preference ->
+            preference[STAR_BOTTLE_LIST_BANNER] = state
+        }
+    }
+
+    fun getStarBottleOpenSheetShownMonth(): Flow<Int> = datastore.data.map { preference ->
+        preference[STAR_BOTTLE_OPEN_SHEET] ?: 0
+    }
+
+    suspend fun setStarBottleOpenSheetShownMonth(month: Int) {
+        datastore.edit { preference ->
+            preference[STAR_BOTTLE_OPEN_SHEET] = month
         }
     }
 }

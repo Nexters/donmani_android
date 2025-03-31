@@ -2,4 +2,5 @@
     <string name="record_list_appbar_title">기록</string>
     <string name="no_record_title">아직 기록이 없어요</string>
     <string name="btn_add_record">기록하기</string>
+    <string name="action_btn_tooltip_message">별통이만 모아볼 수 있어요!</string>
 </resources>

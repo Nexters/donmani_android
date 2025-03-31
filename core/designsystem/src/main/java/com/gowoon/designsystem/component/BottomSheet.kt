@@ -83,18 +83,15 @@ fun BottomSheet(
                             onDismissRequest()
                         }
                     }
-                } else {
-                    Spacer(Modifier.height(20.dp))
                 }
-                Spacer(Modifier.height(24.dp))
                 title?.let {
                     Text(
+                        modifier = Modifier.padding(vertical = 24.dp),
                         text = it,
                         color = DonmaniTheme.colors.Gray95,
                         style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold)
                     )
                 }
-                Spacer(Modifier.height(24.dp))
                 content {
                     scope.launch {
                         state.hide()

@@ -10,6 +10,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.physics.layout.compose)
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.common)

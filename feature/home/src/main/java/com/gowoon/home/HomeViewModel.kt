@@ -6,7 +6,9 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.config.HideStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
+import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
@@ -24,7 +26,9 @@ class HomeViewModel @Inject constructor(
     private val getUserNicknameUseCase: GetUserNicknameUseCase,
     private val getRecordListUseCase: GetRecordListUseCase,
     private val showYesterdayTooltipUseCase: ShowYesterdayTooltipUseCase,
-    private val hideYesterdayTooltipUseCase: HideYesterdayTooltipUseCase
+    private val hideYesterdayTooltipUseCase: HideYesterdayTooltipUseCase,
+    private val showStarBottleOpenSheetUseCase: ShowStarBottleOpenSheetUseCase,
+    private val hideStarBottleOpenSheetUseCase: HideStarBottleOpenSheetUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
 
     override fun createInitialState(): HomeState {
@@ -50,6 +54,10 @@ class HomeViewModel @Inject constructor(
                 )
                 setEffect(HomeEffect.RefreshTrigger)
             }
+
+            is HomeEvent.HideBottomSheet -> {
+                hideSheet()
+            }
         }
     }
 
@@ -71,7 +79,10 @@ class HomeViewModel @Inject constructor(
         }
         viewModelScope.launch {
             uiEffect.filter { it is HomeEffect.RefreshTrigger }
-                .flatMapLatest { getRecordListUseCase() }.stateIn(this).collect {
+                .flatMapLatest {
+                    val today = LocalDate.now()
+                    getRecordListUseCase(today.year, today.monthValue)
+                }.stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
                             val records = result.data.filterNotNull()
@@ -107,11 +118,32 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            showStarBottleOpenSheetUseCase().stateIn(this).collect {
+                when (it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(showBottomSheet = it.data))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
     }
 
     private fun hideTooltip() {
         viewModelScope.launch {
             if (hideYesterdayTooltipUseCase() is Result.Error) {
+                // TODO error handling
+            }
+        }
+    }
+
+    private fun hideSheet() {
+        viewModelScope.launch {
+            if (hideStarBottleOpenSheetUseCase() is Result.Error) {
                 // TODO error handling
             }
         }
@@ -129,12 +161,14 @@ data class HomeState(
     val recordAdded: Boolean = false,
     val hasToday: Boolean = false,
     val hasYesterday: Boolean = false,
-    val showTooltip: Boolean = true
+    val showTooltip: Boolean = true,
+    val showBottomSheet: Boolean = false
 ) : UiState
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
     data class OnAddRecord(val newRecord: Record?, val recordAdded: Boolean) : HomeEvent
+    data object HideBottomSheet : HomeEvent
 }
 
 sealed interface HomeEffect : UiEffect {

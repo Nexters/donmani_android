@@ -22,6 +22,9 @@ import com.gowoon.setting.navigation.navigateToSetting
 import com.gowoon.setting.navigation.settingScreen
 import com.gowoon.splash.navigation.SplashNavigationRoute
 import com.gowoon.splash.navigation.splashScreen
+import com.gowoon.starbottlelist.navigation.navigateToStarBottle
+import com.gowoon.starbottlelist.navigation.navigateToStarBottleList
+import com.gowoon.starbottlelist.navigation.starBottleListScreen
 import com.gowoon.ui.util.rememberHiltJson
 
 @Composable
@@ -63,7 +66,8 @@ fun DonmaniNavHost(
             },
             navigateToRecordList = { records ->
                 navController.navigateToRecordList(json.encodeToString(records))
-            }
+            },
+            navigateToStarBottleList = navController::navigateToStarBottleList
         )
         recordGraph(
             onClickBack = navController::popBackStack,
@@ -84,7 +88,15 @@ fun DonmaniNavHost(
         )
         recordListScreen(
             onClickBack = navController::popBackStack,
-            navigateToRecord = navController::navigateToRecordAndPopUpTo
+            navigateToRecord = navController::navigateToRecordAndPopUpTo,
+            navigateToStarBottleList = navController::navigateToStarBottleList
+        )
+        starBottleListScreen(
+            onClickBack = navController::popBackStack,
+            navigateToStarBottle = navController::navigateToStarBottle,
+            navigateToRecordList = { records ->
+                navController.navigateToRecordList(json.encodeToString(records))
+            }
         )
         settingScreen(
             onClickBack = navController::popBackStack,

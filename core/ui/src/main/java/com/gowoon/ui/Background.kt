@@ -27,7 +27,7 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
 import com.gowoon.ui.util.getColor
 
-enum class BGMode { DEFAULT, MAIN }
+enum class BGMode { DEFAULT, SPECIAL }
 
 @Composable
 fun CategoryBackground(category: Category?, content: @Composable () -> Unit) {
@@ -60,7 +60,7 @@ fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () ->
         endColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
             0xFF091958
         ),
-        showStarBg = mode == BGMode.MAIN,
+        showStarBg = mode == BGMode.SPECIAL,
         content = content
     )
 }

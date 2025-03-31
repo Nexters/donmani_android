@@ -3,17 +3,12 @@ package com.gowoon.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,14 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -42,13 +34,13 @@ import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
-import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.HomeAppBar
-import com.gowoon.home.component.StarBottle
+import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.MessageBox
+import com.gowoon.ui.component.StarBottle
 import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
@@ -60,7 +52,8 @@ internal fun HomeScreen(
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit,
-    onClickBottle: (List<Record>) -> Unit
+    onClickBottle: (List<Record>) -> Unit,
+    onClickGoToStarBottle: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
@@ -80,6 +73,12 @@ internal fun HomeScreen(
     TransparentScaffold(
         topBar = { HomeAppBar(onClickSetting = onClickSetting) }
     ) { padding ->
+        if (state.showBottomSheet && state.records.isEmpty()) {
+            StarBottleOpenBottomSheet(
+                onDismissRequest = { viewModel.setEvent(HomeEvent.HideBottomSheet) },
+                onClickGoToStarBottle = onClickGoToStarBottle
+            )
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -148,39 +147,13 @@ private fun HomeContent(
             stiffness = Spring.StiffnessLow
         )
     )
-
-    Box(
-        modifier = modifier
-            .width(300.dp)
-            .height(400.dp)
-            .noRippleClickable { onClickBottle() }
-            .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
-    ) {
-        Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(65.dp)),
-            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
-            contentDescription = null
-        )
-        StarBottle(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 50.dp)
-                .padding(10.dp)
-                .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
-            records = records,
-            newRecord = if (recordAdded) newRecord else null
-        )
-        Image(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .graphicsLayer { alpha = 0.7f },
-            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
-            contentDescription = null
-        )
-    }
+    StarBottle(
+        modifier = modifier.graphicsLayer(translationY = if (recordAdded) offsetY else 0f),
+        records = records,
+        newRecord = newRecord,
+        recordAdded = recordAdded,
+        onClickBottle = onClickBottle
+    )
 }
 
 @Composable
