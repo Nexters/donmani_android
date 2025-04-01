@@ -43,6 +43,12 @@ fun Category.name(type: ConsumptionType): String = when (type) {
     ConsumptionType.BAD -> (this as BadCategory).name
 }
 
+fun Category.isDeleted(): Boolean = kotlin.runCatching {
+    (this as GoodCategory).deleted
+}.getOrElse {
+    (this as BadCategory).deleted
+}
+
 fun String.getCategory(): Category = kotlin.runCatching {
     GoodCategory.valueOf(this)
 }.getOrElse {

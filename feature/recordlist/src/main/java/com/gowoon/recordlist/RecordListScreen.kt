@@ -249,7 +249,7 @@ private fun SummaryCardHeader(
             .wrapContentHeight()
             .background(color = DonmaniTheme.colors.DeepBlue60, shape = RoundedCornerShape(16.dp))
             .padding(16.dp)
-            .noRippleClickable { onClick?.invoke() },
+            .noRippleClickable { if (goodCount + badCount > 0) onClick?.invoke() },
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

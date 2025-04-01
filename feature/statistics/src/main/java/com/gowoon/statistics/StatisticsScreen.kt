@@ -17,10 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,11 +37,11 @@ import com.gowoon.model.record.Category
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
+import com.gowoon.model.record.isDeleted
 import com.gowoon.statistics.component.PercentageIndicator
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StatisticsCategoryChip
-import io.github.aakira.napier.Napier
 
 @Composable
 internal fun StatisticsScreen(
@@ -129,7 +126,9 @@ private fun StatisticsContent(
     Column(modifier.fillMaxWidth()) {
         StatisticsCard(
             type = ConsumptionType.GOOD,
-            categoryCounts = categoryCounts.filter { it.key is GoodCategory }
+            categoryCounts = categoryCounts.filter {
+                it.key is GoodCategory
+            }
         )
         Spacer(Modifier.height(20.dp))
         StatisticsCard(
@@ -144,42 +143,40 @@ private fun StatisticsCard(
     type: ConsumptionType,
     categoryCounts: Map<Category, Int>
 ) {
-    val totalCount by remember { mutableIntStateOf(categoryCounts.values.sum()) }
+    var totalCount = categoryCounts.filterKeys { !it.isDeleted() }.values.sum()
     Column(
         Modifier
             .fillMaxWidth()
             .background(color = DonmaniTheme.colors.DeepBlue70, shape = RoundedCornerShape(20.dp))
             .padding(16.dp)
     ) {
-        Text(
-            text = stringResource(R.string.statistics_card_title, type.title, totalCount),
-            style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
-            color = DonmaniTheme.colors.Gray99
-        )
-        when (type) {
-            ConsumptionType.GOOD -> {
-                GoodCategory.entries.filterNot { it.deleted }.forEach {
-                    StatisticsCategoryItem(
-                        type = ConsumptionType.GOOD,
-                        category = it,
-                        percentage = categoryCounts[it]?.let { count ->
-                            Napier.d("gowoon $it $count $totalCount")
-                            (count / totalCount).toFloat()
-                        } ?: 0f
-                    )
+        if (totalCount > 0) {
+            Text(
+                text = stringResource(R.string.statistics_card_title, type.title, totalCount),
+                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
+                color = DonmaniTheme.colors.Gray99
+            )
+            when (type) {
+                ConsumptionType.GOOD -> {
+                    GoodCategory.entries.filterNot { it.deleted }.forEach {
+                        StatisticsCategoryItem(
+                            type = ConsumptionType.GOOD,
+                            category = it,
+                            count = categoryCounts[it] ?: 0,
+                            totalCount = totalCount
+                        )
+                    }
                 }
-            }
 
-            ConsumptionType.BAD -> {
-                BadCategory.entries.filterNot { it.deleted }.forEach {
-                    StatisticsCategoryItem(
-                        type = ConsumptionType.BAD,
-                        category = it,
-                        percentage = categoryCounts[it]?.let { count ->
-                            Napier.d("gowoon $it $count $totalCount")
-                            (count / totalCount).toFloat()
-                        } ?: 0f
-                    )
+                ConsumptionType.BAD -> {
+                    BadCategory.entries.filterNot { it.deleted }.forEach {
+                        StatisticsCategoryItem(
+                            type = ConsumptionType.BAD,
+                            category = it,
+                            count = categoryCounts[it] ?: 0,
+                            totalCount = totalCount
+                        )
+                    }
                 }
             }
         }
@@ -190,11 +187,10 @@ private fun StatisticsCard(
 private fun StatisticsCategoryItem(
     type: ConsumptionType,
     category: Category,
-    percentage: Float
+    count: Int,
+    totalCount: Int
 ) {
-    LaunchedEffect(Unit) {
-        Napier.d("gowoon $category $percentage")
-    }
+    val percentage = count.toFloat() / totalCount.toFloat()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,14 +216,14 @@ private fun StatisticsCategoryItem(
                 modifier = Modifier
                     .width(120.dp)
                     .height(6.dp),
-                trackColor = DonmaniTheme.colors.DeepBlue99,
-                targetColor = DonmaniTheme.colors.DeepBlue80,
-                progress = percentage / 100f
+                trackColor = DonmaniTheme.colors.DeepBlue80,
+                targetColor = DonmaniTheme.colors.DeepBlue99,
+                progress = percentage
             )
             Spacer(Modifier.width(8.dp))
             Text(
                 modifier = Modifier.width(40.dp),
-                text = "$percentage%",
+                text = "${(percentage * 100).toInt()}%",
                 style = DonmaniTheme.typography.Body2,
                 color = DonmaniTheme.colors.Gray95,
                 textAlign = TextAlign.End
