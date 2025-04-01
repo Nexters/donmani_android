@@ -2,6 +2,7 @@ package com.gowoon.donmani_android.navigation
 
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -112,6 +113,11 @@ fun DonmaniNavHost(
             onClickBack = navController::popBackStack,
             navigateToWebView = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            },
+            navigateToSystemSetting = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:${context.packageName}")
                 context.startActivity(intent)
             }
         )

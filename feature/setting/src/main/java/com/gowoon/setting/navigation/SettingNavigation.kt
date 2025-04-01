@@ -14,14 +14,16 @@ fun NavController.navigateToSetting() {
 
 fun NavGraphBuilder.settingScreen(
     onClickBack: () -> Unit,
-    navigateToWebView: (String) -> Unit
+    navigateToWebView: (String) -> Unit,
+    navigateToSystemSetting: () -> Unit
 ) {
     composable(route = settingNavigationRoute) {
         SettingScreen(
             onClickBack = onClickBack,
             onClickNotice = { navigateToWebView(BuildConfig.NOTICE_URL) },
             onClickPrivatePrivacy = { navigateToWebView(BuildConfig.PRIVATE_PRIVACY_URL) },
-            onClickFeedback = { navigateToWebView(BuildConfig.FEEDBACK_URL) }
+            onClickFeedback = { navigateToWebView(BuildConfig.FEEDBACK_URL) },
+            onClickPush = navigateToSystemSetting
         )
     }
 }
