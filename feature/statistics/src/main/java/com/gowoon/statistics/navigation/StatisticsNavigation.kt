@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StatisticsNavigation(
-    val year: String,
+    val year: Int,
     val month: Int
 )
 
-fun NavController.navigateToStatistics(year: String, month: Int) {
+fun NavController.navigateToStatistics(year: Int, month: Int) {
     navigate(route = StatisticsNavigation(year, month))
 }
 

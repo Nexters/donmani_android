@@ -42,3 +42,9 @@ fun Category.name(type: ConsumptionType): String = when (type) {
     ConsumptionType.GOOD -> (this as GoodCategory).name
     ConsumptionType.BAD -> (this as BadCategory).name
 }
+
+fun String.getCategory(): Category = kotlin.runCatching {
+    GoodCategory.valueOf(this)
+}.getOrElse {
+    BadCategory.valueOf(this)
+}

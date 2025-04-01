@@ -66,7 +66,7 @@ internal fun RecordListScreen(
     viewModel: RecordListViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
     onClickAdd: () -> Unit,
-    onClickSummary: (String, Int) -> Unit,
+    onClickSummary: (Int, Int) -> Unit,
     onClickActionButton: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -77,7 +77,11 @@ internal fun RecordListScreen(
     TransparentScaffold(
         topBar = {
             AppBar(
-                title = stringResource(R.string.record_list_appbar_title, state.year, state.month),
+                title = stringResource(
+                    R.string.record_list_appbar_title,
+                    state.year.toString().takeLast(2),
+                    state.month
+                ),
                 onClickNavigation = onClickBack,
                 actionButton = {
                     if (showActionButton) {

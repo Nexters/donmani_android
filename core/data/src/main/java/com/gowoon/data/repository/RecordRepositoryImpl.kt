@@ -4,8 +4,10 @@ import com.gowoon.data.mapper.toDto
 import com.gowoon.data.mapper.toModel
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RecordRepository
+import com.gowoon.model.record.Category
 import com.gowoon.model.record.MonthlySummary
 import com.gowoon.model.record.Record
+import com.gowoon.model.record.getCategory
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.service.ExpenseService
@@ -85,4 +87,31 @@ class RecordRepositoryImpl @Inject constructor(
                 emit(Result.Error(message = e.message))
             }
         }
+
+    override suspend fun getCategoryStatistics(
+        year: Int,
+        month: Int
+    ): Flow<Result<Map<Category, Int>>> = flow {
+        try {
+            recordService.getCategoryStatistics(userKey = deviceId, year = year, month = month)
+                .let { result ->
+                    emit(
+                        if (result.isSuccessful) {
+                            result.body()?.let { body ->
+                                val map = mutableMapOf<Category, Int>().apply {
+                                    body.categoryCounts.forEach {
+                                        put(it.category.getCategory(), it.count)
+                                    }
+                                }
+                                Result.Success(map)
+                            } ?: Result.Error(message = "empty body")
+                        } else {
+                            Result.Error(code = result.code(), message = result.message())
+                        }
+                    )
+                }
+        } catch (e: Exception) {
+            emit(Result.Error(message = e.message))
+        }
+    }
 }

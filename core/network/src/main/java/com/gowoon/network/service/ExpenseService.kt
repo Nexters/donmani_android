@@ -3,6 +3,7 @@ package com.gowoon.network.service
 import com.gowoon.network.dto.common.BaseDto
 import com.gowoon.network.dto.common.EmptyBaseDto
 import com.gowoon.network.dto.request.PostRecordRequest
+import com.gowoon.network.dto.response.CategoryStatisticsResponse
 import com.gowoon.network.dto.response.ExpenseListResponse
 import com.gowoon.network.dto.response.ExpenseSummaryListResponse
 import retrofit2.Response
@@ -30,4 +31,11 @@ interface ExpenseService {
         @Path("userKey") userKey: String,
         @Query("year") year: Int
     ): Response<ExpenseSummaryListResponse>
+
+    @GET("expenses/category-statistics/{userKey}")
+    suspend fun getCategoryStatistics(
+        @Path("userKey") userKey: String,
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): Response<CategoryStatisticsResponse>
 }

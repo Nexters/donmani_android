@@ -44,7 +44,7 @@ class RecordListViewModel @Inject constructor(
         setState(
             currentState.copy(
                 records = json.decodeFromString<List<Record>>(recordList),
-                year = year.toString().takeLast(2),
+                year = year,
                 month = month
             )
         )
@@ -80,7 +80,7 @@ class RecordListViewModel @Inject constructor(
 
 data class RecordListState(
     val records: List<Record> = listOf(),
-    val year: String = LocalDate.now().year.toString().takeLast(2),
+    val year: Int = LocalDate.now().year,
     val month: Int = LocalDate.now().monthValue,
     val showTooltip: Boolean = false
 ) : UiState

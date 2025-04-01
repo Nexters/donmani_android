@@ -17,7 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +44,7 @@ import com.gowoon.statistics.component.PercentageIndicator
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StatisticsCategoryChip
+import io.github.aakira.napier.Napier
 
 @Composable
 internal fun StatisticsScreen(
@@ -54,7 +58,7 @@ internal fun StatisticsScreen(
             AppBar(
                 title = stringResource(
                     R.string.statistics_app_bar_title,
-                    state.year,
+                    state.year.toString().takeLast(2),
                     state.month
                 ),
                 onClickNavigation = onClickBack
@@ -70,7 +74,7 @@ internal fun StatisticsScreen(
             Spacer(Modifier.height(16.dp))
             HeaderNoticeBanner(onClick = onClickRequest)
             Spacer(Modifier.height(24.dp))
-            StatisticsContent()
+            StatisticsContent(categoryCounts = state.categoryCounts)
             Spacer(Modifier.height(118.dp))
         }
 
@@ -118,17 +122,19 @@ private fun HeaderNoticeBanner(
 }
 
 @Composable
-private fun StatisticsContent(modifier: Modifier = Modifier) {
-    val count = 3
+private fun StatisticsContent(
+    modifier: Modifier = Modifier,
+    categoryCounts: Map<Category, Int>
+) {
     Column(modifier.fillMaxWidth()) {
         StatisticsCard(
             type = ConsumptionType.GOOD,
-            totalCount = count
+            categoryCounts = categoryCounts.filter { it.key is GoodCategory }
         )
         Spacer(Modifier.height(20.dp))
         StatisticsCard(
             type = ConsumptionType.BAD,
-            totalCount = count
+            categoryCounts = categoryCounts.filter { it.key is BadCategory }
         )
     }
 }
@@ -136,10 +142,9 @@ private fun StatisticsContent(modifier: Modifier = Modifier) {
 @Composable
 private fun StatisticsCard(
     type: ConsumptionType,
-    totalCount: Int
+    categoryCounts: Map<Category, Int>
 ) {
-    // 아마도 타입별로 정렬된 리스트로 받을 듯. category. count or percent로 
-    val percentage = 10
+    val totalCount by remember { mutableIntStateOf(categoryCounts.values.sum()) }
     Column(
         Modifier
             .fillMaxWidth()
@@ -153,21 +158,27 @@ private fun StatisticsCard(
         )
         when (type) {
             ConsumptionType.GOOD -> {
-                GoodCategory.entries.forEach {
+                GoodCategory.entries.filterNot { it.deleted }.forEach {
                     StatisticsCategoryItem(
                         type = ConsumptionType.GOOD,
                         category = it,
-                        percentage = percentage
+                        percentage = categoryCounts[it]?.let { count ->
+                            Napier.d("gowoon $it $count $totalCount")
+                            (count / totalCount).toFloat()
+                        } ?: 0f
                     )
                 }
             }
 
             ConsumptionType.BAD -> {
-                BadCategory.entries.forEach {
+                BadCategory.entries.filterNot { it.deleted }.forEach {
                     StatisticsCategoryItem(
                         type = ConsumptionType.BAD,
                         category = it,
-                        percentage = percentage
+                        percentage = categoryCounts[it]?.let { count ->
+                            Napier.d("gowoon $it $count $totalCount")
+                            (count / totalCount).toFloat()
+                        } ?: 0f
                     )
                 }
             }
@@ -179,8 +190,11 @@ private fun StatisticsCard(
 private fun StatisticsCategoryItem(
     type: ConsumptionType,
     category: Category,
-    percentage: Int
+    percentage: Float
 ) {
+    LaunchedEffect(Unit) {
+        Napier.d("gowoon $category $percentage")
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
