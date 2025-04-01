@@ -24,7 +24,7 @@ fun NavController.navigateToStarBottle(month: Int, state: String) {
 fun NavGraphBuilder.starBottleListScreen(
     onClickBack: () -> Unit,
     navigateToStarBottle: (Int, String) -> Unit,
-    navigateToRecordList: (list: List<Record>) -> Unit
+    navigateToRecordList: (list: List<Record>, Int, Int) -> Unit
 ) {
     composable(route = StarBottleListNavigationRoute) {
         StarBottleListScreen(

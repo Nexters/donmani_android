@@ -21,7 +21,7 @@ fun NavController.navigateToHome(addedRecord: String? = null) {
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
     navigateToRecord: (Boolean, Boolean) -> Unit,
-    navigateToRecordList: (list: List<Record>) -> Unit,
+    navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit
 ) {
     composable<HomeNavigationRoute> { backStackEntry ->

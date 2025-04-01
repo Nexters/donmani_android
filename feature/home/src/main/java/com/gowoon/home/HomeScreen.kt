@@ -52,7 +52,7 @@ internal fun HomeScreen(
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickAdd: (Boolean, Boolean) -> Unit,
-    onClickBottle: (List<Record>) -> Unit,
+    onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,7 +92,7 @@ internal fun HomeScreen(
                 records = state.records,
                 newRecord = state.newRecord,
                 recordAdded = state.recordAdded,
-                onClickBottle = { onClickBottle(state.records) },
+                onClickBottle = { onClickBottle(state.records, state.year, state.month) },
             )
             HomeFooter(
                 hasToday = state.hasToday,

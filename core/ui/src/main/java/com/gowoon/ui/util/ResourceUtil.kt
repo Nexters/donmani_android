@@ -24,7 +24,7 @@ fun Category.getColor(): Color = when (val category = this) {
             GoodCategory.AFFECTION -> Color(0xffFFB8B9)
             GoodCategory.HEALTH -> Color(0xffAAE1C8)
             GoodCategory.SAVING -> Color(0xffA4C3FF)
-            GoodCategory.NONE -> Color.Unspecified
+            GoodCategory.NONE -> Color(0xff8E92A0)
         }
     }
 
@@ -39,7 +39,7 @@ fun Category.getColor(): Color = when (val category = this) {
             BadCategory.HABIT -> Color(0xffD9CDBD)
             BadCategory.OVERFRUGALITY -> Color(0xffAAE1C8)
             BadCategory.MISS -> Color(0xffA7B0CF)
-            BadCategory.NONE -> Color.Unspecified
+            BadCategory.NONE -> Color(0xff8E92A0)
         }
     }
 }

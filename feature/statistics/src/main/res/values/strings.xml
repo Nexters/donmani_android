@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="statistics_app_bar_title">%s년 %d월 기록 통계</string>
+    <string name="notice_banner_title">요약 페이지가 곧 업데이트 될거에요</string>
+    <string name="notice_banner_description">기록을 모아 분석해 드릴게요!</string>
+    <string name="notice_banner_request_btn">기능 요청하기</string>
+    <string name="statistics_card_title">%s 소비 %d</string>
+</resources>

@@ -25,6 +25,8 @@ import com.gowoon.splash.navigation.splashScreen
 import com.gowoon.starbottlelist.navigation.navigateToStarBottle
 import com.gowoon.starbottlelist.navigation.navigateToStarBottleList
 import com.gowoon.starbottlelist.navigation.starBottleListScreen
+import com.gowoon.statistics.navigation.navigateToStatistics
+import com.gowoon.statistics.navigation.statisticsScreen
 import com.gowoon.ui.util.rememberHiltJson
 
 @Composable
@@ -64,8 +66,8 @@ fun DonmaniNavHost(
                     hasYesterdayRecord = hasYesterday
                 )
             },
-            navigateToRecordList = { records ->
-                navController.navigateToRecordList(json.encodeToString(records))
+            navigateToRecordList = { records, year, month ->
+                navController.navigateToRecordList(json.encodeToString(records), year, month)
             },
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
@@ -89,13 +91,21 @@ fun DonmaniNavHost(
         recordListScreen(
             onClickBack = navController::popBackStack,
             navigateToRecord = navController::navigateToRecordAndPopUpTo,
+            navigateToStatistics = navController::navigateToStatistics,
             navigateToStarBottleList = navController::navigateToStarBottleList
+        )
+        statisticsScreen(
+            onClickBack = navController::popBackStack,
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            }
         )
         starBottleListScreen(
             onClickBack = navController::popBackStack,
             navigateToStarBottle = navController::navigateToStarBottle,
-            navigateToRecordList = { records ->
-                navController.navigateToRecordList(json.encodeToString(records))
+            navigateToRecordList = { records, year, month ->
+                navController.navigateToRecordList(json.encodeToString(records), year, month)
             }
         )
         settingScreen(
