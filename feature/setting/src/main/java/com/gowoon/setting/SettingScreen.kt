@@ -1,7 +1,6 @@
 package com.gowoon.setting
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 data class SettingItem(
     val title: String,
     val showReddot: Boolean = false,
+    val toggleState: Boolean? = null,
     val onClick: () -> Unit
 )
 
@@ -117,6 +119,13 @@ internal fun SettingScreen(
             SettingContent(
                 listOf(
                     SettingItem(
+                        title = stringResource(R.string.setting_push),
+                        toggleState = false, // TODO
+                        onClick = {
+                            // TODO
+                        }
+                    ),
+                    SettingItem(
                         title = stringResource(R.string.setting_notice),
                         showReddot = state.newNotice,
                         onClick = {
@@ -186,7 +195,22 @@ private fun SettingContent(
             SettingContentItem(
                 title = it.title,
                 showReddot = it.showReddot,
-                onClick = it.onClick
+                onClick = it.onClick,
+                button = {
+                    it.toggleState?.let {
+                        Switch(
+                            checked = it,
+                            onCheckedChange = {},
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = DonmaniTheme.colors.DeepBlue30,
+                                checkedTrackColor = DonmaniTheme.colors.DeepBlue99,
+                                uncheckedThumbColor = DonmaniTheme.colors.DeepBlue30,
+                                uncheckedTrackColor = DonmaniTheme.colors.DeepBlue70,
+                                uncheckedBorderColor = Color.Transparent
+                            )
+                        )
+                    }
+                }
             )
         }
     }
@@ -197,7 +221,7 @@ private fun SettingContentItem(
     title: String,
     showReddot: Boolean,
     onClick: () -> Unit,
-    button: (@Composable BoxScope.() -> Unit)? = null
+    button: @Composable () -> Unit = { }
 ) {
     Box(
         modifier = Modifier
@@ -207,6 +231,7 @@ private fun SettingContentItem(
     ) {
         Row(modifier = Modifier.align(Alignment.CenterStart)) {
             Text(
+                modifier = Modifier.align(Alignment.CenterVertically),
                 text = title,
                 color = DonmaniTheme.colors.DeepBlue99,
                 style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.SemiBold)
@@ -215,7 +240,8 @@ private fun SettingContentItem(
                 Spacer(Modifier.width(4.dp))
                 Reddot()
             }
+            Spacer(Modifier.weight(1f))
+            button()
         }
-        button?.let { it() }
     }
 }
