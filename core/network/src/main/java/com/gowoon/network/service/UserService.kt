@@ -33,4 +33,10 @@ interface UserService {
     suspend fun updateNoticeStatus(
         @Path("userKey") userKey: String
     ): Response<Unit>
+
+    @POST("{userKey}/token")
+    suspend fun registerFCMToken(
+        @Path("userKey") userKey: String,
+        @Body token: String
+    ): Response<String>
 }

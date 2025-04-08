@@ -12,4 +12,5 @@ interface UserRepository {
     suspend fun updateUserNickname(newNickname: String): Result<String>
     suspend fun getNoticeStatus(): Result<Boolean>
     suspend fun updateNoticeStatus(): Result<Unit>
+    suspend fun registerFCMToken(token: String): Result<String>
 }
