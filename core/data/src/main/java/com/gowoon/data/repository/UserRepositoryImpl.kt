@@ -103,4 +103,18 @@ class UserRepositoryImpl @Inject constructor(
         Result.Error(message = e.message)
     }
 
+    override suspend fun registerFCMToken(token: String): Result<String> = try {
+        userService.registerFCMToken(userKey = deviceId, token = token).let { result ->
+            if (result.isSuccessful) {
+                result.body()?.let { body ->
+                    Result.Success(body)
+                } ?: Result.Error(message = "body is null")
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
 }

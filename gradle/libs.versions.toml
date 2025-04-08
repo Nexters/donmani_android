@@ -26,6 +26,12 @@ kotlin = "2.1.10"
 kotlinxSerialization = "1.8.0"
 coroutine = "1.10.1"
 
+# google
+googleServices = "4.4.2"
+firebaseBom = "33.12.0"
+firebaseAnalytics = "22.4.0"
+firebaseCloudMessaging = "24.1.1"
+
 # ksp
 ksp = "2.1.10-1.0.29"
 
@@ -87,6 +93,10 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 ## android play
 play-review = { group = "com.google.android.play", name = "review", version.ref = "playReview" }
+## firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
+firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseCloudMessaging" }
 
 # test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -127,8 +137,9 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version = "kotlin" }
 
-# kotlin
+# google
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 # hilt
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -164,4 +175,8 @@ android-lifecycle = [
     "androidx-lifecycle-viewmodel",
     "androidx-lifecycle-viewmodel-compose",
     "androidx-lifecycle-compose"
+]
+firebase = [
+    "firebase-analytics",
+    "firebase-cloud-messaging"
 ]
