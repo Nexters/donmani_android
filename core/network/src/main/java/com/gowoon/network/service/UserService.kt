@@ -19,7 +19,7 @@ interface UserService {
         @Body requestBody: RegisterUserRequest
     ): Response<BaseDto<RegisterUserResponse>>
 
-    @PUT("user/update")
+    @POST("user/update")
     suspend fun updateUser(
         @Body requestBody: UpdateUserRequest
     ): Response<BaseDto<UpdateUserResponse>>

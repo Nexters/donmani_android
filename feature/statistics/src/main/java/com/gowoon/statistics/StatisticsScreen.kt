@@ -147,18 +147,23 @@ private fun StatisticsCard(
     Column(
         Modifier
             .fillMaxWidth()
-            .background(color = DonmaniTheme.colors.DeepBlue70, shape = RoundedCornerShape(20.dp))
+            .background(
+                color = DonmaniTheme.colors.DeepBlue70,
+                shape = RoundedCornerShape(20.dp)
+            )
             .padding(16.dp)
     ) {
-        if (totalCount > 0) {
-            Text(
-                text = stringResource(R.string.statistics_card_title, type.title, totalCount),
-                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
-                color = DonmaniTheme.colors.Gray99
-            )
-            when (type) {
-                ConsumptionType.GOOD -> {
-                    GoodCategory.entries.filterNot { it.deleted }.forEach {
+
+        Text(
+            text = stringResource(R.string.statistics_card_title, type.title, totalCount),
+            style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
+            color = DonmaniTheme.colors.Gray99
+        )
+        when (type) {
+            ConsumptionType.GOOD -> {
+                GoodCategory.entries.filterNot { it.deleted }
+                    .sortedByDescending { categoryCounts[it] }
+                    .forEach {
                         StatisticsCategoryItem(
                             type = ConsumptionType.GOOD,
                             category = it,
@@ -166,10 +171,12 @@ private fun StatisticsCard(
                             totalCount = totalCount
                         )
                     }
-                }
+            }
 
-                ConsumptionType.BAD -> {
-                    BadCategory.entries.filterNot { it.deleted }.forEach {
+            ConsumptionType.BAD -> {
+                BadCategory.entries.filterNot { it.deleted }
+                    .sortedByDescending { categoryCounts[it] }
+                    .forEach {
                         StatisticsCategoryItem(
                             type = ConsumptionType.BAD,
                             category = it,
@@ -177,7 +184,6 @@ private fun StatisticsCard(
                             totalCount = totalCount
                         )
                     }
-                }
             }
         }
     }
