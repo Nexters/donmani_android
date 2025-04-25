@@ -17,6 +17,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.model.record.name
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
@@ -231,6 +232,29 @@ internal class RecordMainViewModel @Inject constructor(
         LocalTime.now().until(LocalTime.MIDNIGHT, ChronoUnit.SECONDS).toInt() + 86400
 
     fun isNoRecordForBothDays(): Boolean = showYesterday && showToday
+    fun GA4GetScreenType(): String =
+        if (isNoRecordForBothDays()) "하루"
+        else if (showToday) "오늘"
+        else if (showYesterday) "어제"
+        else ""
+
+    fun GA4GetCurrentRecord(): List<Pair<String, String>>? {
+        return currentState.records[currentState.selectedDay.name]?.let { record ->
+            mutableListOf<Pair<String, String>>().apply {
+                when (record) {
+                    is NoConsumption -> add(Pair("empty", ""))
+                    is ConsumptionRecord -> {
+                        record.goodRecord?.let { good ->
+                            add(Pair("good", good.category.name(ConsumptionType.GOOD)))
+                        }
+                        record.badRecord?.let { bad ->
+                            add(Pair("bad", bad.category.name(ConsumptionType.BAD)))
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 data class RecordMainState(

@@ -4,11 +4,13 @@ import android.os.Bundle
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
+import io.github.aakira.napier.Napier
 
 object FirebaseAnalyticsUtil {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     fun initialize() {
+        Napier.d("gowoon firebase initialized")
         firebaseAnalytics = Firebase.analytics
     }
 
@@ -17,13 +19,27 @@ object FirebaseAnalyticsUtil {
         eventName: String,
         params: Bundle? = null
     ) {
-        firebaseAnalytics.logEvent("[${trigger.prefix}]${eventName}", params)
+        Napier.d("gowoon firebase send event $trigger, $eventName, $params")
+        firebaseAnalytics.logEvent("${trigger.prefix}_${eventName}", params)
     }
 
     fun sendEvent(
         trigger: EventTrigger,
         eventName: String,
         vararg params: Pair<String, String>
+    ) {
+        val bundle = Bundle().apply {
+            params.forEach {
+                putString(it.first, it.second)
+            }
+        }
+        sendEvent(trigger, eventName, bundle)
+    }
+
+    fun sendEvent(
+        trigger: EventTrigger,
+        eventName: String,
+        params: List<Pair<String, String>>
     ) {
         val bundle = Bundle().apply {
             params.forEach {

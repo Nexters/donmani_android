@@ -14,7 +14,7 @@ import com.gowoon.record.R
 @Composable
 internal fun ExitWarningBottomSheet(
     onClick: (Boolean) -> Unit,
-    onDismissRequest: () -> Unit
+    onDismissRequest: (Boolean) -> Unit
 ) {
     BottomSheet(
         title = stringResource(R.string.exit_warning_title),
@@ -33,6 +33,6 @@ internal fun ExitWarningBottomSheet(
             )
         },
         onClick = onClick,
-        onDismissRequest = onDismissRequest
+        onDismissRequestWithAction = onDismissRequest
     )
 }

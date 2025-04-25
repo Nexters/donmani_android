@@ -75,11 +75,14 @@ fun DonmaniNavHost(
         recordGraph(
             onClickBack = navController::popBackStack,
             navigateToHome = navController::navigateToHome,
-            navigateToRecordInput = {
-                navController.navigateToRecordInput(type = it)
+            navigateToRecordInput = { type, screenType ->
+                navController.navigateToRecordInput(type = type, screenType = screenType)
             },
-            navigateToRecordInputWithData = {
-                navController.navigateToRecordInput(consumption = json.encodeToString(it))
+            navigateToRecordInputWithData = { consumption, screenType ->
+                navController.navigateToRecordInput(
+                    consumption = json.encodeToString(consumption),
+                    screenType = screenType
+                )
             },
             popBackStackWithArgument = { key, data ->
                 navController.previousBackStackEntry?.savedStateHandle?.set(

@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
 import com.gowoon.designsystem.component.RoundedButton
@@ -68,7 +69,13 @@ internal fun OnBoardingScreen(
     ) {
         when (state.step) {
             Step.INTRO -> {
-                GuideIntro { viewModel.setEvent(OnBoardingEvent.GoToGuide) }
+                GuideIntro {
+                    viewModel.setEvent(OnBoardingEvent.GoToGuide)
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "onboarding_start_button"
+                    )
+                }
             }
 
             Step.GUIDE -> {
@@ -170,11 +177,23 @@ private fun GuideScreen(onClick: (Route) -> Unit) {
                 NegativeButton(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.onboarding_btn_go_home)
-                ) { onClick(Route.HOME) }
+                ) {
+                    onClick(Route.HOME)
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "onboarding_home_button"
+                    )
+                }
                 PositiveButton(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.onboarding_btn_go_record)
-                ) { onClick(Route.RECORD) }
+                ) {
+                    onClick(Route.RECORD)
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "onboarding_record_button"
+                    )
+                }
             }
         } else {
             RoundedButton(

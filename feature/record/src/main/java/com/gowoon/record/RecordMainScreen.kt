@@ -23,11 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CheckBoxWithTitle
 import com.gowoon.designsystem.component.RoundedButton
@@ -61,8 +64,8 @@ internal fun RecordMainScreen(
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromInput: String? = null,
     navigateToHome: () -> Unit,
-    onClickAdd: (ConsumptionType) -> Unit,
-    onClickEdit: (Consumption) -> Unit,
+    onClickAdd: (ConsumptionType, String) -> Unit,
+    onClickEdit: (Consumption, String) -> Unit,
     onSave: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -80,6 +83,17 @@ internal fun RecordMainScreen(
     }
 
     val onClickBackEvent = {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+            eventName = "recordmain_back_button",
+            params = mutableListOf(
+                Pair("screentype", viewModel.GA4GetScreenType())
+            ).apply {
+                viewModel.GA4GetCurrentRecord()?.let {
+                    this.addAll(it)
+                }
+            }
+        )
         if (viewModel.startToRecord()) {
             viewModel.setEvent(
                 RecordMainEvent.ShowBottomSheet(
@@ -113,7 +127,10 @@ internal fun RecordMainScreen(
     if (state.showConfirm) {
         state.records[state.selectedDay.name]?.let { record ->
             RecordConfirmScreen(
-                modifier = Modifier.zIndex(1f), record = record, onClickEdit = onClickEdit
+                modifier = Modifier.zIndex(1f),
+                record = record,
+                onClickEdit = onClickEdit,
+                screenType = viewModel.GA4GetScreenType()
             ) {
                 if (it) {
                     viewModel.setEvent(RecordMainEvent.OnSaveRecord(record) { succeed ->
@@ -140,6 +157,11 @@ internal fun RecordMainScreen(
                             }.ifEmpty { EntryDay.entries },
                             selectedState = state.selectedDay
                         ) { selected ->
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "recordmain_${selected.name.toLowerCase(Locale.current)}_button",
+                                Pair("screentype", viewModel.GA4GetScreenType())
+                            )
                             if (viewModel.startToRecord()) {
                                 viewModel.setEvent(
                                     RecordMainEvent.ShowBottomSheet(
@@ -162,6 +184,12 @@ internal fun RecordMainScreen(
                 when (it.first) {
                     RecordMainDialogType.NO_CONSUMPTION -> {
                         NoConsumptionBottomSheet(onClick = { isPositive ->
+                            val midfix = if (isPositive) "yes" else "no"
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "recordmain_${midfix}_button",
+                                Pair("screentype", viewModel.GA4GetScreenType())
+                            )
                             if (isPositive) {
                                 it.second()
                             }
@@ -175,7 +203,7 @@ internal fun RecordMainScreen(
                             if (isPositive) {
                                 it.second()
                             }
-                        }) {
+                        }) { isUserClicked ->
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
                     }
@@ -210,6 +238,11 @@ internal fun RecordMainScreen(
                             showTooltip = state.showTooltip,
                             onClickCheckBox = { checked ->
                                 if (checked) {
+                                    FirebaseAnalyticsUtil.sendEvent(
+                                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                        eventName = "recordmain_empty_button",
+                                        Pair("screentype", viewModel.GA4GetScreenType())
+                                    )
                                     viewModel.setEvent(
                                         RecordMainEvent.ShowBottomSheet(
                                             Pair(RecordMainDialogType.NO_CONSUMPTION) {
@@ -231,13 +264,15 @@ internal fun RecordMainScreen(
                             onClickTooltip = {
                                 viewModel.setEvent(RecordMainEvent.OnClickNoConsumptionTooltip)
                             },
-                            onClickEdit = onClickEdit
+                            onClickEdit = onClickEdit,
+                            screenType = viewModel.GA4GetScreenType()
                         )
                     }
                 }
-                RecordMainFooter(modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .zIndex(1f),
+                RecordMainFooter(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .zIndex(1f),
                     enable = finishToRecord,
                     remainTime = if (state.selectedDay == EntryDay.Yesterday) {
                         state.remainTime?.let {
@@ -245,7 +280,13 @@ internal fun RecordMainScreen(
                         }
                     } else {
                         null
-                    }) {
+                    }
+                ) {
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "recordmain_submit_button",
+                        Pair("screentype", viewModel.GA4GetScreenType())
+                    )
                     viewModel.setEvent(RecordMainEvent.ShowConfirm(true))
                 }
             }
@@ -259,9 +300,10 @@ private fun RecordMainContent(
     record: Record,
     showTooltip: Boolean,
     onClickCheckBox: (Boolean) -> Unit,
-    onClickEmptyBox: (ConsumptionType) -> Unit,
+    onClickEmptyBox: (ConsumptionType, String) -> Unit,
     onClickTooltip: () -> Unit,
-    onClickEdit: (Consumption) -> Unit
+    onClickEdit: (Consumption, String) -> Unit,
+    screenType: String
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         when (record) {
@@ -272,25 +314,45 @@ private fun RecordMainContent(
             is ConsumptionRecord -> {
                 if (record.goodRecord != null && record.badRecord != null) {
                     RecordCard(
-                        record = record, onClickEdit = onClickEdit
+                        record = record,
+                        onClickEdit = onClickEdit,
+                        screenType = screenType
                     )
                 } else {
                     if (record.goodRecord == null) {
-                        EmptyCard(type = ConsumptionType.GOOD) { onClickEmptyBox(ConsumptionType.GOOD) }
+                        EmptyCard(type = ConsumptionType.GOOD) {
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "recordmain_good_button",
+                                Pair("screentype", screenType)
+                            )
+                            onClickEmptyBox(ConsumptionType.GOOD, screenType)
+                        }
                     } else {
                         record.goodRecord?.let {
                             ConsumptionCard(
-                                consumption = it, onClickEdit = onClickEdit
+                                consumption = it,
+                                onClickEdit = onClickEdit,
+                                screenType = screenType
                             )
                         }
                     }
                     Spacer(Modifier.height(20.dp))
                     if (record.badRecord == null) {
-                        EmptyCard(type = ConsumptionType.BAD) { onClickEmptyBox(ConsumptionType.BAD) }
+                        EmptyCard(type = ConsumptionType.BAD) {
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "recordmain_bad_button",
+                                Pair("screentype", screenType)
+                            )
+                            onClickEmptyBox(ConsumptionType.BAD, screenType)
+                        }
                     } else {
                         record.badRecord?.let {
                             ConsumptionCard(
-                                consumption = it, onClickEdit = onClickEdit
+                                consumption = it,
+                                onClickEdit = onClickEdit,
+                                screenType = screenType
                             )
                         }
                     }

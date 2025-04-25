@@ -29,6 +29,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.component.InputField
@@ -65,6 +66,17 @@ internal fun RecordInputScreen(
     val focusRequester = remember { FocusRequester() }
 
     BackHandler {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+            eventName = "record_back_button",
+            params = mutableListOf(
+                Pair("screentype", viewModel.GA4GetScreenType())
+            ).apply {
+                add(viewModel.GA4GetRecordType())
+                viewModel.GA4GetCategory()?.let { add(it) }
+                add(viewModel.GA4GetRecord())
+            }
+        )
         if (viewModel.changedRecord()) {
             viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(true))
         } else {
@@ -99,9 +111,28 @@ internal fun RecordInputScreen(
             if (state.showExitWarningBottomSheet) {
                 ExitWarningBottomSheet(
                     onClick = { isPositive ->
+                        val midfix = if (isPositive) "nexttime" else "continue"
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "record_${midfix}_button",
+                            params = mutableListOf(
+                                Pair("screentype", viewModel.GA4GetScreenType()),
+                                viewModel.GA4GetRecordType()
+                            )
+                        )
                         if (isPositive) onClickBack()
                     }
-                ) {
+                ) { isUserClicked ->
+                    if (!isUserClicked) {
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "record_close_button",
+                            params = mutableListOf(
+                                Pair("screentype", viewModel.GA4GetScreenType()),
+                                viewModel.GA4GetRecordType()
+                            )
+                        )
+                    }
                     viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(false))
                 }
             }

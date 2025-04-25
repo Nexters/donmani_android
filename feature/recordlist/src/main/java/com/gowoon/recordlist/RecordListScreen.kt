@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.RoundedButton
 import com.gowoon.designsystem.component.RoundedButtonRadius
@@ -113,7 +114,13 @@ internal fun RecordListScreen(
                 )
                 EmptyContent(
                     modifier = Modifier.align(Alignment.Center),
-                    onClickAdd = onClickAdd
+                    onClickAdd = {
+                        onClickAdd()
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "recordhistory_record_button"
+                        )
+                    }
                 )
             }
         } else {

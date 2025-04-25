@@ -130,7 +130,8 @@ fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption,
     showEdit: Boolean = true,
-    onClickEdit: (Consumption) -> Unit
+    onClickEdit: (Consumption, String) -> Unit,
+    screenType: String
 ) {
     Card(
         modifier = modifier
@@ -147,7 +148,7 @@ fun ConsumptionCard(
             category = consumption.category,
             memo = consumption.description,
             showEdit = showEdit,
-            onClickEdit = { onClickEdit(consumption) }
+            onClickEdit = { onClickEdit(consumption, screenType) }
         )
     }
 
@@ -158,7 +159,8 @@ fun RecordCard(
     modifier: Modifier = Modifier,
     record: ConsumptionRecord,
     showEdit: Boolean = true,
-    onClickEdit: (Consumption) -> Unit
+    onClickEdit: (Consumption, String) -> Unit,
+    screenType: String
 ) {
     record.goodRecord?.let { good ->
         record.badRecord?.let { bad ->
@@ -183,7 +185,7 @@ fun RecordCard(
                         category = good.category,
                         memo = good.description,
                         showEdit = showEdit,
-                        onClickEdit = { onClickEdit(good) }
+                        onClickEdit = { onClickEdit(good, screenType) }
                     )
                     Spacer(Modifier.height(32.dp))
                     ConsumptionContent(
@@ -191,7 +193,7 @@ fun RecordCard(
                         category = bad.category,
                         memo = bad.description,
                         showEdit = showEdit,
-                        onClickEdit = { onClickEdit(bad) }
+                        onClickEdit = { onClickEdit(bad, screenType) }
                     )
                 }
             }
