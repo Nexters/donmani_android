@@ -60,6 +60,12 @@ internal fun HomeScreen(
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
+    val referrer by viewModel.referrer.collectAsStateWithLifecycle()
+    LaunchedEffect(referrer) {
+        if (!referrer.first) {
+            viewModel.sendViewMainGA4Event()
+        }
+    }
     LaunchedEffect(resultFromRecord) {
         var recordAdded = false
         var record: Record? = null

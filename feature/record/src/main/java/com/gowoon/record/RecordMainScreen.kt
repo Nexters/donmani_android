@@ -108,6 +108,13 @@ internal fun RecordMainScreen(
         }
     }
 
+    val referrer by viewModel.referrer.collectAsStateWithLifecycle()
+    LaunchedEffect(referrer) {
+        if (!referrer.first) {
+            viewModel.sendViewRecordMainGA4Event()
+        }
+    }
+
     LaunchedEffect(resultFromInput) {
         resultFromInput?.let {
             viewModel.setEvent(
@@ -199,11 +206,25 @@ internal fun RecordMainScreen(
                     }
 
                     RecordMainDialogType.EXIT_WARNING -> {
-                        ExitWarningBottomSheet(onClick = { isPositive ->
-                            if (isPositive) {
-                                it.second()
-                            }
-                        }) { isUserClicked ->
+                        ExitWarningBottomSheet(
+                            onExpanded = {
+                                FirebaseAnalyticsUtil.sendEvent(
+                                    trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+                                    eventName = "recordmain_back_bottomsheet",
+                                    params = mutableListOf(
+                                        Pair("referrer", "기록")
+                                    ).apply {
+                                        viewModel.GA4GetCurrentRecord()?.let { params ->
+                                            addAll(params)
+                                        }
+                                    }
+                                )
+                            },
+                            onClick = { isPositive ->
+                                if (isPositive) {
+                                    it.second()
+                                }
+                            }) { isUserClicked ->
                             viewModel.setEvent(RecordMainEvent.ShowBottomSheet(null))
                         }
                     }

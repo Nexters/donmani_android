@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +76,15 @@ internal fun RecordListScreen(
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     val showActionButton = true // TODO 전체 기록 없을 때로 조건 추가
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+            eventName = "recordhistory",
+            Pair("referrer", "메인")
+        )
+    }
+
     TransparentScaffold(
         topBar = {
             AppBar(

@@ -83,7 +83,9 @@ class RecordInputViewModel @Inject constructor(
     }
 
     fun GA4GetScreenType() = screenType
-    fun GA4GetRecordType() = Pair(currentState.type.name.lowercase(), "")
+    fun GA4GetRecordType() =
+        Pair(currentState.type.name.lowercase(), currentState.type.name.lowercase())
+
     fun GA4GetCategory(): Pair<String, String>? = currentState.category?.let {
         Pair("category", it.getTitle(currentState.type))
     }

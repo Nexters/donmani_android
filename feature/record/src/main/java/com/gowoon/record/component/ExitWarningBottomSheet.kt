@@ -13,6 +13,7 @@ import com.gowoon.record.R
 
 @Composable
 internal fun ExitWarningBottomSheet(
+    onExpanded: () -> Unit,
     onClick: (Boolean) -> Unit,
     onDismissRequest: (Boolean) -> Unit
 ) {
@@ -33,6 +34,7 @@ internal fun ExitWarningBottomSheet(
             )
         },
         onClick = onClick,
-        onDismissRequestWithAction = onDismissRequest
+        onDismissRequestWithAction = onDismissRequest,
+        onExpanded = onExpanded
     )
 }

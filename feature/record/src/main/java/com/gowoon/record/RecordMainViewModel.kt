@@ -7,6 +7,7 @@ import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideNoConsumptionTooltipUseCase
 import com.gowoon.domain.usecase.config.ShowNoConsumptionTooltipUseCase
@@ -22,6 +23,8 @@ import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -40,6 +43,9 @@ internal class RecordMainViewModel @Inject constructor(
     private val showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not()
     private val showYesterday =
         savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
+    private val _referrer =
+        MutableStateFlow(Pair(false, savedStateHandle.toRoute<RecordNavigationRoute>().referrer))
+    val referrer = _referrer.asStateFlow()
 
     init {
         initialState()
@@ -254,6 +260,16 @@ internal class RecordMainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun sendViewRecordMainGA4Event() {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+            eventName = "recordmain",
+            Pair("referrer", referrer.value.second),
+            Pair("screentype", GA4GetScreenType())
+        )
+        _referrer.value = Pair(true, referrer.value.second)
     }
 }
 

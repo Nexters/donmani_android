@@ -12,22 +12,27 @@ import kotlinx.serialization.Serializable
 const val InputToMainArgumentKey = "inputToMain"
 
 @Serializable
-data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
+data class RecordNavigationRoute(
+    val hasTodayRecord: Boolean,
+    val hasYesterdayRecord: Boolean,
+    val referrer: String
+)
 
 fun NavController.navigateToRecord(
+    referrer: String,
     hasTodayRecord: Boolean,
     hasYesterdayRecord: Boolean,
     fromStart: Boolean = false
 ) {
-    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord)) {
+    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord, referrer)) {
         if (fromStart) {
             popUpTo(graph.startDestinationId) { inclusive = true }
         }
     }
 }
 
-fun NavController.navigateToRecordAndPopUpTo() {
-    navigate(route = RecordNavigationRoute(false, false)) {
+fun NavController.navigateToRecordAndPopUpTo(referrer: String) {
+    navigate(route = RecordNavigationRoute(false, false, referrer)) {
         currentBackStackEntry?.destination?.id?.let {
             popUpTo(it) { inclusive = true }
         }

@@ -110,6 +110,16 @@ internal fun RecordInputScreen(
         ) {
             if (state.showExitWarningBottomSheet) {
                 ExitWarningBottomSheet(
+                    onExpanded = {
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+                            eventName = "recordmain_back_bottomsheet",
+                            params = mutableListOf(
+                                Pair("referrer", "기록작성"),
+                                viewModel.GA4GetRecordType()
+                            )
+                        )
+                    },
                     onClick = { isPositive ->
                         val midfix = if (isPositive) "nexttime" else "continue"
                         FirebaseAnalyticsUtil.sendEvent(

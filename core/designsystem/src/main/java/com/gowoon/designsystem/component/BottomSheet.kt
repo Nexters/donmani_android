@@ -58,7 +58,6 @@ fun BottomSheet(
             skipPartiallyExpanded = true,
             confirmValueChange = { canDismiss }
         )
-
     val handleDismiss: (Boolean) -> Unit = { isClicked ->
         onDismissRequestWithAction?.invoke(isClicked) ?: onDismissRequest?.invoke()
     }
