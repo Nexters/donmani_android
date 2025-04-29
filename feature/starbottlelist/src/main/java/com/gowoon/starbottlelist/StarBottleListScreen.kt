@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -46,6 +47,7 @@ import com.gowoon.model.record.BottleState
 import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.NoticeBanner
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDate
 
 @Composable
 internal fun StarBottleListScreen(
@@ -87,6 +89,19 @@ internal fun StarBottleListScreen(
             }
             items(state.monthlySummaryList) {
                 StarBottleListItem(it.first, it.second) {
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "list_별통이_button",
+                        params = mutableListOf(
+                            Pair(
+                                "별통이_id",
+                                LocalDate.now().year.toString().takeLast(2) + String.format(
+                                    "%02d",
+                                    it.first
+                                )
+                            )
+                        )
+                    )
                     when (val state = it.second) {
                         is BottleState.OPENED -> {
                             if (state.count == 0) {

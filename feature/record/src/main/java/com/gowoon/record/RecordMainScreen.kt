@@ -187,7 +187,7 @@ internal fun RecordMainScreen(
                             val midfix = if (isPositive) "yes" else "no"
                             FirebaseAnalyticsUtil.sendEvent(
                                 trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                                eventName = "recordmain_${midfix}_button",
+                                eventName = "recordmain_empty_${midfix}_button",
                                 Pair("screentype", viewModel.GA4GetScreenType())
                             )
                             if (isPositive) {

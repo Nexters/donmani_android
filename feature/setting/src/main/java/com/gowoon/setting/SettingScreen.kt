@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -54,6 +55,7 @@ data class SettingItem(
     val title: String,
     val showReddot: Boolean = false,
     val toggleState: Boolean? = null,
+    val gaEventName: String? = null,
     val onClick: () -> Unit
 )
 
@@ -127,6 +129,10 @@ internal fun SettingScreen(
             ProfileHeader(
                 nickname = state.nickname
             ) {
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "setting_nickname"
+                )
                 viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.EDIT_NICKNAME))
             }
             Spacer(Modifier.height(60.dp))
@@ -135,18 +141,21 @@ internal fun SettingScreen(
                     SettingItem(
                         title = stringResource(R.string.setting_push),
                         toggleState = notificationStatus,
+                        gaEventName = "setting_apppush",
                         onClick = onClickPush
                     ),
                     SettingItem(
                         title = stringResource(R.string.setting_notice),
                         showReddot = state.newNotice,
+                        gaEventName = "setting_notice",
                         onClick = {
                             viewModel.setEvent(SettingEvent.UpdateNoticeStatusAsRead)
                             onClickNotice()
                         }
                     ),
                     SettingItem(
-                        title = stringResource(R.string.setting_bbs_rule)
+                        title = stringResource(R.string.setting_bbs_rule),
+                        gaEventName = "setting_rules",
                     ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
                     SettingItem(
                         title = stringResource(R.string.setting_private_privacy),
@@ -207,7 +216,15 @@ private fun SettingContent(
             SettingContentItem(
                 title = it.title,
                 showReddot = it.showReddot,
-                onClick = it.onClick,
+                onClick = {
+                    it.gaEventName?.let { eventName ->
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = eventName
+                        )
+                    }
+                    it.onClick()
+                },
                 button = {
                     it.toggleState?.let {
                         Switch(

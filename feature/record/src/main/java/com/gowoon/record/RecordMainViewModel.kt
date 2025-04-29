@@ -17,7 +17,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
-import com.gowoon.model.record.name
+import com.gowoon.model.record.getTitle
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
@@ -242,13 +242,13 @@ internal class RecordMainViewModel @Inject constructor(
         return currentState.records[currentState.selectedDay.name]?.let { record ->
             mutableListOf<Pair<String, String>>().apply {
                 when (record) {
-                    is NoConsumption -> add(Pair("empty", ""))
+                    is NoConsumption -> add(Pair("empty", "null"))
                     is ConsumptionRecord -> {
                         record.goodRecord?.let { good ->
-                            add(Pair("good", good.category.name(ConsumptionType.GOOD)))
+                            add(Pair("good", good.category.getTitle(ConsumptionType.GOOD)))
                         }
                         record.badRecord?.let { bad ->
-                            add(Pair("bad", bad.category.name(ConsumptionType.BAD)))
+                            add(Pair("bad", bad.category.getTitle(ConsumptionType.BAD)))
                         }
                     }
                 }

@@ -90,7 +90,7 @@ internal fun RecordConfirmScreen(
                     ).apply {
                         when (record) {
                             is NoConsumption -> {
-                                add(Pair("empty", ""))
+                                add(Pair("empty", "null"))
                             }
 
                             is ConsumptionRecord -> {

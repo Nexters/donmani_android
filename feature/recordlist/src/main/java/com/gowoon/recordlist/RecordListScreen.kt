@@ -91,7 +91,13 @@ internal fun RecordListScreen(
                                 .onGloballyPositioned {
                                     tooltipOffset = it.boundsInRoot().bottomCenter
                                 }
-                                .noRippleClickable { onClickActionButton() },
+                                .noRippleClickable {
+                                    FirebaseAnalyticsUtil.sendEvent(
+                                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                        eventName = "list_button"
+                                    )
+                                    onClickActionButton()
+                                },
                             imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.star_bottle_icon),
                             tint = Color.Unspecified,
                             contentDescription = null
@@ -131,6 +137,10 @@ internal fun RecordListScreen(
                 records = state.records,
                 month = state.month
             ) {
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "insight_button"
+                )
                 onClickSummary(state.year, state.month)
             }
         }
@@ -203,13 +213,13 @@ private fun RecordListItem(record: Record) {
                     RecordCard(
                         record = record,
                         showEdit = false
-                    ) { }
+                    )
                 } else {
                     record.goodRecord?.let {
-                        ConsumptionCard(consumption = it, showEdit = false) { }
+                        ConsumptionCard(consumption = it, showEdit = false)
                     }
                     record.badRecord?.let {
-                        ConsumptionCard(consumption = it, showEdit = false) { }
+                        ConsumptionCard(consumption = it, showEdit = false)
                     }
                 }
             }
