@@ -9,10 +9,10 @@ import com.gowoon.model.record.Record
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HomeNavigationRoute(val addedRecord: String?)
+data class HomeNavigationRoute(val addedRecord: String?, val referrer: String?)
 
-fun NavController.navigateToHome(addedRecord: String? = null) {
-    navigate(HomeNavigationRoute(addedRecord)) {
+fun NavController.navigateToHome(addedRecord: String? = null, referrer: String? = null) {
+    navigate(HomeNavigationRoute(addedRecord, referrer)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }

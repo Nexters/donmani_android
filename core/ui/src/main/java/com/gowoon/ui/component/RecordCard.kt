@@ -130,7 +130,8 @@ fun ConsumptionCard(
     modifier: Modifier = Modifier,
     consumption: Consumption,
     showEdit: Boolean = true,
-    onClickEdit: (Consumption) -> Unit
+    screenType: String? = null,
+    onClickEdit: (Consumption, String) -> Unit = { _, _ -> }
 ) {
     Card(
         modifier = modifier
@@ -147,7 +148,11 @@ fun ConsumptionCard(
             category = consumption.category,
             memo = consumption.description,
             showEdit = showEdit,
-            onClickEdit = { onClickEdit(consumption) }
+            onClickEdit = {
+                screenType?.let {
+                    onClickEdit(consumption, screenType)
+                }
+            }
         )
     }
 
@@ -158,7 +163,8 @@ fun RecordCard(
     modifier: Modifier = Modifier,
     record: ConsumptionRecord,
     showEdit: Boolean = true,
-    onClickEdit: (Consumption) -> Unit
+    screenType: String? = null,
+    onClickEdit: (Consumption, String) -> Unit = { _, _ -> }
 ) {
     record.goodRecord?.let { good ->
         record.badRecord?.let { bad ->
@@ -183,7 +189,11 @@ fun RecordCard(
                         category = good.category,
                         memo = good.description,
                         showEdit = showEdit,
-                        onClickEdit = { onClickEdit(good) }
+                        onClickEdit = {
+                            screenType?.let {
+                                onClickEdit(good, screenType)
+                            }
+                        }
                     )
                     Spacer(Modifier.height(32.dp))
                     ConsumptionContent(
@@ -191,7 +201,11 @@ fun RecordCard(
                         category = bad.category,
                         memo = bad.description,
                         showEdit = showEdit,
-                        onClickEdit = { onClickEdit(bad) }
+                        onClickEdit = {
+                            screenType?.let {
+                                onClickEdit(good, screenType)
+                            }
+                        }
                     )
                 }
             }

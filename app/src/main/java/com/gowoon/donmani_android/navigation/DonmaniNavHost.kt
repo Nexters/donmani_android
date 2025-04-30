@@ -46,16 +46,17 @@ fun DonmaniNavHost(
         modifier = modifier
     ) {
         splashScreen(
-            navigateToHome = navController::navigateToHome,
+            navigateToHome = { navController.navigateToHome(referrer = "launcher") },
             navigateToOnBoarding = navController::navigateToOnBoarding
         )
         onBoardingScreen(
-            navigateToHome = navController::navigateToHome,
+            navigateToHome = { navController.navigateToHome(referrer = "onboarding") },
             navigateToRecord = {
                 navController.navigateToRecord(
                     hasTodayRecord = false,
                     hasYesterdayRecord = false,
-                    fromStart = true
+                    fromStart = true,
+                    referrer = "onboarding"
                 )
             }
         )
@@ -64,7 +65,8 @@ fun DonmaniNavHost(
             navigateToRecord = { hasToday, hasYesterday ->
                 navController.navigateToRecord(
                     hasTodayRecord = hasToday,
-                    hasYesterdayRecord = hasYesterday
+                    hasYesterdayRecord = hasYesterday,
+                    referrer = "main"
                 )
             },
             navigateToRecordList = { records, year, month ->
@@ -74,12 +76,15 @@ fun DonmaniNavHost(
         )
         recordGraph(
             onClickBack = navController::popBackStack,
-            navigateToHome = navController::navigateToHome,
-            navigateToRecordInput = {
-                navController.navigateToRecordInput(type = it)
+            navigateToHome = { navController.navigateToHome(referrer = null) },
+            navigateToRecordInput = { type, screenType ->
+                navController.navigateToRecordInput(type = type, screenType = screenType)
             },
-            navigateToRecordInputWithData = {
-                navController.navigateToRecordInput(consumption = json.encodeToString(it))
+            navigateToRecordInputWithData = { consumption, screenType ->
+                navController.navigateToRecordInput(
+                    consumption = json.encodeToString(consumption),
+                    screenType = screenType
+                )
             },
             popBackStackWithArgument = { key, data ->
                 navController.previousBackStackEntry?.savedStateHandle?.set(
@@ -91,7 +96,9 @@ fun DonmaniNavHost(
         )
         recordListScreen(
             onClickBack = navController::popBackStack,
-            navigateToRecord = navController::navigateToRecordAndPopUpTo,
+            navigateToRecord = {
+                navController.navigateToRecordAndPopUpTo("recordhistory")
+            },
             navigateToStatistics = navController::navigateToStatistics,
             navigateToStarBottleList = navController::navigateToStarBottleList
         )

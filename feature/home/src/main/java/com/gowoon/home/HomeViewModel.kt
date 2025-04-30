@@ -1,10 +1,13 @@
 package com.gowoon.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
@@ -12,8 +15,11 @@ import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
+import com.gowoon.home.navigation.HomeNavigationRoute
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -23,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getUserNicknameUseCase: GetUserNicknameUseCase,
     private val getRecordListUseCase: GetRecordListUseCase,
     private val showYesterdayTooltipUseCase: ShowYesterdayTooltipUseCase,
@@ -30,6 +37,9 @@ class HomeViewModel @Inject constructor(
     private val showStarBottleOpenSheetUseCase: ShowStarBottleOpenSheetUseCase,
     private val hideStarBottleOpenSheetUseCase: HideStarBottleOpenSheetUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
+    private val _referrer =
+        MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().referrer))
+    val referrer = _referrer.asStateFlow()
 
     override fun createInitialState(): HomeState {
         return HomeState()
@@ -149,6 +159,17 @@ class HomeViewModel @Inject constructor(
 
     private fun hasRecordOfDay(records: List<Record>, date: LocalDate): Boolean {
         return records.any { record -> record.date == date }
+    }
+
+    fun sendViewMainGA4Event() {
+        referrer.value.second?.let { referrerName ->
+            FirebaseAnalyticsUtil.sendEvent(
+                trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+                eventName = "main",
+                Pair("referrer", referrerName)
+            )
+        }
+        _referrer.value = Pair(true, referrer.value.second)
     }
 }
 

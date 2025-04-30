@@ -10,6 +10,7 @@ import com.gowoon.common.base.UiState
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.Consumption
 import com.gowoon.model.record.ConsumptionType
+import com.gowoon.model.record.getTitle
 import com.gowoon.record.navigation.RecordInputNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.serialization.json.Json
@@ -23,6 +24,7 @@ class RecordInputViewModel @Inject constructor(
     override fun createInitialState(): RecordInputState = RecordInputState()
     private val type = savedStateHandle.toRoute<RecordInputNavigationRoute>().type
     private val consumption = savedStateHandle.toRoute<RecordInputNavigationRoute>().consumption
+    private val screenType = savedStateHandle.toRoute<RecordInputNavigationRoute>().screenType
 
     init {
         initialState()
@@ -79,6 +81,17 @@ class RecordInputViewModel @Inject constructor(
     fun showToast(message: String) {
         setEffect(RecordInputEffect.ShowToast(message))
     }
+
+    fun GA4GetScreenType() = screenType
+    fun GA4GetRecordType() =
+        Pair(currentState.type.name.lowercase(), currentState.type.name.lowercase())
+
+    fun GA4GetCategory(): Pair<String, String>? = currentState.category?.let {
+        Pair("category", it.getTitle(currentState.type))
+    }
+
+    fun GA4GetRecord(): Pair<String, String> = Pair("record", currentState.memo.text.toString())
+
 }
 
 data class RecordInputState(

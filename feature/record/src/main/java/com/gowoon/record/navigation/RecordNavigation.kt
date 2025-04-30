@@ -10,25 +10,29 @@ import com.gowoon.record.RecordMainScreen
 import kotlinx.serialization.Serializable
 
 const val InputToMainArgumentKey = "inputToMain"
-const val MainToHomeArgumentKey = "mainToHome"
 
 @Serializable
-data class RecordNavigationRoute(val hasTodayRecord: Boolean, val hasYesterdayRecord: Boolean)
+data class RecordNavigationRoute(
+    val hasTodayRecord: Boolean,
+    val hasYesterdayRecord: Boolean,
+    val referrer: String
+)
 
 fun NavController.navigateToRecord(
+    referrer: String,
     hasTodayRecord: Boolean,
     hasYesterdayRecord: Boolean,
     fromStart: Boolean = false
 ) {
-    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord)) {
+    navigate(route = RecordNavigationRoute(hasTodayRecord, hasYesterdayRecord, referrer)) {
         if (fromStart) {
             popUpTo(graph.startDestinationId) { inclusive = true }
         }
     }
 }
 
-fun NavController.navigateToRecordAndPopUpTo() {
-    navigate(route = RecordNavigationRoute(false, false)) {
+fun NavController.navigateToRecordAndPopUpTo(referrer: String) {
+    navigate(route = RecordNavigationRoute(false, false, referrer)) {
         currentBackStackEntry?.destination?.id?.let {
             popUpTo(it) { inclusive = true }
         }
@@ -38,21 +42,23 @@ fun NavController.navigateToRecordAndPopUpTo() {
 @Serializable
 data class RecordInputNavigationRoute(
     val type: ConsumptionType? = null,
-    val consumption: String? = null
+    val consumption: String? = null,
+    val screenType: String
 )
 
 fun NavController.navigateToRecordInput(
     type: ConsumptionType? = null,
-    consumption: String? = null
+    consumption: String? = null,
+    screenType: String
 ) {
-    navigate(route = RecordInputNavigationRoute(type, consumption))
+    navigate(route = RecordInputNavigationRoute(type, consumption, screenType))
 }
 
 fun NavGraphBuilder.recordGraph(
     onClickBack: () -> Unit,
     navigateToHome: (data: String?) -> Unit,
-    navigateToRecordInput: (ConsumptionType) -> Unit,
-    navigateToRecordInputWithData: (Consumption) -> Unit,
+    navigateToRecordInput: (ConsumptionType, String) -> Unit,
+    navigateToRecordInputWithData: (Consumption, String) -> Unit,
     popBackStackWithArgument: (key: String, data: String) -> Unit,
 ) {
     composable<RecordNavigationRoute> { backStackEntry ->

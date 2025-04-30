@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
 import com.gowoon.designsystem.component.Title
@@ -33,6 +35,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.model.record.name
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.NoConsumptionCard
@@ -42,9 +45,17 @@ import com.gowoon.ui.component.RecordCard
 internal fun RecordConfirmScreen(
     modifier: Modifier = Modifier,
     record: Record,
-    onClickEdit: (Consumption) -> Unit,
+    onClickEdit: (Consumption, String) -> Unit,
+    screenType: String,
     onClick: (Boolean) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+            eventName = "confirm",
+            Pair("referrer", "true")
+        )
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -63,7 +74,8 @@ internal fun RecordConfirmScreen(
                 .fillMaxWidth()
                 .weight(1f),
             record = record,
-            onClickEdit = onClickEdit
+            onClickEdit = onClickEdit,
+            screenType = screenType
         )
         RecordConfirmFooter(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +88,42 @@ internal fun RecordConfirmScreen(
                     null
                 }
             },
-            onClick = onClick
+            onClick = { isPositive ->
+                val midfix = if (isPositive) "submit" else "back"
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "confirm_${midfix}_button",
+                    params = mutableListOf(
+                        Pair("screentype", screenType)
+                    ).apply {
+                        when (record) {
+                            is NoConsumption -> {
+                                add(Pair("empty", "null"))
+                            }
+
+                            is ConsumptionRecord -> {
+                                record.goodRecord?.let {
+                                    add(
+                                        Pair(
+                                            "good",
+                                            "category: ${it.category.name(it.type)}, record: ${it.description}"
+                                        )
+                                    )
+                                }
+                                record.badRecord?.let {
+                                    add(
+                                        Pair(
+                                            "bad",
+                                            "category: ${it.category.name(it.type)}, record: ${it.description}"
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                )
+                onClick(isPositive)
+            }
         )
     }
 }
@@ -85,7 +132,8 @@ internal fun RecordConfirmScreen(
 private fun RecordConfirmContent(
     modifier: Modifier = Modifier,
     record: Record,
-    onClickEdit: (Consumption) -> Unit
+    onClickEdit: (Consumption, String) -> Unit,
+    screenType: String
 ) {
     Box(modifier = modifier) {
         when (record) {
@@ -98,21 +146,24 @@ private fun RecordConfirmContent(
                     RecordCard(
                         record = record,
                         showEdit = true,
-                        onClickEdit = onClickEdit
+                        onClickEdit = onClickEdit,
+                        screenType = screenType
                     )
                 } else {
                     record.goodRecord?.let {
                         ConsumptionCard(
                             consumption = it,
                             showEdit = true,
-                            onClickEdit = onClickEdit
+                            onClickEdit = onClickEdit,
+                            screenType = screenType
                         )
                     }
                     record.badRecord?.let {
                         ConsumptionCard(
                             consumption = it,
                             showEdit = true,
-                            onClickEdit = onClickEdit
+                            onClickEdit = onClickEdit,
+                            screenType = screenType
                         )
                     }
                 }

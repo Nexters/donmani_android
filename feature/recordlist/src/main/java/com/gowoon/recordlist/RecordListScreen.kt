@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.RoundedButton
 import com.gowoon.designsystem.component.RoundedButtonRadius
@@ -74,6 +76,15 @@ internal fun RecordListScreen(
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     val showActionButton = true // TODO 전체 기록 없을 때로 조건 추가
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+            eventName = "recordhistory",
+            Pair("referrer", "메인")
+        )
+    }
+
     TransparentScaffold(
         topBar = {
             AppBar(
@@ -90,7 +101,13 @@ internal fun RecordListScreen(
                                 .onGloballyPositioned {
                                     tooltipOffset = it.boundsInRoot().bottomCenter
                                 }
-                                .noRippleClickable { onClickActionButton() },
+                                .noRippleClickable {
+                                    FirebaseAnalyticsUtil.sendEvent(
+                                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                        eventName = "list_button"
+                                    )
+                                    onClickActionButton()
+                                },
                             imageVector = ImageVector.vectorResource(com.gowoon.designsystem.R.drawable.star_bottle_icon),
                             tint = Color.Unspecified,
                             contentDescription = null
@@ -113,7 +130,13 @@ internal fun RecordListScreen(
                 )
                 EmptyContent(
                     modifier = Modifier.align(Alignment.Center),
-                    onClickAdd = onClickAdd
+                    onClickAdd = {
+                        onClickAdd()
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "recordhistory_record_button"
+                        )
+                    }
                 )
             }
         } else {
@@ -124,6 +147,10 @@ internal fun RecordListScreen(
                 records = state.records,
                 month = state.month
             ) {
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "insight_button"
+                )
                 onClickSummary(state.year, state.month)
             }
         }
@@ -196,13 +223,13 @@ private fun RecordListItem(record: Record) {
                     RecordCard(
                         record = record,
                         showEdit = false
-                    ) { }
+                    )
                 } else {
                     record.goodRecord?.let {
-                        ConsumptionCard(consumption = it, showEdit = false) { }
+                        ConsumptionCard(consumption = it, showEdit = false)
                     }
                     record.badRecord?.let {
-                        ConsumptionCard(consumption = it, showEdit = false) { }
+                        ConsumptionCard(consumption = it, showEdit = false)
                     }
                 }
             }

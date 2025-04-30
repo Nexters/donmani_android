@@ -7,6 +7,7 @@ import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideNoConsumptionTooltipUseCase
 import com.gowoon.domain.usecase.config.ShowNoConsumptionTooltipUseCase
@@ -17,10 +18,13 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.model.record.Record.NoConsumption
+import com.gowoon.model.record.getTitle
 import com.gowoon.record.navigation.RecordNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -39,6 +43,9 @@ internal class RecordMainViewModel @Inject constructor(
     private val showToday = savedStateHandle.toRoute<RecordNavigationRoute>().hasTodayRecord.not()
     private val showYesterday =
         savedStateHandle.toRoute<RecordNavigationRoute>().hasYesterdayRecord.not()
+    private val _referrer =
+        MutableStateFlow(Pair(false, savedStateHandle.toRoute<RecordNavigationRoute>().referrer))
+    val referrer = _referrer.asStateFlow()
 
     init {
         initialState()
@@ -231,6 +238,39 @@ internal class RecordMainViewModel @Inject constructor(
         LocalTime.now().until(LocalTime.MIDNIGHT, ChronoUnit.SECONDS).toInt() + 86400
 
     fun isNoRecordForBothDays(): Boolean = showYesterday && showToday
+    fun GA4GetScreenType(): String =
+        if (isNoRecordForBothDays()) "하루"
+        else if (showToday) "오늘"
+        else if (showYesterday) "어제"
+        else ""
+
+    fun GA4GetCurrentRecord(): List<Pair<String, String>>? {
+        return currentState.records[currentState.selectedDay.name]?.let { record ->
+            mutableListOf<Pair<String, String>>().apply {
+                when (record) {
+                    is NoConsumption -> add(Pair("empty", "null"))
+                    is ConsumptionRecord -> {
+                        record.goodRecord?.let { good ->
+                            add(Pair("good", good.category.getTitle(ConsumptionType.GOOD)))
+                        }
+                        record.badRecord?.let { bad ->
+                            add(Pair("bad", bad.category.getTitle(ConsumptionType.BAD)))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendViewRecordMainGA4Event() {
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+            eventName = "recordmain",
+            Pair("referrer", referrer.value.second),
+            Pair("screentype", GA4GetScreenType())
+        )
+        _referrer.value = Pair(true, referrer.value.second)
+    }
 }
 
 data class RecordMainState(

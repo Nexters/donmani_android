@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.HomeCircleButton
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.component.Tooltip
@@ -59,6 +60,12 @@ internal fun HomeScreen(
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
+    val referrer by viewModel.referrer.collectAsStateWithLifecycle()
+    LaunchedEffect(referrer) {
+        if (!referrer.first) {
+            viewModel.sendViewMainGA4Event()
+        }
+    }
     LaunchedEffect(resultFromRecord) {
         var recordAdded = false
         var record: Record? = null
@@ -71,7 +78,17 @@ internal fun HomeScreen(
         viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
     TransparentScaffold(
-        topBar = { HomeAppBar(onClickSetting = onClickSetting) }
+        topBar = {
+            HomeAppBar(
+                onClickSetting = {
+                    onClickSetting()
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "main_setting_button"
+                    )
+                }
+            )
+        }
     ) { padding ->
         if (state.showBottomSheet && state.records.isEmpty()) {
             StarBottleOpenBottomSheet(
@@ -92,13 +109,25 @@ internal fun HomeScreen(
                 records = state.records,
                 newRecord = state.newRecord,
                 recordAdded = state.recordAdded,
-                onClickBottle = { onClickBottle(state.records, state.year, state.month) },
+                onClickBottle = {
+                    onClickBottle(state.records, state.year, state.month)
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "main_record_archive_button"
+                    )
+                },
             )
             HomeFooter(
                 hasToday = state.hasToday,
                 hasYesterday = state.hasYesterday,
                 changedCircleButtonPosition = { tooltipOffset = it },
-                onClickAdd = { onClickAdd(state.hasToday, state.hasYesterday) }
+                onClickAdd = {
+                    onClickAdd(state.hasToday, state.hasYesterday)
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "main_record_button"
+                    )
+                }
             )
         }
     }

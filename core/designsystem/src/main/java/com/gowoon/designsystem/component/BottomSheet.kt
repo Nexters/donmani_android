@@ -45,7 +45,8 @@ fun BottomSheet(
     buttonType: BottomSheetButtonType? = null,
     content: @Composable (hide: () -> Unit) -> Unit,
     onClick: ((Boolean) -> Unit)? = null,
-    onDismissRequest: () -> Unit,
+    onDismissRequest: (() -> Unit)? = null,
+    onDismissRequestWithAction: ((Boolean) -> Unit)? = null,
     onExpanded: () -> Unit = {},
     canDismiss: Boolean = true,
     snackbarHostState: SnackbarHostState? = null,
@@ -57,6 +58,9 @@ fun BottomSheet(
             skipPartiallyExpanded = true,
             confirmValueChange = { canDismiss }
         )
+    val handleDismiss: (Boolean) -> Unit = { isClicked ->
+        onDismissRequestWithAction?.invoke(isClicked) ?: onDismissRequest?.invoke()
+    }
     LaunchedEffect(state.isVisible) {
         if (state.isVisible) {
             onExpanded()
@@ -66,7 +70,7 @@ fun BottomSheet(
         sheetState = state,
         dragHandle = null,
         containerColor = DonmaniTheme.colors.DeepBlue60,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = { handleDismiss(false) }
     ) {
         Box(
             modifier = Modifier
@@ -80,7 +84,7 @@ fun BottomSheet(
                     CloseButton(modifier = Modifier.align(Alignment.End)) {
                         scope.launch {
                             state.hide()
-                            onDismissRequest()
+                            handleDismiss(false)
                         }
                     }
                 }
@@ -95,7 +99,7 @@ fun BottomSheet(
                 content {
                     scope.launch {
                         state.hide()
-                        onDismissRequest()
+                        handleDismiss(false)
                     }
                 }
                 if (isSpaceBetweenBtn) Spacer(Modifier.height(24.dp))
@@ -116,7 +120,7 @@ fun BottomSheet(
                                 scope.launch {
                                     state.hide()
                                     onClick?.invoke(true)
-                                    onDismissRequest()
+                                    handleDismiss(true)
                                 }
                             }
                         }
@@ -135,7 +139,7 @@ fun BottomSheet(
                                     scope.launch {
                                         state.hide()
                                         onClick?.invoke(false)
-                                        onDismissRequest()
+                                        handleDismiss(true)
                                     }
                                 }
                                 PositiveButton(
@@ -145,7 +149,7 @@ fun BottomSheet(
                                     scope.launch {
                                         state.hide()
                                         onClick?.invoke(true)
-                                        onDismissRequest()
+                                        handleDismiss(true)
                                     }
                                 }
                             }
