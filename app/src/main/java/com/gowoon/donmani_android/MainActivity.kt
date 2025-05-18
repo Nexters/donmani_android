@@ -23,7 +23,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         checkNotificationPermission()
         FirebaseAnalyticsUtil.initialize()
-        val isFromFcm = checkFromNotification(intent)
+        val isFromFcm = checkFromNotification(intent).also {
+            if (it) {
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.OPEN,
+                    eventName = "notification_open"
+                )
+            }
+        }
         setContent {
             DonmaniTheme {
                 val navController = rememberNavController()

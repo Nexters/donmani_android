@@ -1,6 +1,8 @@
 package com.gowoon.donmani_android.notification
 
 import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.user.RegisterFCMTokenUseCase
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,5 +26,13 @@ class DonmaniFirebaseMessagingService : FirebaseMessagingService() {
                 Napier.d("gowoon on new token")
             }
         }
+    }
+
+    override fun onMessageReceived(message: RemoteMessage) {
+        super.onMessageReceived(message)
+        FirebaseAnalyticsUtil.sendEvent(
+            trigger = FirebaseAnalyticsUtil.EventTrigger.RECEIVE,
+            eventName = "notification_receive"
+        )
     }
 }
