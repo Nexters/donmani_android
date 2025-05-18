@@ -1,5 +1,6 @@
 package com.gowoon.donmani_android
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,12 +23,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         checkNotificationPermission()
         FirebaseAnalyticsUtil.initialize()
+        val isFromFcm = checkFromNotification(intent)
         setContent {
             DonmaniTheme {
                 val navController = rememberNavController()
                 val appState = rememberAppState(navController)
                 GradientBackground(if (appState.isBeforeHome) BGMode.SPECIAL else BGMode.DEFAULT) {
-                    DonmaniNavHost(navController = navController)
+                    DonmaniNavHost(navController = navController, isFromFcm = isFromFcm)
                 }
             }
         }
@@ -41,5 +43,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun checkFromNotification(intent: Intent): Boolean {
+        // 지금은 진입 루트가 런처랑 노티뿐이라 임시로 extra 데이터 있는지만 확인하지만, 서버랑 협의해서 fcm noti 구분할 수 있는 scheme, key 등등 논의 필요
+        return intent.extras != null
     }
 }

@@ -9,10 +9,18 @@ import com.gowoon.model.record.Record
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HomeNavigationRoute(val addedRecord: String?, val referrer: String?)
+data class HomeNavigationRoute(
+    val addedRecord: String?,
+    val referrer: String?,
+    val isFromFcm: Boolean
+)
 
-fun NavController.navigateToHome(addedRecord: String? = null, referrer: String? = null) {
-    navigate(HomeNavigationRoute(addedRecord, referrer)) {
+fun NavController.navigateToHome(
+    addedRecord: String? = null,
+    referrer: String? = null,
+    isFromFcm: Boolean = false
+) {
+    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcm)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }
@@ -20,7 +28,7 @@ fun NavController.navigateToHome(addedRecord: String? = null, referrer: String? 
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
-    navigateToRecord: (Boolean, Boolean) -> Unit,
+    navigateToRecord: (Boolean, Boolean, String) -> Unit,
     navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit
 ) {
