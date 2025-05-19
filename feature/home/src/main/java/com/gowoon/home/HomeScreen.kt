@@ -52,7 +52,7 @@ internal fun HomeScreen(
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
-    onClickAdd: (Boolean, Boolean) -> Unit,
+    onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
 ) {
@@ -61,9 +61,16 @@ internal fun HomeScreen(
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
+    val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
     LaunchedEffect(referrer) {
         if (!referrer.first) {
             viewModel.sendViewMainGA4Event()
+        }
+    }
+    LaunchedEffect(isFromFcm) {
+        if (!isFromFcm.first && isFromFcm.second) {
+            onClickAdd(state.hasToday, state.hasYesterday, "notification")
+            viewModel.updateIsFromFcmState()
         }
     }
     LaunchedEffect(resultFromRecord) {
@@ -122,7 +129,7 @@ internal fun HomeScreen(
                 hasYesterday = state.hasYesterday,
                 changedCircleButtonPosition = { tooltipOffset = it },
                 onClickAdd = {
-                    onClickAdd(state.hasToday, state.hasYesterday)
+                    onClickAdd(state.hasToday, state.hasYesterday, "main")
                     FirebaseAnalyticsUtil.sendEvent(
                         trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
                         eventName = "main_record_button"

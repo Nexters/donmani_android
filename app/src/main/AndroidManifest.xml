@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:replace="label"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="bbs_fcm_notification" />
         <service
             android:name=".notification.DonmaniFirebaseMessagingService"
             android:exported="false">

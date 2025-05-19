@@ -41,6 +41,10 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().referrer))
     val referrer = _referrer.asStateFlow()
 
+    private val _isFromFcm =
+        MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().isFromFcm))
+    val isFromFcm = _isFromFcm.asStateFlow()
+
     override fun createInitialState(): HomeState {
         return HomeState()
     }
@@ -170,6 +174,10 @@ class HomeViewModel @Inject constructor(
             )
         }
         _referrer.value = Pair(true, referrer.value.second)
+    }
+
+    fun updateIsFromFcmState() {
+        _isFromFcm.value = Pair(true, isFromFcm.value.second)
     }
 }
 
