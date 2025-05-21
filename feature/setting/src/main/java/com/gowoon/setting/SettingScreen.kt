@@ -46,7 +46,8 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
 import com.gowoon.setting.component.Reddot
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.BBSRuleBottomSheet
 import kotlinx.coroutines.flow.collectLatest
 
@@ -87,7 +88,8 @@ internal fun SettingScreen(
         notificationStatus = NotificationPermissionUtil.isNotificationPermissionGranted(context)
     }
 
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground() },
         topBar = {
             AppBar(
                 title = stringResource(R.string.setting_appbar_title),

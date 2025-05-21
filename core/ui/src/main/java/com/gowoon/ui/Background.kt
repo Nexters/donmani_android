@@ -30,47 +30,29 @@ import com.gowoon.ui.util.getColor
 enum class BGMode { DEFAULT, SPECIAL }
 
 @Composable
-fun CategoryBackground(category: Category?, content: @Composable () -> Unit) {
-    GradientBackground {
-        Box(Modifier.fillMaxSize()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.5f)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                category?.getColor() ?: Color.Transparent,
-                                Color.Transparent
-                            )
+fun CategoryBackground(category: Category?) {
+    Box(Modifier.fillMaxSize()) {
+        GradientBackground()
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(1.5f)
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            category?.getColor() ?: Color.Transparent,
+                            Color.Transparent
                         )
                     )
-            )
-            content()
-        }
+                )
+        )
     }
 }
 
 @Composable
-fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () -> Unit) {
-    GradientBackground(
-        startColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(
-            0xFF020617
-        ),
-        endColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
-            0xFF091958
-        ),
-        showStarBg = mode == BGMode.SPECIAL,
-        content = content
-    )
-}
-
-@Composable
 fun GradientBackground(
-    startColor: Color,
-    endColor: Color,
-    showStarBg: Boolean,
-    content: @Composable () -> Unit
+    mode: BGMode = BGMode.DEFAULT,
+    content : @Composable () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -78,27 +60,25 @@ fun GradientBackground(
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        startColor,
-                        endColor
+                        if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(
+                            0xFF020617
+                        ),
+                        if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
+                            0xFF091958
+                        )
                     )
                 )
             )
-    ) {
-        if (showStarBg) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = ImageVector.vectorResource(R.drawable.star_background),
-                tint = Color.Unspecified,
-                contentDescription = null
-            )
-        }
+    ){
         content()
     }
 }
 
 @Composable
-fun TransparentScaffold(
+fun BBSScaffold(
     modifier: Modifier = Modifier,
+    background: @Composable () -> Unit = {},
+    showStarBg: Boolean = false,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -109,18 +89,29 @@ fun TransparentScaffold(
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Scaffold(
-        modifier = modifier
-            .safeDrawingPadding()
-            .padding(horizontal = DonmaniTheme.dimens.Margin20),
-        topBar = topBar,
-        bottomBar = bottomBar,
-        snackbarHost = snackbarHost,
-        floatingActionButton = floatingActionButton,
-        floatingActionButtonPosition = floatingActionButtonPosition,
-        containerColor = Color.Transparent,
-        contentColor = contentColor,
-        contentWindowInsets = contentWindowInsets,
-        content = content
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        background()
+        if (showStarBg) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = ImageVector.vectorResource(R.drawable.star_background),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
+        }
+        Scaffold(
+            modifier = modifier
+                .safeDrawingPadding()
+                .padding(horizontal = DonmaniTheme.dimens.Margin20),
+            topBar = topBar,
+            bottomBar = bottomBar,
+            snackbarHost = snackbarHost,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            containerColor = Color.Transparent,
+            contentColor = contentColor,
+            contentWindowInsets = contentWindowInsets,
+            content = content
+        )
+    }
 }

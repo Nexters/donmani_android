@@ -49,7 +49,8 @@ import com.gowoon.model.record.Record.NoConsumption
 import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.component.NoConsumptionBottomSheet
 import com.gowoon.record.component.TodayYesterdayToggle
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.EmptyCard
 import com.gowoon.ui.component.MessageBox
@@ -151,41 +152,43 @@ internal fun RecordMainScreen(
             }
         }
     } else {
-        TransparentScaffold(topBar = {
-            AppBar(
-                onClickNavigation = onClickBackEvent,
-                actionButton = {
-                    if (viewModel.isNoRecordForBothDays()) {
-                        TodayYesterdayToggle(
-                            options = EntryDay.entries.filter {
-                                state.records.containsKey(
-                                    it.name
-                                )
-                            }.ifEmpty { EntryDay.entries },
-                            selectedState = state.selectedDay
-                        ) { selected ->
-                            FirebaseAnalyticsUtil.sendEvent(
-                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                                eventName = "recordmain_${selected.name.toLowerCase(Locale.current)}_button",
-                                Pair("screentype", viewModel.GA4GetScreenType())
-                            )
-                            if (viewModel.startToRecord()) {
-                                viewModel.setEvent(
-                                    RecordMainEvent.ShowBottomSheet(
-                                        Pair(RecordMainDialogType.EXIT_WARNING) {
-                                            viewModel.setEvent(
-                                                RecordMainEvent.OnClickDayToggle(selected)
-                                            )
-                                        }
+        BBSScaffold(
+            background = { GradientBackground() },
+            topBar = {
+                AppBar(
+                    onClickNavigation = onClickBackEvent,
+                    actionButton = {
+                        if (viewModel.isNoRecordForBothDays()) {
+                            TodayYesterdayToggle(
+                                options = EntryDay.entries.filter {
+                                    state.records.containsKey(
+                                        it.name
                                     )
+                                }.ifEmpty { EntryDay.entries },
+                                selectedState = state.selectedDay
+                            ) { selected ->
+                                FirebaseAnalyticsUtil.sendEvent(
+                                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                    eventName = "recordmain_${selected.name.toLowerCase(Locale.current)}_button",
+                                    Pair("screentype", viewModel.GA4GetScreenType())
                                 )
-                            } else {
-                                viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                                if (viewModel.startToRecord()) {
+                                    viewModel.setEvent(
+                                        RecordMainEvent.ShowBottomSheet(
+                                            Pair(RecordMainDialogType.EXIT_WARNING) {
+                                                viewModel.setEvent(
+                                                    RecordMainEvent.OnClickDayToggle(selected)
+                                                )
+                                            }
+                                        )
+                                    )
+                                } else {
+                                    viewModel.setEvent(RecordMainEvent.OnClickDayToggle(selected))
+                                }
                             }
                         }
-                    }
-                })
-        }) { padding ->
+                    })
+            }) { padding ->
             val scrollState = rememberScrollState()
             state.showBottomSheet?.let {
                 when (it.first) {

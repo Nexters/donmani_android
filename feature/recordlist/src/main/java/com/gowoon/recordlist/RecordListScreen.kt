@@ -58,7 +58,8 @@ import com.gowoon.domain.util.toKorean
 import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
@@ -85,7 +86,8 @@ internal fun RecordListScreen(
         )
     }
 
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground() },
         topBar = {
             AppBar(
                 title = stringResource(

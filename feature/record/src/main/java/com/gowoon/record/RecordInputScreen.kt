@@ -44,8 +44,8 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.getTitle
 import com.gowoon.record.component.ExitWarningBottomSheet
 import com.gowoon.record.navigation.InputToMainArgumentKey
+import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.CategoryBackground
-import com.gowoon.ui.TransparentScaffold
 import com.gowoon.ui.component.InputCategoryChip
 import com.gowoon.ui.util.rememberHiltJson
 import kotlinx.coroutines.flow.collectLatest
@@ -92,109 +92,108 @@ internal fun RecordInputScreen(
         }
     }
 
-    CategoryBackground(state.category) {
-        TransparentScaffold(
-            topBar = {
-                AppBar(
-                    onClickNavigation = {
-                        if (viewModel.changedRecord()) {
-                            viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(true))
-                        } else {
-                            onClickBack()
-                        }
-                    },
-                    title = stringResource(R.string.record_detail_appbar_title, state.type.title)
-                )
-            },
-            snackbarHost = { CustomSnackBarHost(snackbarHostState) }
-        ) {
-            if (state.showExitWarningBottomSheet) {
-                ExitWarningBottomSheet(
-                    onExpanded = {
-                        FirebaseAnalyticsUtil.sendEvent(
-                            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
-                            eventName = "recordmain_back_bottomsheet",
-                            params = mutableListOf(
-                                Pair("referrer", "기록작성"),
-                                viewModel.GA4GetRecordType()
-                            )
-                        )
-                    },
-                    onClick = { isPositive ->
-                        val midfix = if (isPositive) "nexttime" else "continue"
-                        FirebaseAnalyticsUtil.sendEvent(
-                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                            eventName = "record_${midfix}_button",
-                            params = mutableListOf(
-                                Pair("screentype", viewModel.GA4GetScreenType()),
-                                viewModel.GA4GetRecordType()
-                            )
-                        )
-                        if (isPositive) onClickBack()
+    BBSScaffold(
+        background = { CategoryBackground(state.category) },
+        topBar = {
+            AppBar(
+                onClickNavigation = {
+                    if (viewModel.changedRecord()) {
+                        viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(true))
+                    } else {
+                        onClickBack()
                     }
-                ) { isUserClicked ->
-                    if (!isUserClicked) {
-                        FirebaseAnalyticsUtil.sendEvent(
-                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                            eventName = "record_close_button",
-                            params = mutableListOf(
-                                Pair("screentype", viewModel.GA4GetScreenType()),
-                                viewModel.GA4GetRecordType()
-                            )
+                },
+                title = stringResource(R.string.record_detail_appbar_title, state.type.title)
+            )
+        },
+        snackbarHost = { CustomSnackBarHost(snackbarHostState) }
+    ) {
+        if (state.showExitWarningBottomSheet) {
+            ExitWarningBottomSheet(
+                onExpanded = {
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+                        eventName = "recordmain_back_bottomsheet",
+                        params = mutableListOf(
+                            Pair("referrer", "기록작성"),
+                            viewModel.GA4GetRecordType()
                         )
-                    }
-                    viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(false))
+                    )
+                },
+                onClick = { isPositive ->
+                    val midfix = if (isPositive) "nexttime" else "continue"
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "record_${midfix}_button",
+                        params = mutableListOf(
+                            Pair("screentype", viewModel.GA4GetScreenType()),
+                            viewModel.GA4GetRecordType()
+                        )
+                    )
+                    if (isPositive) onClickBack()
                 }
-            }
-
-            if (state.showCategoryDialog) {
-                CategorySelectBottomSheet(
-                    type = state.type,
-                    selected = state.category,
-                    onChangedValue = { selected ->
-                        viewModel.setEvent(RecordInputEvent.OnChangeCategory(selected))
-                    }
-                ) {
-                    viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(false))
-                    focusRequester.requestFocus()
+            ) { isUserClicked ->
+                if (!isUserClicked) {
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "record_close_button",
+                        params = mutableListOf(
+                            Pair("screentype", viewModel.GA4GetScreenType()),
+                            viewModel.GA4GetRecordType()
+                        )
+                    )
                 }
+                viewModel.setEvent(RecordInputEvent.ShowExitWaringBottomSheet(false))
             }
+        }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
+        if (state.showCategoryDialog) {
+            CategorySelectBottomSheet(
+                type = state.type,
+                selected = state.category,
+                onChangedValue = { selected ->
+                    viewModel.setEvent(RecordInputEvent.OnChangeCategory(selected))
+                }
             ) {
-                RecordInputContent(
-                    modifier = Modifier.weight(1f),
-                    type = state.type,
-                    category = state.category,
-                    memo = state.memo,
-                    focusRequester = focusRequester,
-                    onClickEdit = { viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(true)) },
-                    showToast = { viewModel.showToast(context.getString(com.gowoon.ui.R.string.toast_max_length)) }
-                )
-                RoundedButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 12.dp),
-                    type = RoundedButtonRadius.High,
-                    label = stringResource(R.string.btn_record_input_done),
-                    enable = enabled
+                viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(false))
+                focusRequester.requestFocus()
+            }
+        }
 
-                ) {
-                    state.category?.let { category ->
-                        onClickDone(
-                            InputToMainArgumentKey,
-                            json.encodeToString(
-                                Consumption(
-                                    type = state.type,
-                                    category = category,
-                                    description = state.memo.text.toString()
-                                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            RecordInputContent(
+                modifier = Modifier.weight(1f),
+                type = state.type,
+                category = state.category,
+                memo = state.memo,
+                focusRequester = focusRequester,
+                onClickEdit = { viewModel.setEvent(RecordInputEvent.ShowCategoryDialog(true)) },
+                showToast = { viewModel.showToast(context.getString(com.gowoon.ui.R.string.toast_max_length)) }
+            )
+            RoundedButton(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(bottom = 12.dp),
+                type = RoundedButtonRadius.High,
+                label = stringResource(R.string.btn_record_input_done),
+                enable = enabled
+
+            ) {
+                state.category?.let { category ->
+                    onClickDone(
+                        InputToMainArgumentKey,
+                        json.encodeToString(
+                            Consumption(
+                                type = state.type,
+                                category = category,
+                                description = state.memo.text.toString()
                             )
                         )
-                    }
+                    )
                 }
             }
         }

@@ -39,7 +39,9 @@ import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.BGMode
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.StarBottle
 import com.gowoon.ui.util.rememberHiltJson
@@ -85,7 +87,9 @@ internal fun HomeScreen(
         }
         viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground(mode = BGMode.SPECIAL) },
+        showStarBg = true,
         topBar = {
             HomeAppBar(
                 onClickSetting = {

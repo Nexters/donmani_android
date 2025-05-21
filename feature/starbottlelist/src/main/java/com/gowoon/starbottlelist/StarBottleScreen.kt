@@ -21,7 +21,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Record
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.BGMode
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StarBottle
 
@@ -32,7 +34,9 @@ internal fun StarBottleScreen(
     onClickBottle: (List<Record>, Int, Int) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground(mode = BGMode.SPECIAL) },
+        showStarBg = true,
         topBar = {
             AppBar(
                 title = stringResource(

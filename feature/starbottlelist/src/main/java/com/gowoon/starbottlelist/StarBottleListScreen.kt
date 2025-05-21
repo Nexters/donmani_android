@@ -44,7 +44,8 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.BottleState
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.NoticeBanner
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
@@ -67,7 +68,8 @@ internal fun StarBottleListScreen(
         }
     }
 
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground() },
         topBar = {
             AppBar(
                 title = stringResource(R.string.star_bottle_list_app_bar_title),
