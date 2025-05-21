@@ -28,6 +28,7 @@ fun NavController.navigateToHome(
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
+    navigateToReward: () -> Unit,
     navigateToRecord: (Boolean, Boolean, String) -> Unit,
     navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit
@@ -37,6 +38,7 @@ fun NavGraphBuilder.homeScreen(
         HomeScreen(
             resultFromRecord = result,
             onClickSetting = navigateToSetting,
+            onClickStore = navigateToReward,
             onClickAdd = navigateToRecord,
             onClickBottle = navigateToRecordList,
             onClickGoToStarBottle = navigateToStarBottleList

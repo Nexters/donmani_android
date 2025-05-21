@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeScreen
 import com.gowoon.home.navigation.navigateToHome
+import com.gowoon.motivation.navigation.motivationScreen
+import com.gowoon.motivation.navigation.navigateToReward
 import com.gowoon.onboarding.navigation.navigateToOnBoarding
 import com.gowoon.onboarding.navigation.onBoardingScreen
 import com.gowoon.record.navigation.navigateToRecord
@@ -68,6 +70,7 @@ fun DonmaniNavHost(
         )
         homeScreen(
             navigateToSetting = navController::navigateToSetting,
+            navigateToReward = navController::navigateToReward,
             navigateToRecord = { hasToday, hasYesterday, referrer ->
                 navController.navigateToRecord(
                     hasTodayRecord = hasToday,
@@ -134,5 +137,6 @@ fun DonmaniNavHost(
                 context.startActivity(intent)
             }
         )
+        motivationScreen()
     }
 }

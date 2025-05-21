@@ -52,6 +52,7 @@ internal fun HomeScreen(
     @FeatureJson json: Json = rememberHiltJson(),
     resultFromRecord: String?,
     onClickSetting: () -> Unit,
+    onClickStore: () -> Unit,
     onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
@@ -93,7 +94,8 @@ internal fun HomeScreen(
                         trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
                         eventName = "main_setting_button"
                     )
-                }
+                },
+                onClickStore = onClickStore
             )
         }
     ) { padding ->
