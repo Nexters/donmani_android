@@ -2,6 +2,7 @@
     <string name="home_title">"%s님의 별통이"</string>
     <string name="footer_message_when_has_today_and_yesterday">작성할 수 있는 기록 모두 작성했어요!</string>
     <string name="tooltip_message_for_yesterday">어제 소비도 정리해 보아요!</string>
+    <string name="tooltip_message_for_reward">선물 도착!✨</string>
 
     <!-- bottom sheet -->
     <string name="star_bottle_open_bottom_sheet_title">%d월 별통이가 열렸어요!</string>

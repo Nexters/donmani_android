@@ -60,8 +60,11 @@ internal fun HomeScreen(
     onClickGoToStarBottle: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
-    var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
+    var addTooltipOffset by remember { mutableStateOf(Offset.Zero) }
+    var addTooltipSize by remember { mutableStateOf(IntSize.Zero) }
+
+    var rewardTooltipOffset by remember { mutableStateOf(Offset.Zero) }
+    var rewardTooltipSize by remember { mutableStateOf(0) }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
@@ -117,7 +120,8 @@ internal fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(vertical = 24.dp),
+                .padding(vertical = 24.dp)
+                .onGloballyPositioned { rewardTooltipOffset = it.boundsInRoot().topRight },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -137,7 +141,7 @@ internal fun HomeScreen(
             HomeFooter(
                 hasToday = state.hasToday,
                 hasYesterday = state.hasYesterday,
-                changedCircleButtonPosition = { tooltipOffset = it },
+                changedCircleButtonPosition = { addTooltipOffset = it },
                 onClickAdd = {
                     onClickAdd(state.hasToday, state.hasYesterday, "main")
                     FirebaseAnalyticsUtil.sendEvent(
@@ -153,12 +157,12 @@ internal fun HomeScreen(
         Tooltip(
             modifier = Modifier
                 .padding(
-                    top = tooltipOffset.y.pxToDp(),
-                    start = tooltipOffset.x.pxToDp()
+                    top = addTooltipOffset.y.pxToDp(),
+                    start = addTooltipOffset.x.pxToDp()
                 )
-                .onSizeChanged { tooltipSize = it }
+                .onSizeChanged { addTooltipSize = it }
                 .offset(
-                    x = -(tooltipSize / 2).width.pxToDp(),
+                    x = -(addTooltipSize / 2).width.pxToDp(),
                     y = (-40).dp // calculated with button size and tooltip size
                 ),
             direction = TooltipDirection.TopOf,
@@ -169,6 +173,21 @@ internal fun HomeScreen(
         }
     }
 
+    if (state.showRewardTooltip) {
+        Tooltip(
+            modifier = Modifier
+                .offset(
+                    y = rewardTooltipOffset.y.pxToDp() - (16 + 24).dp, // appbar size, action button size, padding
+                    x = rewardTooltipOffset.x.pxToDp() - rewardTooltipSize.pxToDp() + 19.dp - 12.dp // screen size, margin size, button size, toolbar size
+                )
+                .onSizeChanged { rewardTooltipSize = it.width },
+            direction = TooltipDirection.BottomOf,
+            caretAlignment = TooltipCaretAlignment.End,
+            showCloseButton = false,
+            backgroundColor = DonmaniTheme.colors.DeepBlue70,
+            message = stringResource(R.string.tooltip_message_for_reward)
+        ) { }
+    }
 }
 
 @Composable

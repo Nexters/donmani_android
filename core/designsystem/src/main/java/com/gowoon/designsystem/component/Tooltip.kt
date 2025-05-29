@@ -37,6 +37,7 @@ enum class TooltipCaretAlignment {
 fun Tooltip(
     modifier: Modifier = Modifier,
     direction: TooltipDirection,
+    showCloseButton: Boolean = true,
     caretAlignment: TooltipCaretAlignment,
     backgroundColor: Color = DonmaniTheme.colors.DeepBlue10,
     contentColor: Color = DonmaniTheme.colors.DeepBlue99,
@@ -47,6 +48,7 @@ fun Tooltip(
         when (direction) {
             TooltipDirection.TopOf -> {
                 TooltipBody(
+                    showCloseButton = showCloseButton,
                     backgroundColor = backgroundColor,
                     contentColor = contentColor,
                     message = message
@@ -65,6 +67,7 @@ fun Tooltip(
                     direction = direction
                 )
                 TooltipBody(
+                    showCloseButton = showCloseButton,
                     backgroundColor = backgroundColor,
                     contentColor = contentColor,
                     message = message
@@ -76,6 +79,7 @@ fun Tooltip(
 
 @Composable
 private fun TooltipBody(
+    showCloseButton: Boolean,
     backgroundColor: Color,
     contentColor: Color,
     message: String,
@@ -95,12 +99,14 @@ private fun TooltipBody(
             color = contentColor,
             style = DonmaniTheme.typography.Body3.copy(fontWeight = FontWeight.Medium)
         )
-        Icon(
-            modifier = Modifier.size(16.dp),
-            imageVector = ImageVector.vectorResource(R.drawable.close),
-            tint = contentColor,
-            contentDescription = null
-        )
+        if(showCloseButton){
+            Icon(
+                modifier = Modifier.size(16.dp),
+                imageVector = ImageVector.vectorResource(R.drawable.close),
+                tint = contentColor,
+                contentDescription = null
+            )
+        }
     }
 }
 
