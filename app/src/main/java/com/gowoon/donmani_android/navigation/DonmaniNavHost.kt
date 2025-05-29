@@ -137,6 +137,15 @@ fun DonmaniNavHost(
                 context.startActivity(intent)
             }
         )
-        motivationScreen()
+        motivationScreen(
+            onClickBack = navController::popBackStack,
+            navigateToRecord = {
+                navController.navigateToRecordAndPopUpTo("reward")
+            },
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            }
+        )
     }
 }

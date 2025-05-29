@@ -83,6 +83,7 @@ internal fun HomeScreen(
             record = json.decodeFromString<Record>(it)
             if (record != state.newRecord) {
                 recordAdded = true
+                viewModel.setEvent(HomeEvent.UpdateRewardTooltipState(true))
             }
         }
         viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
@@ -99,7 +100,10 @@ internal fun HomeScreen(
                         eventName = "main_setting_button"
                     )
                 },
-                onClickStore = onClickStore
+                onClickStore = {
+                    onClickStore()
+                    viewModel.setEvent(HomeEvent.UpdateRewardTooltipState(false))
+                }
             )
         }
     ) { padding ->

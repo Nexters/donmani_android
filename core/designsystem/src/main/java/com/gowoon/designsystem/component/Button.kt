@@ -2,6 +2,7 @@ package com.gowoon.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -138,7 +139,9 @@ fun HomeCircleButton(
 @Preview
 @Composable
 private fun ButtonPreview() {
-    RoundedButton(type = RoundedButtonRadius.Row, label = "button") {
+    RoundedButton(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+        type = RoundedButtonRadius.Row, label = "button") {
 
     }
 }

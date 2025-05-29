@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- reward main -->
+    <string name="reward_main_title_default">기록하고 토비 선물받기 🎁\n지금까지 %d번 기록 중</string>
+    <string name="reward_main_title_no_record">앗! 아직 기록을 작성하지 않았어요</string>
+    <string name="reward_main_title_no_gift">오늘까지 받을 수 있는 선물을\n모두 받았어요</string>
+    <string name="reward_main_title_done">준비한 선물을 모두 받았어요!\n이번 선물 어떠셨나요?</string>
+    <string name="reward_main_description_default">14번 기록하면 특별한 선물을 받아요</string>
+    <string name="reward_main_description_no_record">오늘부터 기록하고 숨겨진 14개 선물을 받아 보세요!</string>
+    <string name="reward_main_description_done">다섯 분을 선정해 스타벅스 기프티콘을 드려요</string>
+    <!-- button -->
+    <string name="reward_main_get_gift_button_title">지금 선물받기</string>
+    <string name="reward_main_go_to_record_button_title">기록하러 가기</string>
+    <string name="reward_main_go_to_review_button_title">후기 알려주기</string>
+    <string name="reward_main_go_to_home_button_title">홈으로</string>
+    <!-- message -->
+    <string name="reward_main_no_gift_message">내일 다시 만나요!</string>
+
+    <!-- reward gift open -->
+    <string name="reward_open_title">응원의 선물을 받았어요!</string>
+
+    <!-- reward gift confirm -->
+    <string name="reward_open_confirm_title">%s 받았어요!</string>
+
+    <!-- reward feedback -->
+    <string name="reward_feedback_title_prefix">%s님,</string>
+    <string name="reward_feedback_title_suffix">소비 했네요!</string>
+
+    <!-- reward first bottom sheet -->
+    <!-- button -->
+    <string name="reward_main_get_first_gift_button_title">첫 선물 받기</string>
+</resources>
