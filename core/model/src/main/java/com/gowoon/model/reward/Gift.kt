@@ -3,6 +3,7 @@ package com.gowoon.model.reward
 data class Gift(
     val category: GiftCategory,
     val name: String,
+    val thumbnailImageUrl: String,
     val resourceUrl: String,
     val isNew: Boolean
 )

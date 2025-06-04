@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.lottie.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)
 }

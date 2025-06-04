@@ -1,10 +1,15 @@
 package com.gowoon.domain.repository
 
 import com.gowoon.domain.common.Result
+import com.gowoon.model.reward.Feedback
 import kotlinx.coroutines.flow.Flow
 
 interface RewardRepository {
     suspend fun getShowRewardReceivedTooltip(): Flow<Result<Boolean>>
     suspend fun setShowRewardReceivedTooltip(state: Boolean): Result<Unit>
     suspend fun getFeedbackSummary(): Flow<Result<Triple<Boolean, Boolean, Int>>> // isOpened, isFirstOpen, totalCount
+    suspend fun getShowFirstAccessRewardBottomSheet(): Flow<Result<Boolean>>
+    suspend fun setShowFirstAccessRewardBottomSheet(state: Boolean): Result<Unit>
+    suspend fun getFeedback(): Flow<Result<Feedback>>
+    suspend fun getGiftCount(): Flow<Result<Int>>
 }

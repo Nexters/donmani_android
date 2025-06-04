@@ -15,16 +15,33 @@
     <string name="reward_main_go_to_home_button_title">홈으로</string>
     <!-- message -->
     <string name="reward_main_no_gift_message">내일 다시 만나요!</string>
+    <!-- bottom sheet -->
+    <string name="reward_first_access_bottom_sheet_title">오늘부터 14번 기록하면\n특별한 선물을 받아요</string>
+    <string name="reward_first_access_bottom_sheet_description">기록할 때마다 하나씩, 모두 모으면 숨겨진 선물이?!</string>
+    <string name="reward_first_access_bottom_sheet_button_title">첫 선물 받기</string>
 
     <!-- reward gift open -->
     <string name="reward_open_title">응원의 선물을 받았어요!</string>
+    <!-- button -->
+    <string name="reward_open_button_title">열어보기</string>
+    <!-- banner -->
+    <string name="reward_open_banner_title">열지 않은 선물 %d개 함께 열게요</string>
+    <string name="reward_open_banner_description">이벤트 기간동안 기록 할 때마다 선물 받아요</string>
 
     <!-- reward gift confirm -->
     <string name="reward_open_confirm_title">%s 받았어요!</string>
+    <!-- button -->
+    <string name="reward_open_confirm_button_title">받은 선물 꾸며보기</string>
 
     <!-- reward feedback -->
     <string name="reward_feedback_title_prefix">%s님,</string>
     <string name="reward_feedback_title_suffix">소비 했네요!</string>
+    <string name="reward_feedback_today">오늘</string>
+    <string name="reward_feedback_lately">요즘</string>
+    <!-- reward feedback card -->
+    <string name="reward_feedback_card_topper">토비의 한마디</string>
+    <!-- button -->
+    <string name="reward_feedback_button_title">다음</string>
 
     <!-- reward first bottom sheet -->
     <!-- button -->

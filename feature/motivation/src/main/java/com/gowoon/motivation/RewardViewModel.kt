@@ -7,14 +7,23 @@ import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.reward.GetFeedbackSummaryUseCase
+import com.gowoon.domain.usecase.reward.GetFeedbackUseCase
+import com.gowoon.domain.usecase.reward.GetGiftCountUseCase
+import com.gowoon.domain.usecase.reward.HideRewardFirstBottomSheetUseCase
+import com.gowoon.domain.usecase.reward.ShowRewardFirstOpenBottomSheetUseCase
 import com.gowoon.model.reward.Gift
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RewardViewModel @Inject constructor(
-    private val getFeedbackSummaryUseCase: GetFeedbackSummaryUseCase
+    private val showRewardFirstOpenBottomSheetUseCase: ShowRewardFirstOpenBottomSheetUseCase,
+    private val hideRewardFirstBottomSheetUseCase: HideRewardFirstBottomSheetUseCase,
+    private val getFeedbackSummaryUseCase: GetFeedbackSummaryUseCase,
+    private val getFeedbackUseCase: GetFeedbackUseCase,
+    private val getGiftCountUseCase: GetGiftCountUseCase
 ) : BaseViewModel<RewardState, RewardEvent, RewardEffect>() {
     override fun createInitialState(): RewardState {
         return RewardState()
@@ -29,30 +38,40 @@ class RewardViewModel @Inject constructor(
             is RewardEvent.GoToNextStep -> {
                 setNextStep()
             }
+
+            RewardEvent.HideFirstBottomSheet -> {
+                hideBottomSheet()
+            }
         }
     }
 
     private fun initialState() {
         viewModelScope.launch {
-            getFeedbackSummaryUseCase().collect { result ->
-                when (result) {
+            getFeedbackSummaryUseCase().combine(showRewardFirstOpenBottomSheetUseCase()) { feedback, show ->
+                if (feedback is Result.Success && show is Result.Success) {
+                    Result.Success(
+                        currentState.copy(
+                            step = Step.Main(
+                                getMainState(
+                                    feedback.data.third,
+                                    feedback.data.first
+                                )
+                            ),
+                            dayStreakCount = feedback.data.third,
+                            showFirstBottomSheet = show.data
+                        )
+                    )
+                } else {
+                    Result.Error(message = (feedback as? Result.Error)?.message + (show as? Result.Error)?.message)
+                }
+            }.collect { state ->
+                when (state) {
                     is Result.Error -> {
                         // TODO error handling
                     }
 
                     is Result.Success -> {
-                        setState(
-                            currentState.copy(
-                                step = Step.Main(
-                                    getMainState(
-                                        result.data.third,
-                                        result.data.first
-                                    )
-                                ),
-                                dayStreakCount = result.data.third,
-                                showFirstBottomSheet = result.data.first && result.data.second
-                            )
-                        )
+                        setState(state.data)
                     }
                 }
             }
@@ -78,14 +97,62 @@ class RewardViewModel @Inject constructor(
     private fun setNextStep() {
         when (currentState.step) {
             is Step.Main -> {
-                // TODO post feedback
-                // setState(currentState.copy(step = Step.Feedback()))
+                requestFeedback()
             }
 
-            is Step.Feedback -> TODO()
-            is Step.GiftConfirm -> TODO()
-            is Step.GiftOpen -> TODO()
-            null -> {}
+            is Step.Feedback -> {
+                requestGiftCount()
+            }
+
+            is Step.GiftOpen -> {
+                requestGiftList()
+            }
+
+            else -> {}
+        }
+    }
+
+    private fun requestFeedback() {
+        viewModelScope.launch {
+            getFeedbackUseCase().collect { result ->
+                when (result) {
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+
+                    is Result.Success -> {
+                        setState(currentState.copy(step = Step.Feedback(result.data)))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun requestGiftCount() {
+        viewModelScope.launch {
+            getGiftCountUseCase().collect { result ->
+                when (result) {
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+
+                    is Result.Success -> {
+                        setState(currentState.copy(step = Step.GiftOpen(result.data)))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun requestGiftList() {
+        setState(currentState.copy(step = Step.GiftConfirm(listOf())))
+    }
+
+    private fun hideBottomSheet() {
+        viewModelScope.launch {
+            if (hideRewardFirstBottomSheetUseCase() is Result.Error) {
+                // TODO error handling
+            }
         }
     }
 }
@@ -93,7 +160,6 @@ class RewardViewModel @Inject constructor(
 data class RewardState(
     val step: Step? = null,
     val dayStreakCount: Int = 0,
-    val giftList: List<Gift> = listOf(),
     val showFirstBottomSheet: Boolean = false
 ) : UiState
 
@@ -110,6 +176,7 @@ enum class MainState {
 
 sealed interface RewardEvent : UiEvent {
     data object GoToNextStep : RewardEvent
+    data object HideFirstBottomSheet : RewardEvent
 }
 
 sealed interface RewardEffect : UiEffect

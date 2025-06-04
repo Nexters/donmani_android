@@ -49,6 +49,7 @@ fun BottomSheet(
     onDismissRequestWithAction: ((Boolean) -> Unit)? = null,
     onExpanded: () -> Unit = {},
     canDismiss: Boolean = true,
+    showCloseButton: Boolean = canDismiss,
     snackbarHostState: SnackbarHostState? = null,
     isSpaceBetweenBtn: Boolean = true
 ) {
@@ -80,7 +81,7 @@ fun BottomSheet(
                 .padding(top = 12.dp, bottom = 8.dp),
         ) {
             Column {
-                if (canDismiss) {
+                if (showCloseButton) {
                     CloseButton(modifier = Modifier.align(Alignment.End)) {
                         scope.launch {
                             state.hide()
