@@ -64,6 +64,7 @@ data class SettingItem(
 internal fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
+    onClickDecoration: () -> Unit,
     onClickNotice: () -> Unit,
     onClickPrivatePrivacy: () -> Unit,
     onClickFeedback: () -> Unit,
@@ -141,6 +142,18 @@ internal fun SettingScreen(
             SettingContent(
                 listOf(
                     SettingItem(
+                        title = stringResource(R.string.setting_decoration),
+                        showReddot = true, // TODO
+                        gaEventName = "", // TODO
+                        onClick = onClickDecoration
+                    ),
+                    SettingItem(
+                        title = stringResource(R.string.setting_sound),
+                        toggleState = true, // TODO
+                        gaEventName = "", // TODO
+                        onClick = {} // TODO
+                    ),
+                    SettingItem(
                         title = stringResource(R.string.setting_push),
                         toggleState = notificationStatus,
                         gaEventName = "setting_apppush",
@@ -160,12 +173,12 @@ internal fun SettingScreen(
                         gaEventName = "setting_rules",
                     ) { viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.BBS_RULE)) },
                     SettingItem(
-                        title = stringResource(R.string.setting_private_privacy),
-                        onClick = onClickPrivatePrivacy
-                    ),
-                    SettingItem(
                         title = stringResource(R.string.setting_feedback),
                         onClick = onClickFeedback
+                    ),
+                    SettingItem(
+                        title = stringResource(R.string.setting_private_privacy),
+                        onClick = onClickPrivatePrivacy
                     )
                 )
             )

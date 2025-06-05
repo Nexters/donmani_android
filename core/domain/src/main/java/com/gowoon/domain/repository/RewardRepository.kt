@@ -2,6 +2,7 @@ package com.gowoon.domain.repository
 
 import com.gowoon.domain.common.Result
 import com.gowoon.model.reward.Feedback
+import com.gowoon.model.reward.Gift
 import kotlinx.coroutines.flow.Flow
 
 interface RewardRepository {
@@ -12,4 +13,5 @@ interface RewardRepository {
     suspend fun setShowFirstAccessRewardBottomSheet(state: Boolean): Result<Unit>
     suspend fun getFeedback(): Flow<Result<Feedback>>
     suspend fun getGiftCount(): Flow<Result<Int>>
+    suspend fun openGift(): Flow<Result<List<Gift>>>
 }

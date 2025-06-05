@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Category
@@ -79,6 +80,7 @@ fun BBSScaffold(
     modifier: Modifier = Modifier,
     background: @Composable () -> Unit = {},
     showStarBg: Boolean = false,
+    applyPadding: Boolean = true,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -102,7 +104,7 @@ fun BBSScaffold(
         Scaffold(
             modifier = modifier
                 .safeDrawingPadding()
-                .padding(horizontal = DonmaniTheme.dimens.Margin20),
+                .padding(horizontal = if(applyPadding)DonmaniTheme.dimens.Margin20 else 0.dp),
             topBar = topBar,
             bottomBar = bottomBar,
             snackbarHost = snackbarHost,

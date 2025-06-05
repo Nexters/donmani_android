@@ -5,6 +5,7 @@ import com.gowoon.datastore.RewardDataSource
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RewardRepository
 import com.gowoon.model.reward.Feedback
+import com.gowoon.model.reward.Gift
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
@@ -92,6 +93,24 @@ class RewardRepositoryImpl @Inject constructor(
                     if (result.isSuccessful) {
                         result.body()?.let { body ->
                             Result.Success(body.responseData)
+                        } ?: Result.Error(message = "empty body")
+                    } else {
+                        Result.Error(code = result.code(), message = result.message())
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            emit(Result.Error(message = e.message))
+        }
+    }
+
+    override suspend fun openGift(): Flow<Result<List<Gift>>> = flow {
+        try {
+            emit(
+                rewardService.openRewardList(deviceId).let { result ->
+                    if (result.isSuccessful) {
+                        result.body()?.let { body ->
+                            Result.Success(body.responseData.map { it.toModel() })
                         } ?: Result.Error(message = "empty body")
                     } else {
                         Result.Error(code = result.code(), message = result.message())

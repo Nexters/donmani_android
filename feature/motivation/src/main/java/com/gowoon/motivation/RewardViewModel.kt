@@ -10,6 +10,7 @@ import com.gowoon.domain.usecase.reward.GetFeedbackSummaryUseCase
 import com.gowoon.domain.usecase.reward.GetFeedbackUseCase
 import com.gowoon.domain.usecase.reward.GetGiftCountUseCase
 import com.gowoon.domain.usecase.reward.HideRewardFirstBottomSheetUseCase
+import com.gowoon.domain.usecase.reward.OpenGiftListUseCase
 import com.gowoon.domain.usecase.reward.ShowRewardFirstOpenBottomSheetUseCase
 import com.gowoon.model.reward.Gift
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,8 @@ class RewardViewModel @Inject constructor(
     private val hideRewardFirstBottomSheetUseCase: HideRewardFirstBottomSheetUseCase,
     private val getFeedbackSummaryUseCase: GetFeedbackSummaryUseCase,
     private val getFeedbackUseCase: GetFeedbackUseCase,
-    private val getGiftCountUseCase: GetGiftCountUseCase
+    private val getGiftCountUseCase: GetGiftCountUseCase,
+    private val openGiftListUseCase: OpenGiftListUseCase
 ) : BaseViewModel<RewardState, RewardEvent, RewardEffect>() {
     override fun createInitialState(): RewardState {
         return RewardState()
@@ -145,7 +147,19 @@ class RewardViewModel @Inject constructor(
     }
 
     private fun requestGiftList() {
-        setState(currentState.copy(step = Step.GiftConfirm(listOf())))
+        viewModelScope.launch {
+            openGiftListUseCase().collect { result ->
+                when (result) {
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+
+                    is Result.Success -> {
+                        setState(currentState.copy(step = Step.GiftConfirm(result.data)))
+                    }
+                }
+            }
+        }
     }
 
     private fun hideBottomSheet() {

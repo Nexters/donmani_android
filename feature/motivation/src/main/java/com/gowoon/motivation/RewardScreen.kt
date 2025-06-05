@@ -2,6 +2,7 @@ package com.gowoon.motivation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -18,13 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,7 +59,8 @@ internal fun RewardScreen(
     viewModel: RewardViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
     onClickGoToRecord: () -> Unit,
-    onClickReview: () -> Unit
+    onClickReview: () -> Unit,
+    onClickGoToDecoration: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val onClickNext = { viewModel.setEvent(RewardEvent.GoToNextStep) }
@@ -65,7 +72,8 @@ internal fun RewardScreen(
                 GradientBackground()
             }
         },
-        topBar = { AppBar(onClickNavigation = onClickBack) }
+        applyPadding = false,
+        topBar = { AppBar(onClickNavigation = onClickBack, applyPadding = true) }
     ) {
         if (state.showFirstBottomSheet) {
             FirstAccessBottomSheet(
@@ -110,7 +118,8 @@ internal fun RewardScreen(
 
                 is Step.GiftConfirm -> {
                     GiftConfirmContent(
-                        giftList = step.giftList
+                        giftList = step.giftList,
+                        onClickGoToDecoration = onClickGoToDecoration
                     )
                 }
 
@@ -160,7 +169,11 @@ private fun MainContent(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = DonmaniTheme.dimens.Margin20)
+    ) {
         Text(
             text = title,
             style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
@@ -233,7 +246,11 @@ private fun FeedbackContent(
     feedback: Feedback,
     onClickNext: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = DonmaniTheme.dimens.Margin20)
+    ) {
         Text(
             text = stringResource(R.string.reward_feedback_title_prefix, feedback.nickname),
             style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
@@ -295,7 +312,11 @@ private fun GiftOpenContent(
     onClickOpen: () -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("reward_gift_open.json"))
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = DonmaniTheme.dimens.Margin20)
+    ) {
         Text(
             text = stringResource(R.string.reward_open_title),
             style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
@@ -360,36 +381,67 @@ private fun GiftOpenBanner(
 @Composable
 private fun GiftConfirmContent(
     modifier: Modifier = Modifier,
-    giftList: List<Gift>
+    giftList: List<Gift>,
+    onClickGoToDecoration: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(R.string.reward_open_confirm_title),
-            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
-            color = DonmaniTheme.colors.DeepBlue99
-        )
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("confetti.json"))
+    val pagerState = rememberPagerState { giftList.size }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = modifier.fillMaxSize()) {
+            HorizontalPager(state = pagerState) {
+                GiftItem(giftList[it])
+            }
+            if (giftList.size > 1) {
+                Row(
+                    Modifier
+                        .wrapContentSize()
+                        .padding(top = 20.dp)
+                        .align(Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val alpha = if (pagerState.currentPage == iteration) 1f else 0.1f
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(DonmaniTheme.colors.Common0.copy(alpha = alpha))
+                                .size(6.dp)
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            RoundedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = DonmaniTheme.dimens.Margin20),
+                type = RoundedButtonRadius.Row,
+                label = stringResource(R.string.reward_open_confirm_button_title),
+                onClick = onClickGoToDecoration
+            )
+        }
+        LottieAnimation(composition)
     }
 }
 
 @Composable
-private fun GiftItem() {
-
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    BBSScaffold(
-        background = {
-            GradientBackground()
-        },
-        topBar = { AppBar(onClickNavigation = {}) }
-    ) {
+private fun GiftItem(
+    gift: Gift
+) {
+    Column(Modifier.fillMaxWidth()) {
+        Text(
+            modifier = Modifier.padding(horizontal = DonmaniTheme.dimens.Margin20),
+            text = stringResource(R.string.reward_open_confirm_title, gift.name),
+            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
+            color = DonmaniTheme.colors.DeepBlue99
+        )
+        Spacer(Modifier.height(160.dp))
         Box(
-            modifier = Modifier
-                .padding(it)
-                .padding(top = 16.dp)
-        ) {
-        }
+            Modifier
+                .size(200.dp)
+                .background(color = Color.White, shape = RoundedCornerShape(60.dp))
+                .align(Alignment.CenterHorizontally)
+        )
+
     }
 }
