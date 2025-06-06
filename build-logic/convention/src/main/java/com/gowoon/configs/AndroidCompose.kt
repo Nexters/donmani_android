@@ -4,8 +4,8 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
     commonExtension.apply {
@@ -19,6 +19,7 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             val composeDebugBundle = libs.findBundle("android-compose-debug").get()
             "implementation"(platform(bom))
             "implementation"(composeBundle)
+            "implementation"(libs.findLibrary("coil.compose").get())
             "androidTestImplementation"(platform(bom))
             "debugImplementation"(composeDebugBundle)
         }

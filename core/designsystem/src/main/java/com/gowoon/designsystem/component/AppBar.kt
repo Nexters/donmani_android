@@ -21,6 +21,7 @@ import com.gowoon.designsystem.util.noRippleClickable
 
 @Composable
 fun AppBar(
+    modifier: Modifier = Modifier,
     navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.arrow_left),
     onClickNavigation: () -> Unit,
     actionButton: (@Composable () -> Unit)? = null,
@@ -28,7 +29,7 @@ fun AppBar(
     applyPadding: Boolean = false
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
             .padding(horizontal = if(applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp)

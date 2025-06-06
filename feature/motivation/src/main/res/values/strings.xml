@@ -46,4 +46,9 @@
     <!-- reward first bottom sheet -->
     <!-- button -->
     <string name="reward_main_get_first_gift_button_title">첫 선물 받기</string>
+
+
+    <!-- decoration -->
+    <string name="decoration_appbar_title">꾸미기</string>
+    <string name="decoration_appbar_action_button">완료</string>
 </resources>

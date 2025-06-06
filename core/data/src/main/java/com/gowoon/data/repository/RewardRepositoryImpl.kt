@@ -6,6 +6,7 @@ import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RewardRepository
 import com.gowoon.model.reward.Feedback
 import com.gowoon.model.reward.Gift
+import com.gowoon.model.reward.GiftCategory
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
@@ -111,6 +112,39 @@ class RewardRepositoryImpl @Inject constructor(
                     if (result.isSuccessful) {
                         result.body()?.let { body ->
                             Result.Success(body.responseData.map { it.toModel() })
+                        } ?: Result.Error(message = "empty body")
+                    } else {
+                        Result.Error(code = result.code(), message = result.message())
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            emit(Result.Error(message = e.message))
+        }
+    }
+
+    override suspend fun getInventoryList(): Flow<Result<Map<GiftCategory, List<Gift>>>> = flow {
+        try {
+            emit(
+                rewardService.getInventoryList(deviceId).let { result ->
+                    if (result.isSuccessful) {
+                        result.body()?.let { body ->
+                            val inventory = mutableMapOf<GiftCategory, List<Gift>>().apply {
+                                put(
+                                    GiftCategory.BACKGROUND,
+                                    body.responseData.background.map { it.toModel() })
+                                put(
+                                    GiftCategory.EFFECT,
+                                    body.responseData.effect.map { it.toModel() })
+                                put(
+                                    GiftCategory.DECORATION,
+                                    body.responseData.decoration.map { it.toModel() })
+                                put(
+                                    GiftCategory.CASE,
+                                    body.responseData.case.map { it.toModel() })
+                                put(GiftCategory.BGM, body.responseData.bgm.map { it.toModel() })
+                            }
+                            Result.Success(inventory)
                         } ?: Result.Error(message = "empty body")
                     } else {
                         Result.Error(code = result.code(), message = result.message())

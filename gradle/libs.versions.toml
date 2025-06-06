@@ -51,6 +51,7 @@ okhttp = "4.12.0"
 napier = "2.7.1"
 physicsLayout = "0.4.1"
 lottie = "6.5.0"
+coil = "3.2.0"
 
 [libraries]
 # androidX
@@ -119,6 +120,8 @@ napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 physics-layout-compose = { group = "io.github.klassenkonstantin", name = "physics-layout", version.ref = "physicsLayout" }
 ## lottie
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+## coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 
 # gradle plugin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

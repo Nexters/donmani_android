@@ -4,6 +4,7 @@ import com.gowoon.network.dto.common.BaseDto
 import com.gowoon.network.dto.common.RewardDto
 import com.gowoon.network.dto.response.FeedbackResponse
 import com.gowoon.network.dto.response.FeedbackSummaryResponse
+import com.gowoon.network.dto.response.InventoryResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.PUT
@@ -29,4 +30,9 @@ interface RewardService {
     suspend fun openRewardList(
         @Path("userKey") userKey: String
     ): Response<BaseDto<List<RewardDto>>>
+
+    @GET("reward/edit/{userKey}")
+    suspend fun getInventoryList(
+        @Path("userKey") userKey: String
+    ): Response<BaseDto<InventoryResponse>>
 }

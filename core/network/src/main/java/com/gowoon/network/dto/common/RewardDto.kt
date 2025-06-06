@@ -10,11 +10,11 @@ data class RewardDto(
     @SerialName("name")
     val name: String,
     @SerialName("imageUrl")
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerialName("jsonUrl")
-    val jsonUrl: String,
+    val jsonUrl: String?,
     @SerialName("mp3Url")
-    val mp3Url: String,
+    val mp3Url: String?,
     @SerialName("category")
     val category: String,
     @SerialName("owned")

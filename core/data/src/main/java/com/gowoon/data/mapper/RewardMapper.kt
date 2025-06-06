@@ -5,6 +5,7 @@ import com.gowoon.model.reward.GiftCategory
 import com.gowoon.network.dto.common.RewardDto
 
 fun RewardDto.toModel(): Gift = Gift(
+    id = this.id,
     category = GiftCategory.valueOf(this.category),
     name = this.name,
     thumbnailImageUrl = "", // TODO
@@ -12,8 +13,8 @@ fun RewardDto.toModel(): Gift = Gift(
         GiftCategory.BACKGROUND -> this.imageUrl
         GiftCategory.EFFECT -> this.jsonUrl
         GiftCategory.DECORATION -> this.jsonUrl
-        GiftCategory.BOTTLE -> this.imageUrl
-        GiftCategory.SOUND -> this.mp3Url
-    },
+        GiftCategory.CASE -> this.imageUrl
+        GiftCategory.BGM -> this.mp3Url
+    } ?: "",
     isNew = this.newAcquiredFlag
 )
