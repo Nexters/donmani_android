@@ -19,7 +19,6 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             val composeDebugBundle = libs.findBundle("android-compose-debug").get()
             "implementation"(platform(bom))
             "implementation"(composeBundle)
-            "implementation"(libs.findLibrary("coil.compose").get())
             "androidTestImplementation"(platform(bom))
             "debugImplementation"(composeDebugBundle)
         }

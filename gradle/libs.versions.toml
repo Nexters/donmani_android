@@ -20,6 +20,7 @@ datastore = "1.1.2"
 androidHilt = "1.2.0"
 splashScreen = "1.0.0"
 playReview = "2.0.2"
+exoPlayer = "1.7.1"
 
 # kotlin
 kotlin = "2.1.10"
@@ -83,6 +84,8 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ## hilt
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidHilt" }
+## exo player
+androidx-media-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoPlayer" }
 
 # kotlin
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -122,6 +125,7 @@ physics-layout-compose = { group = "io.github.klassenkonstantin", name = "physic
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 ## coil
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 
 # gradle plugin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

@@ -51,4 +51,13 @@
     <!-- decoration -->
     <string name="decoration_appbar_title">꾸미기</string>
     <string name="decoration_appbar_action_button">완료</string>
+    <!-- dialog -->
+    <string name="decoration_confirm_dialog_title">이렇게 저장할까요?</string>
+    <string name="decoration_confirm_dialog_description">설정 > 꾸미기에서 언제든 바꿀 수 있어요</string>
+    <string name="decoration_confirm_dialog_positive_button">저장하기</string>
+    <string name="decoration_confirm_dialog_negative_button">돌아가기</string>
+    <!-- bottom sheet -->
+    <string name="decoration_bottom_sheet_title">달이 바뀌어도,\n내가 꾸민 별통이는 그대로!</string>
+    <string name="decoration_bottom_sheet_description">달이 바뀌어 새로 열린 별통이는 언제든 꾸밀 수 있어요</string>
+    <string name="decoration_bottom_sheet_button_title">확인했어요</string>
 </resources>

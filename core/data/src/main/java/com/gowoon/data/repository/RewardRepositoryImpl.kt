@@ -8,6 +8,7 @@ import com.gowoon.model.reward.Feedback
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import com.gowoon.network.di.DeviceId
+import com.gowoon.network.dto.request.UpdateRewardRequest
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -155,4 +156,50 @@ class RewardRepositoryImpl @Inject constructor(
             emit(Result.Error(message = e.message))
         }
     }
+
+    override suspend fun updateReward(
+        year: Int,
+        month: Int,
+        backgroundId: Int,
+        effectId: Int,
+        decorationId: Int,
+        caseId: Int,
+        bgmId: Int
+    ): Result<Unit> = try {
+        rewardService.updateReward(
+            UpdateRewardRequest(
+                userKey = deviceId,
+                year = year,
+                month = month,
+                backgroundId = backgroundId,
+                effectId = effectId,
+                decorationId = decorationId,
+                byeoltongCaseId = caseId,
+                bgmId = bgmId
+            )
+        ).let { result ->
+            if (result.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun getShowFirstAccessDecorationBottomSheet(): Flow<Result<Boolean>> = try {
+        rewardDataSource.getShowFirstAccessDecorationBottomSheet().map { Result.Success(it) }
+    } catch (e: Exception) {
+        flow { emit(Result.Error(message = e.message)) }
+    }
+
+    override suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean): Result<Unit> =
+        try {
+            rewardDataSource.setShowFirstAccessDecorationBottomSheet(state)
+                .let { Result.Success(Unit) }
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }

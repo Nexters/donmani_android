@@ -12,7 +12,7 @@ fun RewardDto.toModel(): Gift = Gift(
     resourceUrl = when (GiftCategory.valueOf(category)) {
         GiftCategory.BACKGROUND -> this.imageUrl
         GiftCategory.EFFECT -> this.jsonUrl
-        GiftCategory.DECORATION -> this.jsonUrl
+        GiftCategory.DECORATION -> this.imageUrl
         GiftCategory.CASE -> this.imageUrl
         GiftCategory.BGM -> this.mp3Url
     } ?: "",

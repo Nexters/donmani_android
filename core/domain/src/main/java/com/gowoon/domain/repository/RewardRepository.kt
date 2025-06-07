@@ -16,4 +16,16 @@ interface RewardRepository {
     suspend fun getGiftCount(): Flow<Result<Int>>
     suspend fun openGift(): Flow<Result<List<Gift>>>
     suspend fun getInventoryList(): Flow<Result<Map<GiftCategory, List<Gift>>>>
+    suspend fun updateReward(
+        year: Int,
+        month: Int,
+        backgroundId: Int,
+        effectId: Int,
+        decorationId: Int,
+        caseId: Int,
+        bgmId: Int
+    ): Result<Unit>
+
+    suspend fun getShowFirstAccessDecorationBottomSheet(): Flow<Result<Boolean>>
+    suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean): Result<Unit>
 }

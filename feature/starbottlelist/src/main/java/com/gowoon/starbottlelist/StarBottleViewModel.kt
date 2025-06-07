@@ -45,7 +45,7 @@ class StarBottleViewModel @Inject constructor(
                 ).stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
-                            val records = result.data.filterNotNull()
+                            val records = result.data.records.filterNotNull()
                             setState(
                                 currentState.copy(
                                     month = month,

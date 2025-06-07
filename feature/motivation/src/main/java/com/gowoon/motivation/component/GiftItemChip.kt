@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.ui.component.NewBadge
 
 @Composable
@@ -20,6 +21,7 @@ internal fun GiftItemChip(
     modifier: Modifier = Modifier,
     selected: Boolean,
     isNew: Boolean,
+    onClick: () -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
     val borderModifier = if (selected) modifier.then(
@@ -35,6 +37,7 @@ internal fun GiftItemChip(
             .size(105.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(DonmaniTheme.colors.DeepBlue50.copy(alpha = 0.5f))
+            .noRippleClickable { onClick() }
     ) {
         content()
         if (isNew) {

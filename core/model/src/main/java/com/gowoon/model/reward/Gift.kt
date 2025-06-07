@@ -16,3 +16,7 @@ enum class GiftCategory(val title: String) {
     CASE("별통이"),
     BGM("효과음")
 }
+
+enum class DecorationPosition {
+    TOP_START, BOTTOM_END, ABOVE_BOTTLE
+}
