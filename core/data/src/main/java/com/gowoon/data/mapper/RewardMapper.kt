@@ -8,7 +8,7 @@ fun RewardDto.toModel(): Gift = Gift(
     id = this.id,
     category = GiftCategory.valueOf(this.category),
     name = this.name,
-    thumbnailImageUrl = "", // TODO
+    thumbnailImageUrl = this.thumbnailUrl ?: "",
     resourceUrl = when (GiftCategory.valueOf(category)) {
         GiftCategory.BACKGROUND -> this.imageUrl
         GiftCategory.EFFECT -> this.jsonUrl
@@ -16,5 +16,6 @@ fun RewardDto.toModel(): Gift = Gift(
         GiftCategory.CASE -> this.imageUrl
         GiftCategory.BGM -> this.mp3Url
     } ?: "",
-    isNew = this.newAcquiredFlag
+    isNew = this.newAcquiredFlag,
+    hidden = this.hidden
 )

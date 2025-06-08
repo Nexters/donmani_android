@@ -109,7 +109,8 @@ fun DecoratedBackground(
         )
         LottieAnimation(
             composition = composition,
-            iterations = LottieConstants.IterateForever
+            iterations = LottieConstants.IterateForever,
+            contentScale = ContentScale.FillBounds
         )
     }
 }
@@ -159,27 +160,17 @@ fun Decoration(targetRect: Rect, decoration: Gift?) {
             DecorationAnimation.NONE -> Modifier
         }
         Box(Modifier.fillMaxSize()) {
-            Box(
+            AsyncImage(
                 modifier = Modifier
                     .offset(
                         x = decorationOffset.first,
                         y = decorationOffset.second
                     )
                     .then(animatedModifier)
-                    .size(80.dp)
-                    .background(Color.Red)
+                    .size(80.dp),
+                model = decoration,
+                contentDescription = null
             )
-//            AsyncImage(
-//                modifier = Modifier
-//                    .offset(
-//                        x = decorationOffset.first,
-//                        y = decorationOffset.second
-//                    )
-//                    .then(animatedModifier)
-//                    .size(80.dp),
-//                model = decoration,
-//                contentDescription = null
-//            )
         }
     }
 }

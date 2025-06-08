@@ -7,8 +7,6 @@ import kotlinx.serialization.Serializable
 data class FeedbackSummaryResponse(
     @SerialName("isNotOpened")
     val isNotOpened: Boolean,
-    @SerialName("isFirstOpen")
-    val isFirstOpen: Boolean,
     @SerialName("totalCount")
     val totalCount: Int
 )

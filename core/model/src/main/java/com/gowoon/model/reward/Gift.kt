@@ -6,7 +6,8 @@ data class Gift(
     val name: String,
     val thumbnailImageUrl: String,
     val resourceUrl: String,
-    val isNew: Boolean
+    val isNew: Boolean,
+    val hidden: Boolean
 )
 
 enum class GiftCategory(val title: String) {

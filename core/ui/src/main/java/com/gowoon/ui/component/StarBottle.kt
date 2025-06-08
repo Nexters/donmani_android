@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import com.gowoon.designsystem.util.noRippleClickable
@@ -53,6 +55,8 @@ private const val STAR_SIZE_DP = 45
 @Composable
 fun StarBottle(
     modifier: Modifier = Modifier,
+    bottleSize: DpSize = DpSize(width = 300.dp, height = 400.dp),
+    starSize: Dp = STAR_SIZE_DP.dp,
     records: List<Record>,
     newRecord: Record? = null,
     recordAdded: Boolean = false,
@@ -60,24 +64,17 @@ fun StarBottle(
 ) {
     Box(
         modifier = modifier
-            .width(300.dp)
-            .height(400.dp)
+            .width(bottleSize.width)
+            .height(bottleSize.height)
             .noRippleClickable { onClickBottle() }
     ) {
-//        Image(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .align(Alignment.Center)
-//                .clip(RoundedCornerShape(65.dp)),
-//            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
-//            contentDescription = null
-//        )
         StarBottlePhysicsBody(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 50.dp)
                 .padding(10.dp)
                 .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
+            starSize = starSize,
             records = records,
             newRecord = if (recordAdded) newRecord else null
         )
@@ -95,6 +92,7 @@ fun StarBottle(
 internal fun StarBottlePhysicsBody(
     modifier: Modifier = Modifier,
     bottleShape: Shape = RoundedCornerShape(65.dp),
+    starSize: Dp,
     records: List<Record>,
     newRecord: Record?
 ) {
@@ -113,7 +111,7 @@ internal fun StarBottlePhysicsBody(
     ) {
         newRecord?.let {
             if (show) {
-                Ball(modifier = Modifier.align(Alignment.TopCenter), record = it)
+                Ball(modifier = Modifier.align(Alignment.TopCenter), record = it, size = starSize)
             }
         }
         Column(
@@ -124,7 +122,7 @@ internal fun StarBottlePhysicsBody(
             records.filterNot { it == newRecord }.chunked(COL_COUNT).forEach { rowItems ->
                 Row {
                     rowItems.forEach { record ->
-                        Ball(record = record)
+                        Ball(record = record, size = starSize)
                     }
                 }
             }

@@ -10,7 +10,7 @@ data class ExpenseListResponse(
     @SerialName("userKey")
     val userKey: String,
     @SerialName("records")
-    val records: List<RecordDto>,
+    val records: List<RecordDto>?,
     @SerialName("saveItems")
     val saveItems: List<RewardDto>
 )

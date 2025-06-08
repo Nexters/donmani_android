@@ -22,6 +22,7 @@ import com.gowoon.home.navigation.HomeNavigationRoute
 import com.gowoon.model.common.BBSState
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
@@ -108,6 +109,7 @@ class HomeViewModel @Inject constructor(
                 .stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
+                            Napier.d("gowoon success $result")
                             setState(
                                 currentState.copy(
                                     bbsState = result.data,
@@ -122,6 +124,7 @@ class HomeViewModel @Inject constructor(
 
                         is Result.Error -> {
                             // TODO error handling
+                            Napier.d("gowoon error $result")
                         }
                     }
 

@@ -8,6 +8,6 @@ import javax.inject.Inject
 class GetFeedbackSummaryUseCase @Inject constructor(
     private val rewardRepository: RewardRepository
 ) {
-    suspend operator fun invoke(): Flow<Result<Triple<Boolean, Boolean, Int>>> =
+    suspend operator fun invoke(): Flow<Result<Pair<Boolean, Int>>> =
         rewardRepository.getFeedbackSummary()
 }

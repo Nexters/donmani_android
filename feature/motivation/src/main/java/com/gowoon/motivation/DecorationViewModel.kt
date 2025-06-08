@@ -11,6 +11,7 @@ import com.gowoon.domain.usecase.reward.GetInventoryUseCase
 import com.gowoon.domain.usecase.reward.HideDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.ShowDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.UpdateDecorationUseCase
+import com.gowoon.model.common.BBSState
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,6 +77,7 @@ class DecorationViewModel @Inject constructor(
                     Result.Success(
                         currentState.copy(
                             inventoryList = inventory.data,
+                            bbsState = bbsState.data,
                             savedItems = mutableMapOf<GiftCategory, Gift?>().apply {
                                 put(
                                     GiftCategory.BACKGROUND,
@@ -153,6 +155,7 @@ class DecorationViewModel @Inject constructor(
 data class DecorationState(
     val inventoryList: Map<GiftCategory, List<Gift>> = mapOf(),
     val currentSelectedCategory: GiftCategory = GiftCategory.BACKGROUND,
+    val bbsState: BBSState = BBSState(),
     val savedItems: Map<GiftCategory, Gift?> = mapOf(),
     val showDialog: Boolean = false,
     val showFirstOpenBottomSheet: Boolean = false

@@ -32,10 +32,8 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Record
 import com.gowoon.ui.BBSScaffold
-import com.gowoon.ui.BGMode
 import com.gowoon.ui.DecoratedBackground
 import com.gowoon.ui.Decoration
-import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StarBottle
 
@@ -85,7 +83,9 @@ internal fun StarBottleScreen(
                 StarBottleHeader(modifier = Modifier.fillMaxWidth())
             }
             StarBottleContent(
-                modifier = Modifier.align(Alignment.Center).onGloballyPositioned { targetRect = it.boundsInRoot() },
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .onGloballyPositioned { targetRect = it.boundsInRoot() },
                 records = state.bbsState.records
             ) { onClickBottle(state.bbsState.records, state.year, state.month ?: -1) }
             Decoration(

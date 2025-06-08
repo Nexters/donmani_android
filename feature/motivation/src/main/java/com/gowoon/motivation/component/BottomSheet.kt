@@ -18,9 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.component.BottomSheet
 import com.gowoon.designsystem.component.BottomSheetButtonType
@@ -63,10 +61,12 @@ private fun FirstAccessBottomSheetContent() {
             style = DonmaniTheme.typography.Body2
         )
         Spacer(Modifier.height(24.dp))
-        LottieAnimation(
-            modifier = Modifier.height(180.dp),
-            composition = composition,
-            iterations = LottieConstants.IterateForever
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            painter = painterResource(com.gowoon.designsystem.R.drawable.reward_first_access_img),
+            contentDescription = null
         )
     }
 }
@@ -85,7 +85,9 @@ internal fun DecorationFirstAccessBottomSheet(onDismissRequest: () -> Unit) {
 @Composable
 private fun DecorationFirstAccessBottomSheetContent() {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 24.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
     ) {
         Text(
             text = stringResource(R.string.decoration_bottom_sheet_title),
@@ -100,7 +102,9 @@ private fun DecorationFirstAccessBottomSheetContent() {
         )
         Spacer(Modifier.height(24.dp))
         Image(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
             painter = painterResource(com.gowoon.designsystem.R.drawable.decoration_first_bottom_sheet_img),
             contentDescription = null
         )

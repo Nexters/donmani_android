@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface RewardRepository {
     suspend fun getShowRewardReceivedTooltip(): Flow<Result<Boolean>>
     suspend fun setShowRewardReceivedTooltip(state: Boolean): Result<Unit>
-    suspend fun getFeedbackSummary(): Flow<Result<Triple<Boolean, Boolean, Int>>> // isOpened, isFirstOpen, totalCount
+    suspend fun getFeedbackSummary(): Flow<Result<Pair<Boolean, Int>>> // isNotOpened, totalCount
     suspend fun getShowFirstAccessRewardBottomSheet(): Flow<Result<Boolean>>
     suspend fun setShowFirstAccessRewardBottomSheet(state: Boolean): Result<Unit>
     suspend fun getFeedback(): Flow<Result<Feedback>>

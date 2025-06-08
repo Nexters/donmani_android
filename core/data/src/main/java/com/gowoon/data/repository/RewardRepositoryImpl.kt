@@ -33,16 +33,15 @@ class RewardRepositoryImpl @Inject constructor(
         Result.Error(message = e.message)
     }
 
-    override suspend fun getFeedbackSummary(): Flow<Result<Triple<Boolean, Boolean, Int>>> = flow {
+    override suspend fun getFeedbackSummary(): Flow<Result<Pair<Boolean, Int>>> = flow {
         try {
             emit(
                 rewardService.getFeedbackSummary(deviceId).let { result ->
                     if (result.isSuccessful) {
                         result.body()?.let { body ->
                             Result.Success(
-                                Triple(
+                                Pair(
                                     body.responseData.isNotOpened,
-                                    body.responseData.isFirstOpen,
                                     body.responseData.totalCount
                                 )
                             )

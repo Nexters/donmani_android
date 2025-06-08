@@ -49,6 +49,7 @@ import com.gowoon.ui.Decoration
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.StarBottle
 import com.gowoon.ui.util.rememberHiltJson
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 
@@ -77,6 +78,11 @@ internal fun HomeScreen(
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        Napier.d("gowoon state $state")
+    }
+
     LaunchedEffect(referrer) {
         if (!referrer.first) {
             viewModel.sendViewMainGA4Event()
@@ -89,6 +95,7 @@ internal fun HomeScreen(
         }
     }
     LaunchedEffect(resultFromRecord) {
+        Napier.d("gowoon result from record $resultFromRecord")
         var recordAdded = false
         var record: Record? = null
         resultFromRecord?.let {

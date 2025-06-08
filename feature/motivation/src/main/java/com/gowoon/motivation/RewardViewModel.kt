@@ -58,11 +58,11 @@ class RewardViewModel @Inject constructor(
                         currentState.copy(
                             step = Step.Main(
                                 getMainState(
-                                    feedback.data.third,
+                                    feedback.data.second,
                                     feedback.data.first
                                 )
                             ),
-                            dayStreakCount = feedback.data.third,
+                            dayStreakCount = feedback.data.second,
                             showFirstBottomSheet = show.data
                         )
                     )
