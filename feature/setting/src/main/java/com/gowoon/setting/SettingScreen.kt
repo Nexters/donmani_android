@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.designsystem.component.AppBar
+import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.setting.component.EditNicknameBottomSheet
@@ -90,6 +91,7 @@ internal fun SettingScreen(
     }
 
     BBSScaffold(
+        snackbarHost = { CustomSnackBarHost(snackbarHostState) },
         background = { GradientBackground() },
         topBar = {
             AppBar(
@@ -143,15 +145,26 @@ internal fun SettingScreen(
                 listOf(
                     SettingItem(
                         title = stringResource(R.string.setting_decoration),
-                        showReddot = true, // TODO
+                        showReddot = state.newItem,
                         gaEventName = "", // TODO
-                        onClick = onClickDecoration
+                        onClick = {
+                            viewModel.setEvent(SettingEvent.UpdateDecorationStatusAsRead)
+                            onClickDecoration()
+                        }
                     ),
                     SettingItem(
                         title = stringResource(R.string.setting_sound),
-                        toggleState = true, // TODO
+                        toggleState = state.soundState,
                         gaEventName = "", // TODO
-                        onClick = {} // TODO
+                        onClick = {
+                            viewModel.setEvent(
+                                SettingEvent.OnClickSoundToggle(
+                                    context.getString(
+                                        R.string.no_bgm_toast_message
+                                    )
+                                )
+                            )
+                        }
                     ),
                     SettingItem(
                         title = stringResource(R.string.setting_push),
@@ -227,24 +240,24 @@ private fun SettingContent(
     settingItems: List<SettingItem>
 ) {
     Column(Modifier.fillMaxWidth()) {
-        settingItems.forEach {
+        settingItems.forEach { item ->
             SettingContentItem(
-                title = it.title,
-                showReddot = it.showReddot,
+                title = item.title,
+                showReddot = item.showReddot,
                 onClick = {
-                    it.gaEventName?.let { eventName ->
+                    item.gaEventName?.let { eventName ->
                         FirebaseAnalyticsUtil.sendEvent(
                             trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
                             eventName = eventName
                         )
                     }
-                    it.onClick()
+                    item.onClick()
                 },
                 button = {
-                    it.toggleState?.let {
+                    item.toggleState?.let { state ->
                         Switch(
-                            checked = it,
-                            onCheckedChange = {},
+                            checked = state,
+                            onCheckedChange = { item.onClick() },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = DonmaniTheme.colors.DeepBlue30,
                                 checkedTrackColor = DonmaniTheme.colors.DeepBlue99,

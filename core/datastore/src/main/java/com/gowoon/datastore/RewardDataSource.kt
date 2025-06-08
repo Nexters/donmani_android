@@ -18,7 +18,9 @@ class RewardDataSource @Inject constructor(
         private val SHOW_FIRST_ACCESS_REWARD_BOTTOM_SHEET =
             booleanPreferencesKey("show_first_access_reward_bottom_sheet_key")
         private val SHOW_FIRST_ACCESS_DECORATION_BOTTOM_SHEET =
-            booleanPreferencesKey("show_first_access_reward_bottom_sheet_key")
+            booleanPreferencesKey("show_first_access_decoration_bottom_sheet_key")
+        private val HAS_BGM_ITEMS =
+            booleanPreferencesKey("has_bgm_items_key")
     }
 
     fun getShowRewardReceivedTooltip(): Flow<Boolean> = dataStore.data.map { preference ->
@@ -49,6 +51,17 @@ class RewardDataSource @Inject constructor(
     suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean) {
         dataStore.edit { preference ->
             preference[SHOW_FIRST_ACCESS_DECORATION_BOTTOM_SHEET] = state
+        }
+    }
+
+    fun hasBgmItems(): Flow<Boolean> =
+        dataStore.data.map { preference ->
+            preference[HAS_BGM_ITEMS] ?: false
+        }
+
+    suspend fun setBgmOwned() {
+        dataStore.edit { preference ->
+            preference[HAS_BGM_ITEMS] = true
         }
     }
 }

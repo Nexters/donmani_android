@@ -28,4 +28,6 @@ interface RewardRepository {
 
     suspend fun getShowFirstAccessDecorationBottomSheet(): Flow<Result<Boolean>>
     suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean): Result<Unit>
+    suspend fun hasBgmItems(): Result<Boolean>
+    suspend fun setBgmItemsOwned(): Result<Unit>
 }

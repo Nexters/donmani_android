@@ -117,4 +117,30 @@ class UserRepositoryImpl @Inject constructor(
         Result.Error(message = e.message)
     }
 
+    override suspend fun getRewardStatus(): Result<Boolean> = try {
+        userService.getRewardStatus(deviceId).let { result ->
+            if (result.isSuccessful) {
+                result.body()?.let { body ->
+                    Result.Success(body.checked)
+                } ?: Result.Error(message = "body is null")
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun updateRewardStatus(): Result<Unit> = try {
+        userService.updateRewardStatus(deviceId).let { result ->
+            if (result.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
 }

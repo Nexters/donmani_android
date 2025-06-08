@@ -11,6 +11,7 @@ import com.gowoon.network.di.DeviceId
 import com.gowoon.network.dto.request.UpdateRewardRequest
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -202,4 +203,16 @@ class RewardRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+    override suspend fun hasBgmItems(): Result<Boolean> = try {
+        Result.Success(rewardDataSource.hasBgmItems().first())
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun setBgmItemsOwned(): Result<Unit> = try {
+        Result.Success(rewardDataSource.setBgmOwned())
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
 }

@@ -5,6 +5,7 @@ import com.gowoon.network.dto.request.RegisterUserRequest
 import com.gowoon.network.dto.request.UpdateUserRequest
 import com.gowoon.network.dto.response.NoticeStatusResponse
 import com.gowoon.network.dto.response.RegisterUserResponse
+import com.gowoon.network.dto.response.RewardStatusResponse
 import com.gowoon.network.dto.response.UpdateUserResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -39,4 +40,14 @@ interface UserService {
         @Path("userKey") userKey: String,
         @Body token: String
     ): Response<String>
+
+    @GET("reward/status/{userKey}")
+    suspend fun getRewardStatus(
+        @Path("userKey") userKey: String
+    ): Response<RewardStatusResponse>
+
+    @PUT("reward/status/{userKey}")
+    suspend fun updateRewardStatus(
+        @Path("userKey") userKey: String
+    ): Response<Unit>
 }

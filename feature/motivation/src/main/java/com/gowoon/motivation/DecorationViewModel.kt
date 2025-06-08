@@ -119,9 +119,7 @@ class DecorationViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        if (it.data) {
-                            setState(currentState.copy(showFirstOpenBottomSheet = true))
-                        }
+                        setState(currentState.copy(showFirstOpenBottomSheet = it.data))
                     }
                 }
             }

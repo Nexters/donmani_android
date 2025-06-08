@@ -17,6 +17,7 @@ fun DefaultShape(): Shape {
         val scaledPath = path.copy().apply {
             transform(matrix)
         }
+
         addPath(scaledPath)
     }
 }
