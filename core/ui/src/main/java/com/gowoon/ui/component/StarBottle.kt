@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
@@ -62,14 +64,14 @@ fun StarBottle(
             .height(400.dp)
             .noRippleClickable { onClickBottle() }
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(65.dp)),
-            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
-            contentDescription = null
-        )
+//        Image(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .align(Alignment.Center)
+//                .clip(RoundedCornerShape(65.dp)),
+//            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle_background),
+//            contentDescription = null
+//        )
         StarBottlePhysicsBody(
             modifier = Modifier
                 .fillMaxSize()

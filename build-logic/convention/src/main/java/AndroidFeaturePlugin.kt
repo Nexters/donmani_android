@@ -19,6 +19,11 @@ class AndroidFeaturePlugin : Plugin<Project> {
                 "implementation"(project(":core:model"))
                 "implementation"(project(":core:common"))
 
+                "implementation"(libs.findLibrary("lottie.compose").get())
+                "implementation"(libs.findLibrary("coil.compose").get())
+                "implementation"(libs.findLibrary("coil.network").get())
+                "implementation"(libs.findLibrary("androidx.media.exoplayer").get())
+
                 "implementation"(libs.findLibrary("androidx.navigation.compose").get())
                 "implementation"(libs.findBundle("android-lifecycle").get())
             }

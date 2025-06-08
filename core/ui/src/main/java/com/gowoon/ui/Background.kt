@@ -1,5 +1,11 @@
 package com.gowoon.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,25 +13,36 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.gowoon.designsystem.R
+import coil3.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.model.record.Category
+import com.gowoon.model.reward.DecorationAnimation
+import com.gowoon.model.reward.DecorationPosition
+import com.gowoon.model.reward.Gift
+import com.gowoon.model.reward.getDecorationAnimation
+import com.gowoon.model.reward.getDecorationPosition
 import com.gowoon.ui.util.getColor
 
 enum class BGMode { DEFAULT, SPECIAL }
@@ -53,7 +70,7 @@ fun CategoryBackground(category: Category?) {
 @Composable
 fun GradientBackground(
     mode: BGMode = BGMode.DEFAULT,
-    content : @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -70,8 +87,100 @@ fun GradientBackground(
                     )
                 )
             )
-    ){
+    ) {
         content()
+    }
+}
+
+@Composable
+fun DecoratedBackground(
+    background: String,
+    effect: String
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.Url(effect))
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AsyncImage(
+            model = background,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever
+        )
+    }
+}
+
+@Composable
+fun Decoration(targetRect: Rect, decoration: Gift?) {
+    decoration?.let {
+        val decorationOffset = when (getDecorationPosition(it.id)) {
+            DecorationPosition.TOP_START -> {
+                Pair(
+                    targetRect.topLeft.x.pxToDp() - 10.dp,
+                    targetRect.topLeft.y.pxToDp() - 80.dp
+                )
+            }
+
+            DecorationPosition.BOTTOM_END -> {
+                Pair(
+                    targetRect.bottomRight.x.pxToDp() - 70.dp,
+                    targetRect.bottomRight.y.pxToDp()
+                )
+            }
+
+            DecorationPosition.ABOVE_BOTTLE -> {
+                Pair(
+                    targetRect.topCenter.x.pxToDp() - 40.dp,
+                    targetRect.topCenter.y.pxToDp() - 40.dp
+                )
+            }
+        }
+        val animationOffset by rememberInfiniteTransition().animateFloat(
+            initialValue = 0f,
+            targetValue = 20f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+        val animatedModifier = when (getDecorationAnimation(it.id)) {
+            DecorationAnimation.VERTICAL -> {
+                Modifier.offset(y = animationOffset.dp)
+            }
+
+            DecorationAnimation.HORIZONTAL -> {
+                Modifier.offset(x = animationOffset.dp)
+            }
+
+            DecorationAnimation.NONE -> Modifier
+        }
+        Box(Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .offset(
+                        x = decorationOffset.first,
+                        y = decorationOffset.second
+                    )
+                    .then(animatedModifier)
+                    .size(80.dp)
+                    .background(Color.Red)
+            )
+//            AsyncImage(
+//                modifier = Modifier
+//                    .offset(
+//                        x = decorationOffset.first,
+//                        y = decorationOffset.second
+//                    )
+//                    .then(animatedModifier)
+//                    .size(80.dp),
+//                model = decoration,
+//                contentDescription = null
+//            )
+        }
     }
 }
 
@@ -79,7 +188,6 @@ fun GradientBackground(
 fun BBSScaffold(
     modifier: Modifier = Modifier,
     background: @Composable () -> Unit = {},
-    showStarBg: Boolean = false,
     applyPadding: Boolean = true,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
@@ -93,18 +201,10 @@ fun BBSScaffold(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         background()
-        if (showStarBg) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = ImageVector.vectorResource(R.drawable.star_background),
-                tint = Color.Unspecified,
-                contentDescription = null
-            )
-        }
         Scaffold(
             modifier = modifier
                 .safeDrawingPadding()
-                .padding(horizontal = if(applyPadding)DonmaniTheme.dimens.Margin20 else 0.dp),
+                .padding(horizontal = if (applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp),
             topBar = topBar,
             bottomBar = bottomBar,
             snackbarHost = snackbarHost,

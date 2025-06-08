@@ -20,3 +20,24 @@ enum class GiftCategory(val title: String) {
 enum class DecorationPosition {
     TOP_START, BOTTOM_END, ABOVE_BOTTLE
 }
+
+enum class DecorationAnimation {
+    VERTICAL, HORIZONTAL, NONE
+}
+
+fun getDecorationPosition(decorationId: String): DecorationPosition {
+    return when (decorationId) {
+        "20" -> DecorationPosition.BOTTOM_END
+        "23" -> DecorationPosition.ABOVE_BOTTLE
+        else -> DecorationPosition.TOP_START
+    }
+}
+
+fun getDecorationAnimation(decorationId: String): DecorationAnimation {
+    return when (decorationId) {
+        "19", "21", "22" -> DecorationAnimation.VERTICAL
+        "20" -> DecorationAnimation.HORIZONTAL
+        else -> DecorationAnimation.NONE
+    }
+}
+

@@ -11,7 +11,6 @@ import com.gowoon.domain.usecase.reward.GetInventoryUseCase
 import com.gowoon.domain.usecase.reward.HideDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.ShowDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.UpdateDecorationUseCase
-import com.gowoon.model.reward.DecorationPosition
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -147,14 +146,6 @@ class DecorationViewModel @Inject constructor(
             if (hideDecorationFirstBottomSheetUseCase() is Result.Error) {
                 // TODO error handling
             }
-        }
-    }
-
-    fun getDecorationPosition(decorationId: String): DecorationPosition {
-        return when (decorationId) {
-            "20" -> DecorationPosition.BOTTOM_END
-            "23" -> DecorationPosition.ABOVE_BOTTLE
-            else -> DecorationPosition.TOP_START
         }
     }
 }

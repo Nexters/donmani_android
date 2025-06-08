@@ -18,15 +18,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.HomeCircleButton
@@ -40,8 +44,8 @@ import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
 import com.gowoon.ui.BBSScaffold
-import com.gowoon.ui.BGMode
-import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.DecoratedBackground
+import com.gowoon.ui.Decoration
 import com.gowoon.ui.component.MessageBox
 import com.gowoon.ui.component.StarBottle
 import com.gowoon.ui.util.rememberHiltJson
@@ -59,12 +63,17 @@ internal fun HomeScreen(
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
 ) {
+    val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var addTooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var addTooltipSize by remember { mutableStateOf(IntSize.Zero) }
 
     var rewardTooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var rewardTooltipSize by remember { mutableStateOf(0) }
+
+    var decorationOffset by remember { mutableStateOf(Rect.Zero) }
+
+    var player = remember { ExoPlayer.Builder(context).build() }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
@@ -91,9 +100,22 @@ internal fun HomeScreen(
         }
         viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
+
+    LaunchedEffect(state.bbsState.bgm) {
+        state.bbsState.bgm?.resourceUrl?.let {
+            player.setMediaItem(MediaItem.fromUri(it))
+            player.prepare()
+            player.play()
+        }
+    }
+
     BBSScaffold(
-        background = { GradientBackground(mode = BGMode.SPECIAL) },
-        showStarBg = true,
+        background = {
+            DecoratedBackground(
+                background = state.bbsState.background?.resourceUrl ?: "",
+                effect = state.bbsState.effect?.resourceUrl ?: ""
+            )
+        },
         topBar = {
             HomeAppBar(
                 onClickSetting = {
@@ -110,7 +132,7 @@ internal fun HomeScreen(
             )
         }
     ) { padding ->
-        if (state.showBottomSheet && state.records.isEmpty()) {
+        if (state.showBottomSheet && state.bbsState.records.isEmpty()) {
             StarBottleOpenBottomSheet(
                 onDismissRequest = { viewModel.setEvent(HomeEvent.HideBottomSheet) },
                 onClickGoToStarBottle = onClickGoToStarBottle
@@ -127,11 +149,14 @@ internal fun HomeScreen(
         ) {
             Title(text = state.nickname)
             HomeContent(
-                records = state.records,
+                records = state.bbsState.records,
                 newRecord = state.newRecord,
                 recordAdded = state.recordAdded,
+                onChangePosition = {
+                    decorationOffset = it
+                },
                 onClickBottle = {
-                    onClickBottle(state.records, state.year, state.month)
+                    onClickBottle(state.bbsState.records, state.year, state.month)
                     FirebaseAnalyticsUtil.sendEvent(
                         trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
                         eventName = "main_record_archive_button"
@@ -188,6 +213,10 @@ internal fun HomeScreen(
             message = stringResource(R.string.tooltip_message_for_reward)
         ) { }
     }
+    Decoration(
+        targetRect = decorationOffset,
+        decoration = state.bbsState.effect
+    )
 }
 
 @Composable
@@ -196,6 +225,7 @@ private fun HomeContent(
     records: List<Record>,
     newRecord: Record?,
     recordAdded: Boolean,
+    onChangePosition: (Rect) -> Unit,
     onClickBottle: () -> Unit
 ) {
     var isMoved by remember { mutableStateOf(false) }
@@ -213,7 +243,9 @@ private fun HomeContent(
         )
     )
     StarBottle(
-        modifier = modifier.graphicsLayer(translationY = if (recordAdded) offsetY else 0f),
+        modifier = modifier
+            .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
+            .onGloballyPositioned { onChangePosition(it.boundsInRoot()) },
         records = records,
         newRecord = newRecord,
         recordAdded = recordAdded,

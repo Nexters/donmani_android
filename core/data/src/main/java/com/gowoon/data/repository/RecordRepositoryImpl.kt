@@ -46,7 +46,7 @@ class RecordRepositoryImpl @Inject constructor(
                                         ?.toModel(),
                                     bgm = body.responseData.saveItems.find { it.category == GiftCategory.BGM.name }
                                         ?.toModel(),
-                                    records = body.responseData.records.map { record ->
+                                    records = body.responseData.records.mapNotNull { record ->
                                         record.toModel()
                                     }
                                 )

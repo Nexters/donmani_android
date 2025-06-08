@@ -9,6 +9,7 @@ import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
+import com.gowoon.model.common.BBSState
 import com.gowoon.model.record.BottleState
 import com.gowoon.model.record.Record
 import com.gowoon.starbottlelist.navigation.StarBottleNavigationRoute
@@ -45,11 +46,10 @@ class StarBottleViewModel @Inject constructor(
                 ).stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
-                            val records = result.data.records.filterNotNull()
                             setState(
                                 currentState.copy(
                                     month = month,
-                                    records = records
+                                    bbsState = result.data
                                 )
                             )
                         }
@@ -71,7 +71,7 @@ class StarBottleViewModel @Inject constructor(
 data class StarBottleState(
     val year: Int,
     val month: Int? = null,
-    val records: List<Record> = listOf()
+    val bbsState: BBSState = BBSState()
 ) : UiState
 
 sealed interface StarBottleEvent : UiEvent

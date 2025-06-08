@@ -19,6 +19,7 @@ import com.gowoon.domain.usecase.reward.HideRewardReceivedTooltipUseCase
 import com.gowoon.domain.usecase.reward.ShowRewardReceivedTooltipUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.home.navigation.HomeNavigationRoute
+import com.gowoon.model.common.BBSState
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,7 +81,7 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.UpdateRewardTooltipState -> {
-
+                updateRewardTooltip(event.state)
             }
         }
     }
@@ -107,13 +108,12 @@ class HomeViewModel @Inject constructor(
                 .stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
-                            val records = result.data.records.filterNotNull()
                             setState(
                                 currentState.copy(
-                                    records = records,
-                                    hasToday = hasRecordOfDay(records, LocalDate.now()),
+                                    bbsState = result.data,
+                                    hasToday = hasRecordOfDay(result.data.records, LocalDate.now()),
                                     hasYesterday = hasRecordOfDay(
-                                        records,
+                                        result.data.records,
                                         LocalDate.now().minusDays(1)
                                     )
                                 )
@@ -226,7 +226,7 @@ data class HomeState(
     val year: Int = LocalDate.now().year,
     val month: Int = LocalDate.now().monthValue,
     val nickname: String = "",
-    val records: List<Record> = listOf(),
+    val bbsState: BBSState = BBSState(),
     val newRecord: Record? = null,
     val recordAdded: Boolean = false,
     val hasToday: Boolean = false,

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -22,10 +21,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,20 +39,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import coil3.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
-import com.gowoon.model.reward.DecorationPosition
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import com.gowoon.motivation.component.DecorationFirstAccessBottomSheet
 import com.gowoon.motivation.component.GiftItemChip
+import com.gowoon.ui.DecoratedBackground
+import com.gowoon.ui.Decoration
 import com.gowoon.ui.component.AlertDialog
-import io.github.aakira.napier.Napier
 
 @Composable
 internal fun DecorationScreen(
@@ -59,11 +59,6 @@ internal fun DecorationScreen(
     var player = remember { ExoPlayer.Builder(context).build() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(state) {
-        Napier.d(
-            "gowoon current state = $state"
-        )
-    }
     LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
         state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
             player.setMediaItem(MediaItem.fromUri(it))
@@ -90,9 +85,9 @@ internal fun DecorationScreen(
         Box(
             modifier = Modifier.weight(1f)
         ) {
-            Background(
-                backgroundUrl = state.savedItems[GiftCategory.BACKGROUND]?.resourceUrl,
-                effectUrl = state.savedItems[GiftCategory.EFFECT]?.resourceUrl,
+            DecoratedBackground(
+                background = state.savedItems[GiftCategory.BACKGROUND]?.resourceUrl ?: "",
+                effect = state.savedItems[GiftCategory.EFFECT]?.resourceUrl ?: ""
             )
             Column(modifier = Modifier.padding(horizontal = DonmaniTheme.dimens.Margin20)) {
                 AppBar(
@@ -114,12 +109,7 @@ internal fun DecorationScreen(
                 )
                 DecorationResultContent(
                     bottleUrl = state.savedItems[GiftCategory.CASE]?.resourceUrl ?: "",
-                    decorationInfo = Pair(
-                        state.savedItems[GiftCategory.DECORATION]?.resourceUrl ?: "",
-                        viewModel.getDecorationPosition(
-                            state.savedItems[GiftCategory.DECORATION]?.id ?: ""
-                        )
-                    )
+                    decoration = state.savedItems[GiftCategory.DECORATION]
                 )
             }
         }
@@ -148,61 +138,27 @@ internal fun DecorationScreen(
 }
 
 @Composable
-private fun Background(
-    backgroundUrl: String?,
-    effectUrl: String?
-) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Url(effectUrl ?: ""))
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        AsyncImage(
-            model = backgroundUrl,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever
-        )
-    }
-}
-
-@Composable
 private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     bottleUrl: String,
-    decorationInfo: Pair<String, DecorationPosition>
+    decoration: Gift?
 ) {
+    var targetRect by remember { mutableStateOf(Rect.Zero) }
     Box(modifier = modifier.fillMaxSize()) {
         // TODO 테스트 하면서 조정 필요
-        val decorationModifier = when (decorationInfo.second) {
-            DecorationPosition.TOP_START -> {
-                Modifier.align(Alignment.TopStart)
-            }
-
-            DecorationPosition.BOTTOM_END -> {
-                Modifier.align(Alignment.BottomEnd)
-            }
-
-            DecorationPosition.ABOVE_BOTTLE -> {
-                Modifier.align(Alignment.TopCenter)
-            }
-        }
-        AsyncImage(
-            modifier = decorationModifier.size(80.dp),
-            model = decorationInfo.first,
-            contentDescription = null
-        )
         AsyncImage(
             modifier = Modifier
                 .width(208.dp)
                 .height(260.dp)
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .onGloballyPositioned { targetRect = it.boundsInRoot() },
             model = bottleUrl,
             contentDescription = null,
             contentScale = ContentScale.FillBounds
+        )
+        Decoration(
+            targetRect = targetRect,
+            decoration = decoration
         )
     }
 }

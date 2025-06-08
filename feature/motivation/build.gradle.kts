@@ -19,10 +19,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.lottie.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network)
-    implementation(libs.androidx.media.exoplayer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)
 }
