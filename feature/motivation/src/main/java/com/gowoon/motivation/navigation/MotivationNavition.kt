@@ -18,6 +18,14 @@ fun NavController.navigateToDecoration() {
     navigate(route = DecorationNavigationRoute)
 }
 
+fun NavController.navigateToDecorationAndPopUpTo() {
+    navigate(route = DecorationNavigationRoute) {
+        currentBackStackEntry?.destination?.id?.let {
+            popUpTo(it) { inclusive = true }
+        }
+    }
+}
+
 fun NavGraphBuilder.motivationScreen(
     onClickBack: () -> Unit,
     navigateToRecord: () -> Unit,

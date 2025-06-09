@@ -13,6 +13,7 @@ import com.gowoon.home.navigation.homeScreen
 import com.gowoon.home.navigation.navigateToHome
 import com.gowoon.motivation.navigation.motivationScreen
 import com.gowoon.motivation.navigation.navigateToDecoration
+import com.gowoon.motivation.navigation.navigateToDecorationAndPopUpTo
 import com.gowoon.motivation.navigation.navigateToReward
 import com.gowoon.onboarding.navigation.navigateToOnBoarding
 import com.gowoon.onboarding.navigation.onBoardingScreen
@@ -124,7 +125,7 @@ fun DonmaniNavHost(
         }, navigateToWebView = {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
             context.startActivity(intent)
-        }, navigateToDecoration = navController::navigateToDecoration
+        }, navigateToDecoration = navController::navigateToDecorationAndPopUpTo
         )
     }
 }

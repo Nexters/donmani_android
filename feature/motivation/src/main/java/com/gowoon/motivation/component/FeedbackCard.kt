@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.component.Card
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -87,9 +88,10 @@ internal fun FeedbackCard(modifier: Modifier = Modifier, feedback: Feedback) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = feedback.title,
+                text = feedback.description,
                 style = DonmaniTheme.typography.Body2,
-                color = DonmaniTheme.colors.Gray95
+                color = DonmaniTheme.colors.Gray95,
+                textAlign = TextAlign.Center
             )
         }
     }

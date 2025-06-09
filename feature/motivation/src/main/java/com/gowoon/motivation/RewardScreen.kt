@@ -1,5 +1,11 @@
 package com.gowoon.motivation
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,9 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.NegativeButton
@@ -47,6 +54,7 @@ import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.getTitle
 import com.gowoon.model.reward.Feedback
 import com.gowoon.model.reward.Gift
+import com.gowoon.model.reward.GiftCategory
 import com.gowoon.motivation.component.FeedbackCard
 import com.gowoon.motivation.component.FirstAccessBottomSheet
 import com.gowoon.motivation.component.RewardBackground
@@ -311,7 +319,14 @@ private fun GiftOpenContent(
     giftCount: Int,
     onClickOpen: () -> Unit
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("reward_gift_open.json"))
+    val giftAnimatedOffset by rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = 20f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -327,11 +342,14 @@ private fun GiftOpenContent(
                 .fillMaxWidth()
                 .weight(1f)
         ) {
-            LottieAnimation(
-                modifier = Modifier.align(Alignment.Center),
-                composition = composition,
-                iterations = LottieConstants.IterateForever
+            Image(
+                modifier = Modifier
+                    .offset(y = giftAnimatedOffset.dp)
+                    .align(Alignment.Center),
+                painter = painterResource(com.gowoon.designsystem.R.drawable.gift_box),
+                contentDescription = null
             )
+
         }
         if (giftCount > 1) {
             GiftOpenBanner(giftCount = giftCount)
@@ -428,6 +446,14 @@ private fun GiftConfirmContent(
 private fun GiftItem(
     gift: Gift
 ) {
+    val thumbnailModifier = Modifier
+        .fillMaxSize()
+        .then(
+            when (gift.category) {
+                GiftCategory.BACKGROUND -> Modifier
+                else -> Modifier.padding(45.dp)
+            }
+        )
     Column(Modifier.fillMaxWidth()) {
         Text(
             modifier = Modifier.padding(horizontal = DonmaniTheme.dimens.Margin20),
@@ -439,9 +465,17 @@ private fun GiftItem(
         Box(
             Modifier
                 .size(200.dp)
-                .background(color = Color.White, shape = RoundedCornerShape(60.dp))
+                .background(
+                    color = DonmaniTheme.colors.DeepBlue70,
+                    shape = RoundedCornerShape(60.dp)
+                )
                 .align(Alignment.CenterHorizontally)
-        )
-
+        ) {
+            AsyncImage(
+                modifier = thumbnailModifier.align(Alignment.Center),
+                model = gift.thumbnailImageUrl,
+                contentDescription = null
+            )
+        }
     }
 }
