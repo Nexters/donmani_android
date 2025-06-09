@@ -30,4 +30,5 @@ interface RewardRepository {
     suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean): Result<Unit>
     suspend fun hasBgmItems(): Result<Boolean>
     suspend fun setBgmItemsOwned(): Result<Unit>
+    suspend fun readHiddenItem(year: Int, month: Int): Result<Unit>
 }

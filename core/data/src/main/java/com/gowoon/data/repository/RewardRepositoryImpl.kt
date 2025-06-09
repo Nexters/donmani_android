@@ -8,6 +8,7 @@ import com.gowoon.model.reward.Feedback
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import com.gowoon.network.di.DeviceId
+import com.gowoon.network.dto.request.ReadHiddenRequest
 import com.gowoon.network.dto.request.UpdateRewardRequest
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
@@ -211,6 +212,18 @@ class RewardRepositoryImpl @Inject constructor(
 
     override suspend fun setBgmItemsOwned(): Result<Unit> = try {
         Result.Success(rewardDataSource.setBgmOwned())
+    } catch (e: Exception) {
+        Result.Error(message = e.message)
+    }
+
+    override suspend fun readHiddenItem(year: Int, month: Int): Result<Unit> = try {
+        rewardService.readHiddenItem(ReadHiddenRequest(deviceId, year, month)).let { result ->
+            if (result.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(code = result.code(), message = result.message())
+            }
+        }
     } catch (e: Exception) {
         Result.Error(message = e.message)
     }

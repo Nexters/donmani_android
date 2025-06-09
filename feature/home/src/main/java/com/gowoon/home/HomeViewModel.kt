@@ -84,6 +84,12 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.UpdateRewardTooltipState -> {
                 updateRewardTooltip(event.state)
             }
+
+            is HomeEvent.UpdateDecorationState -> {
+                Napier.d("gowoon babo updatedeco")
+                setState(currentState.copy(storedState = event.changed))
+                setEffect(HomeEffect.ShowToast(event.message))
+            }
         }
     }
 
@@ -236,7 +242,8 @@ data class HomeState(
     val hasYesterday: Boolean = false,
     val showTooltip: Boolean = true,
     val showBottomSheet: Boolean = false,
-    val showRewardTooltip: Boolean = false
+    val showRewardTooltip: Boolean = false,
+    val storedState: String? = null
 ) : UiState
 
 sealed interface HomeEvent : UiEvent {
@@ -244,9 +251,11 @@ sealed interface HomeEvent : UiEvent {
     data class OnAddRecord(val newRecord: Record?, val recordAdded: Boolean) : HomeEvent
     data object HideBottomSheet : HomeEvent
     data class UpdateRewardTooltipState(val state: Boolean) : HomeEvent
+    data class UpdateDecorationState(val changed: String, val message: String) : HomeEvent
 }
 
 sealed interface HomeEffect : UiEffect {
     data object RefreshTrigger : HomeEffect
+    data class ShowToast(val message: String) : HomeEffect
 }
 

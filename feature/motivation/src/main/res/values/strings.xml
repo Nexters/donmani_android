@@ -60,4 +60,8 @@
     <string name="decoration_bottom_sheet_title">달이 바뀌어도,\n내가 꾸민 별통이는 그대로!</string>
     <string name="decoration_bottom_sheet_description">달이 바뀌어 새로 열린 별통이는 언제든 꾸밀 수 있어요</string>
     <string name="decoration_bottom_sheet_button_title">확인했어요</string>
+
+    <string name="decoration_hidden_bottom_sheet_title">축하해요! 🎉</string>
+    <string name="decoration_hidden_bottom_sheet_description">14개 선물을 모두 모아\n토비의 우주바캉스🏝️를 받았어요!</string>
+    <string name="decoration_hidden_bottom_sheet_button_title">히든 아이템 받기</string>
 </resources>

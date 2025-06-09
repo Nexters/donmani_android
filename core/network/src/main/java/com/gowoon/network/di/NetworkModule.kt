@@ -38,7 +38,8 @@ object NetworkModule {
         return (Settings.Secure.getString(
             context.contentResolver,
             Settings.Secure.ANDROID_ID
-        ) ?: "") + "1"
+        ) ?: "")
+//        + "1"
     }
 
     @NetworkJson

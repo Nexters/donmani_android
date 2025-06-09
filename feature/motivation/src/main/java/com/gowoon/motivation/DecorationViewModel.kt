@@ -9,6 +9,7 @@ import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.reward.GetInventoryUseCase
 import com.gowoon.domain.usecase.reward.HideDecorationFirstBottomSheetUseCase
+import com.gowoon.domain.usecase.reward.ReadHiddenItemUseCase
 import com.gowoon.domain.usecase.reward.ShowDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.UpdateDecorationUseCase
 import com.gowoon.model.common.BBSState
@@ -27,7 +28,8 @@ class DecorationViewModel @Inject constructor(
     private val getRecordListUseCase: GetRecordListUseCase,
     private val updateDecorationUseCase: UpdateDecorationUseCase,
     private val showDecorationFirstBottomSheetUseCase: ShowDecorationFirstBottomSheetUseCase,
-    private val hideDecorationFirstBottomSheetUseCase: HideDecorationFirstBottomSheetUseCase
+    private val hideDecorationFirstBottomSheetUseCase: HideDecorationFirstBottomSheetUseCase,
+    private val readHiddenItemUseCase: ReadHiddenItemUseCase
 ) : BaseViewModel<DecorationState, DecorationEvent, DecorationEffect>() {
     override fun createInitialState(): DecorationState {
         return DecorationState()
@@ -59,11 +61,15 @@ class DecorationViewModel @Inject constructor(
             }
 
             is DecorationEvent.SaveDecoration -> {
-                requestUpdateDecoration()
+                requestUpdateDecoration(event.callback)
             }
 
             is DecorationEvent.HideFirstBottomSheet -> {
                 hideFirstBottomSheet()
+            }
+
+            is DecorationEvent.HideHiddenBttomSheet -> {
+                hideHiddenItemBottomSheet()
             }
         }
     }
@@ -74,6 +80,7 @@ class DecorationViewModel @Inject constructor(
                 getInventoryUseCase()
             ) { bbsState, inventory ->
                 if (bbsState is Result.Success && inventory is Result.Success) {
+                    val hidden = inventory.data[GiftCategory.DECORATION]?.any { it.hidden }
                     Result.Success(
                         currentState.copy(
                             inventoryList = inventory.data,
@@ -94,7 +101,8 @@ class DecorationViewModel @Inject constructor(
                                 put(
                                     GiftCategory.BGM,
                                     inventory.data[GiftCategory.BGM]?.find { it.id == bbsState.data.bgm?.id })
-                            }
+                            },
+                            showHiddenGiftBottomSheet = hidden ?: false
                         )
                     )
                 } else {
@@ -127,18 +135,24 @@ class DecorationViewModel @Inject constructor(
         }
     }
 
-    private fun requestUpdateDecoration() {
+    private fun requestUpdateDecoration(callback: () -> Unit) {
         viewModelScope.launch {
-            if (
+            when (
                 updateDecorationUseCase(
                     backgroundId = currentState.savedItems[GiftCategory.BACKGROUND]?.id ?: "",
                     effectId = currentState.savedItems[GiftCategory.EFFECT]?.id ?: "",
                     decorationId = currentState.savedItems[GiftCategory.DECORATION]?.id ?: "",
                     caseId = currentState.savedItems[GiftCategory.CASE]?.id ?: "",
                     bgmId = currentState.savedItems[GiftCategory.BGM]?.id ?: ""
-                ) is Result.Error
+                )
             ) {
-                // TODO error handling
+                is Result.Error -> {
+                    // TODO error handling
+                }
+
+                is Result.Success -> {
+                    callback()
+                }
             }
         }
     }
@@ -150,6 +164,27 @@ class DecorationViewModel @Inject constructor(
             }
         }
     }
+
+    private fun hideHiddenItemBottomSheet() {
+        viewModelScope.launch {
+            when (readHiddenItemUseCase()) {
+                is Result.Error -> {
+                    // TODO error handling
+                }
+
+                is Result.Success -> {
+                    setState(currentState.copy(showHiddenGiftBottomSheet = false))
+                }
+            }
+        }
+    }
+
+    fun isChangedDecorationState(
+        origin: Map<GiftCategory, Gift?>,
+        current: Map<GiftCategory, Gift?>
+    ): Boolean {
+        return !origin.all { current[it.key]?.id == it.value?.id }
+    }
 }
 
 data class DecorationState(
@@ -158,7 +193,8 @@ data class DecorationState(
     val bbsState: BBSState = BBSState(),
     val savedItems: Map<GiftCategory, Gift?> = mapOf(),
     val showDialog: Boolean = false,
-    val showFirstOpenBottomSheet: Boolean = false
+    val showFirstOpenBottomSheet: Boolean = false,
+    val showHiddenGiftBottomSheet: Boolean = false
 ) : UiState
 
 data class InventoryState(
@@ -171,8 +207,9 @@ sealed interface DecorationEvent : UiEvent {
     data class OnClickCategory(val clicked: GiftCategory) : DecorationEvent
     data class OnClickItem(val category: GiftCategory, val item: Gift?) : DecorationEvent
     data class ShowDialog(val show: Boolean) : DecorationEvent
-    data object SaveDecoration : DecorationEvent
+    data class SaveDecoration(val callback: () -> Unit) : DecorationEvent
     data object HideFirstBottomSheet : DecorationEvent
+    data object HideHiddenBttomSheet : DecorationEvent
 }
 
 sealed interface DecorationEffect : UiEffect

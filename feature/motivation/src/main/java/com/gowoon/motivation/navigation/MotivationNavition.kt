@@ -30,7 +30,8 @@ fun NavGraphBuilder.motivationScreen(
     onClickBack: () -> Unit,
     navigateToRecord: () -> Unit,
     navigateToWebView: (String) -> Unit,
-    navigateToDecoration: () -> Unit
+    navigateToDecoration: () -> Unit,
+    navigateToHome: (String) -> Unit
 ) {
     composable(route = RewardNavigationRoute) {
         RewardScreen(
@@ -42,7 +43,8 @@ fun NavGraphBuilder.motivationScreen(
     }
     composable(route = DecorationNavigationRoute) {
         DecorationScreen(
-            onClickBack = onClickBack
+            onClickBack = onClickBack,
+            onClickSave = navigateToHome
         )
     }
 }

@@ -110,7 +110,7 @@ fun DecoratedBackground(
         LottieAnimation(
             composition = composition,
             iterations = LottieConstants.IterateForever,
-            contentScale = ContentScale.FillBounds
+            contentScale = ContentScale.Crop
         )
     }
 }

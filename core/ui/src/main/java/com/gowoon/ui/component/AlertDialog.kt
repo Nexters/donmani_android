@@ -37,7 +37,6 @@ fun AlertDialog(
     ) {
         Column(
             modifier = Modifier
-//                .padding(horizontal = 20.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(
@@ -72,8 +71,8 @@ fun AlertDialog(
                     modifier = Modifier.weight(1f),
                     label = positiveTitle
                 ) {
-                    onClickPositive()
                     onDismissRequest()
+                    onClickPositive()
                 }
             }
         }

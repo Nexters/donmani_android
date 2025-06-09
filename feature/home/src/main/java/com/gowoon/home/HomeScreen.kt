@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,7 +34,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.common.util.FirebaseAnalyticsUtil
+import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.component.HomeCircleButton
+import com.gowoon.designsystem.component.SnackBarType
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
@@ -57,7 +60,8 @@ import kotlinx.serialization.json.Json
 internal fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     @FeatureJson json: Json = rememberHiltJson(),
-    resultFromRecord: String?,
+    changedState: String?,
+    dataFromRecord: String?,
     onClickSetting: () -> Unit,
     onClickStore: () -> Unit,
     onClickAdd: (Boolean, Boolean, String) -> Unit,
@@ -79,8 +83,18 @@ internal fun HomeScreen(
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(Unit) {
         Napier.d("gowoon state $state")
+    }
+
+    LaunchedEffect(true) {
+        viewModel.uiEffect.collect {
+            if (it is HomeEffect.ShowToast) {
+                snackbarHostState.showSnackbar(it.message)
+            }
+        }
     }
 
     LaunchedEffect(referrer) {
@@ -94,11 +108,25 @@ internal fun HomeScreen(
             viewModel.updateIsFromFcmState()
         }
     }
-    LaunchedEffect(resultFromRecord) {
-        Napier.d("gowoon result from record $resultFromRecord")
+
+    LaunchedEffect(changedState) {
+        changedState?.let {
+            if (it != state.storedState) {
+                viewModel.setEvent(
+                    HomeEvent.UpdateDecorationState(
+                        it,
+                        context.getString(R.string.result_decoration_toast_message)
+                    )
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(dataFromRecord) {
+        Napier.d("gowoon result from record $dataFromRecord")
         var recordAdded = false
         var record: Record? = null
-        resultFromRecord?.let {
+        dataFromRecord?.let {
             record = json.decodeFromString<Record>(it)
             if (record != state.newRecord) {
                 recordAdded = true
@@ -224,6 +252,15 @@ internal fun HomeScreen(
         targetRect = decorationOffset,
         decoration = state.bbsState.effect
     )
+    Box(Modifier.fillMaxSize()) {
+        CustomSnackBarHost(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 50.dp),
+            snackBarType = SnackBarType.Confirm,
+            snackbarHostState = snackbarHostState
+        )
+    }
 }
 
 @Composable

@@ -9,4 +9,7 @@
     <string name="star_bottle_open_bottom_sheet_description">매 월 1일에 새로운 별통이가 열려요</string>
     <string name="star_bottle_open_bottom_sheet_go_btn">지난 달 별통이 보러가기</string>
     <string name="star_bottle_open_bottom_sheet_confirm">확인했어요</string>
+
+    <!-- toast -->
+    <string name="result_decoration_toast_message">꾸미기를 반영했어요</string>
 </resources>

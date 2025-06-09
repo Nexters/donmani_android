@@ -120,12 +120,19 @@ fun DonmaniNavHost(
                 intent.data = Uri.parse("package:${context.packageName}")
                 context.startActivity(intent)
             })
-        motivationScreen(onClickBack = navController::popBackStack, navigateToRecord = {
-            navController.navigateToRecordAndPopUpTo("reward")
-        }, navigateToWebView = {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-            context.startActivity(intent)
-        }, navigateToDecoration = navController::navigateToDecorationAndPopUpTo
+        motivationScreen(
+            onClickBack = navController::popBackStack,
+            navigateToRecord = {
+                navController.navigateToRecordAndPopUpTo("reward")
+            },
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            },
+            navigateToDecoration = navController::navigateToDecorationAndPopUpTo,
+            navigateToHome = {
+                navController.navigateToHome(changedState = it)
+            }
         )
     }
 }
