@@ -192,7 +192,6 @@ private fun DecorationResultContent(
     onChangeStarBottleRect: (Rect) -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
-    var targetRect by remember { mutableStateOf(Rect.Zero) }
     Box(modifier = modifier.fillMaxSize()) {
         StarBottle(
             modifier = Modifier
@@ -257,6 +256,7 @@ private fun DecorationItemContent(
             }
         }
         LazyVerticalGrid(
+            modifier = Modifier.weight(1f),
             columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -285,6 +285,14 @@ private fun DecorationItemContent(
                     )
                 }
             }
+        }
+        if (currentSelectedInventory.currentCategory == GiftCategory.BGM) {
+            Text(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+                text = stringResource(R.string.decoration_bgm_message),
+                style = DonmaniTheme.typography.Body2,
+                color = DonmaniTheme.colors.DeepBlue90
+            )
         }
     }
 }

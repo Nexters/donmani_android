@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
@@ -61,6 +60,7 @@ fun StarBottle(
     records: List<Record>,
     newRecord: Record? = null,
     recordAdded: Boolean = false,
+    onChangeDiff: (Float) -> Unit = {},
     onClickBottle: () -> Unit
 ) {
     key(bottleType) {
@@ -209,7 +209,8 @@ fun StarBottle(
                     }
                 },
                 records = records,
-                newRecord = if (recordAdded) newRecord else null
+                newRecord = if (recordAdded) newRecord else null,
+                onChangeDiff = onChangeDiff
             )
         }
     }
@@ -222,10 +223,14 @@ internal fun StarBottlePhysicsBody(
     bottleShape: Shape,
     starSize: Dp,
     records: List<Record>,
-    newRecord: Record?
+    newRecord: Record?,
+    onChangeDiff: (Float) -> Unit
 ) {
     var show by remember { mutableStateOf(false) }
     val simulation = rememberSimulation(rememberClock())
+
+    var lastHandledTime by remember { mutableStateOf(0L) }
+    var preOffset by remember { mutableStateOf(Offset.Zero) }
 
     LaunchedEffect(true) {
         delay(1000)
@@ -233,6 +238,15 @@ internal fun StarBottlePhysicsBody(
     }
     GravitySensor { (x, y) ->
         simulation.setGravity(Offset(-x, y).times(6f))
+        val now = System.currentTimeMillis()
+        if (now - lastHandledTime >= 1000L) {
+            lastHandledTime = now
+            
+            val new = Offset(x, y)
+            val diff = (preOffset - new).getDistance()
+            preOffset = new
+            onChangeDiff(diff)
+        }
     }
     PhysicsLayout(
         modifier = modifier, simulation = simulation, shape = bottleShape

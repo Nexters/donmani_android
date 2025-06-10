@@ -51,6 +51,7 @@
     <!-- decoration -->
     <string name="decoration_appbar_title">꾸미기</string>
     <string name="decoration_appbar_action_button">완료</string>
+    <string name="decoration_bgm_message">・휴대폰을 흔들면 효과음이 들려요 🎹</string>
     <!-- dialog -->
     <string name="decoration_confirm_dialog_title">이렇게 저장할까요?</string>
     <string name="decoration_confirm_dialog_description">설정 > 꾸미기에서 언제든 바꿀 수 있어요</string>
