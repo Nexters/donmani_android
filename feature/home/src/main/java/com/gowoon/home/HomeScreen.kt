@@ -253,7 +253,8 @@ internal fun HomeScreen(
     }
     Decoration(
         targetRect = decorationOffset,
-        decoration = state.bbsState.decoration
+        decoration = state.bbsState.decoration,
+        bottleType = getBottleType(state.bbsState.case?.id ?: "")
     )
     Box(Modifier.fillMaxSize()) {
         CustomSnackBarHost(

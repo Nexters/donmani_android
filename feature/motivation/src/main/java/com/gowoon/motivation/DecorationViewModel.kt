@@ -16,7 +16,6 @@ import com.gowoon.model.common.BBSState
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -46,9 +45,9 @@ class DecorationViewModel @Inject constructor(
             }
 
             is DecorationEvent.OnClickItem -> {
-                Napier.d("clicked item ${event.category} - ${event.item?.name} - ${event.item?.resourceUrl}")
                 setState(
                     currentState.copy(
+                        bbsState = currentState.bbsState.copy(records = currentState.bbsState.records.toMutableList()),
                         savedItems = currentState.savedItems.toMutableMap().apply {
                             put(event.category, event.item)
                         }

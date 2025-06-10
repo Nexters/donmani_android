@@ -61,7 +61,6 @@ import com.gowoon.ui.Decoration
 import com.gowoon.ui.component.AlertDialog
 import com.gowoon.ui.component.StarBottle
 import com.gowoon.ui.component.StarBottleMode
-import io.github.aakira.napier.Napier
 
 @Composable
 internal fun DecorationScreen(
@@ -89,9 +88,6 @@ internal fun DecorationScreen(
         }
     }
 
-    LaunchedEffect(state) {
-        Napier.d("gowoon state = $state")
-    }
     LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
         state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
             player.setMediaItem(MediaItem.fromUri(it))
@@ -175,7 +171,8 @@ internal fun DecorationScreen(
     Decoration(
         targetRect = targetRect,
         decoration = state.savedItems[GiftCategory.DECORATION],
-        starBottleMode = StarBottleMode.Preview
+        starBottleMode = StarBottleMode.Preview,
+        bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: "")
     )
 
     DisposableEffect(Unit) {

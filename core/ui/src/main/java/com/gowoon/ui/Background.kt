@@ -38,6 +38,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.model.record.Category
+import com.gowoon.model.reward.BottleType
 import com.gowoon.model.reward.DecorationAnimation
 import com.gowoon.model.reward.DecorationPosition
 import com.gowoon.model.reward.Gift
@@ -121,11 +122,9 @@ fun Decoration(
     modifier: Modifier = Modifier,
     targetRect: Rect,
     decoration: Gift?,
-    starBottleMode: StarBottleMode = StarBottleMode.Default
+    starBottleMode: StarBottleMode = StarBottleMode.Default,
+    bottleType: BottleType
 ) {
-//    val decoration = decoration?.copy(
-//        id = "23",
-//    )
     decoration?.let {
         val decorationOffset = when (getDecorationPosition(it.id)) {
             DecorationPosition.TOP_START -> {
@@ -165,9 +164,18 @@ fun Decoration(
             }
 
             DecorationPosition.ABOVE_BOTTLE -> {
+                val times = when (starBottleMode) {
+                    StarBottleMode.Default -> 1.3f
+                    StarBottleMode.Preview -> 1.0f
+                }
+                val additional = when (bottleType) {
+                    BottleType.DEFAULT -> Pair(50.dp, 0.dp)
+                    BottleType.CIRCLE -> Pair(0.dp, 0.dp)
+                    BottleType.HEART -> Pair(60.dp, 30.dp)
+                }
                 Pair(
-                    targetRect.topCenter.x.pxToDp() - 40.dp,
-                    targetRect.topCenter.y.pxToDp() - 40.dp
+                    targetRect.topCenter.x.pxToDp() - 40.dp + additional.first * times,
+                    targetRect.topCenter.y.pxToDp() - 40.dp + additional.second * times
                 )
             }
         }
