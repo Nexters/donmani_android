@@ -29,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -80,16 +82,12 @@ internal fun HomeScreen(
 
     var decorationOffset by remember { mutableStateOf(Rect.Zero) }
 
-    var player = remember { ExoPlayer.Builder(context).build() }
+    var player = remember { if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        Napier.d("gowoon state $state")
-    }
 
     LaunchedEffect(true) {
         viewModel.uiEffect.collect {
@@ -140,10 +138,18 @@ internal fun HomeScreen(
 
     LaunchedEffect(state.bbsState.bgm) {
         state.bbsState.bgm?.resourceUrl?.let {
-            player.setMediaItem(MediaItem.fromUri(it))
-            player.prepare()
-            player.play()
+            player?.setMediaItem(MediaItem.fromUri(it))
+            player?.prepare()
+
         }
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        player?.play()
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        player?.pause()
     }
 
     BBSScaffold(

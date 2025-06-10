@@ -26,6 +26,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.designsystem.component.AppBar
@@ -48,14 +50,21 @@ internal fun StarBottleScreen(
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
     var targetRect by remember { mutableStateOf(Rect.Zero) }
-    var player = remember { ExoPlayer.Builder(context).build() }
+    var player = remember { if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null }
 
     LaunchedEffect(state.bbsState.bgm) {
         state.bbsState.bgm?.resourceUrl?.let {
-            player.setMediaItem(MediaItem.fromUri(it))
-            player.prepare()
-            player.play()
+            player?.setMediaItem(MediaItem.fromUri(it))
+            player?.prepare()
         }
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        player?.play()
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        player?.pause()
     }
 
     BBSScaffold(

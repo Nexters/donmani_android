@@ -9,6 +9,7 @@ import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
+import com.gowoon.domain.usecase.config.GetBgmStateUseCase
 import com.gowoon.domain.usecase.config.HideStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
@@ -43,7 +44,8 @@ class HomeViewModel @Inject constructor(
     private val hideStarBottleOpenSheetUseCase: HideStarBottleOpenSheetUseCase,
     private val getRewardReceivedTooltipStateUseCase: GetRewardReceivedTooltipStateUseCase,
     private val hideRewardReceivedTooltipUseCase: HideRewardReceivedTooltipUseCase,
-    private val showRewardReceivedTooltipUseCase: ShowRewardReceivedTooltipUseCase
+    private val showRewardReceivedTooltipUseCase: ShowRewardReceivedTooltipUseCase,
+    private val getBgmStateUseCase: GetBgmStateUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
     private val _referrer =
         MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().referrer))
@@ -175,6 +177,19 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            getBgmStateUseCase().stateIn(this).collect {
+                when (it) {
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+
+                    is Result.Success -> {
+                        setState(currentState.copy(bgmPlayOn = it.data))
+                    }
+                }
+            }
+        }
     }
 
     private fun hideTooltip() {
@@ -243,7 +258,8 @@ data class HomeState(
     val showTooltip: Boolean = true,
     val showBottomSheet: Boolean = false,
     val showRewardTooltip: Boolean = false,
-    val storedState: String? = null
+    val storedState: String? = null,
+    val bgmPlayOn: Boolean = false
 ) : UiState
 
 sealed interface HomeEvent : UiEvent {

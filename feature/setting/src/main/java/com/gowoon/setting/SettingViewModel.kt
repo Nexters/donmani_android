@@ -163,14 +163,8 @@ class SettingViewModel @Inject constructor(
                 is Result.Success -> {
                     if (result.data) {
                         Napier.d("gowoon has bgm")
-                        when (updateBgmStateUseCase(!currentState.soundState)) {
-                            is Result.Success -> {
-                                setState(currentState.copy(newItem = false))
-                            }
-
-                            is Result.Error -> {
-                                // TODO error handling
-                            }
+                        if (updateBgmStateUseCase(!currentState.soundState) is Result.Error) {
+                            // TODO error handling
                         }
                     } else {
                         Napier.d("gowoon no bgm")

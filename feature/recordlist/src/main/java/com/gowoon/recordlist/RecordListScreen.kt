@@ -97,7 +97,7 @@ internal fun RecordListScreen(
                 ),
                 onClickNavigation = onClickBack,
                 actionButton = {
-                    if (showActionButton) {
+                    if (viewModel.isThisMonth() && showActionButton) {
                         Icon(
                             modifier = Modifier
                                 .onGloballyPositioned {
