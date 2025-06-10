@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
@@ -71,7 +72,7 @@ internal fun DecorationScreen(
     val context = LocalContext.current
     var player = remember { ExoPlayer.Builder(context).build() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
+    var gravityDiff by remember { mutableStateOf(0f) }
     var targetRect by remember { mutableStateOf(Rect.Zero) }
     val enableConfirm by remember {
         derivedStateOf {
@@ -92,7 +93,16 @@ internal fun DecorationScreen(
         state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
             player.setMediaItem(MediaItem.fromUri(it))
             player.prepare()
+            player?.repeatMode = Player.REPEAT_MODE_ONE
             player.play()
+        }
+    }
+
+    LaunchedEffect(gravityDiff) {
+        player?.volume = if (gravityDiff < 2f) {
+            0f
+        } else {
+            gravityDiff
         }
     }
 
@@ -146,10 +156,10 @@ internal fun DecorationScreen(
                 DecorationResultContent(
                     records = state.bbsState.records,
                     bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
-                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty()
-                ) {
-                    targetRect = it
-                }
+                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty(),
+                    onChangeStarBottleRect = { targetRect = it },
+                    onChangeDiff = { gravityDiff = it }
+                )
             }
         }
         DecorationItemContent(
@@ -189,7 +199,8 @@ private fun DecorationResultContent(
     records: List<Record>,
     bottleType: BottleType,
     isPlay: Boolean,
-    onChangeStarBottleRect: (Rect) -> Unit
+    onChangeStarBottleRect: (Rect) -> Unit,
+    onChangeDiff: (Float) -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
     Box(modifier = modifier.fillMaxSize()) {
@@ -199,7 +210,8 @@ private fun DecorationResultContent(
                 .onGloballyPositioned { onChangeStarBottleRect(it.boundsInRoot()) },
             starBottleMode = StarBottleMode.Preview,
             bottleType = bottleType,
-            records = records
+            records = records,
+            onChangeDiff = onChangeDiff
         ) { }
         LottieAnimation(
             composition = composition,

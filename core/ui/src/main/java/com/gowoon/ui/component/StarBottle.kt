@@ -60,7 +60,7 @@ fun StarBottle(
     records: List<Record>,
     newRecord: Record? = null,
     recordAdded: Boolean = false,
-    onChangeDiff: (Float) -> Unit = {},
+    onChangeDiff: (Float) -> Unit,
     onClickBottle: () -> Unit
 ) {
     key(bottleType) {
@@ -241,7 +241,7 @@ internal fun StarBottlePhysicsBody(
         val now = System.currentTimeMillis()
         if (now - lastHandledTime >= 1000L) {
             lastHandledTime = now
-            
+
             val new = Offset(x, y)
             val diff = (preOffset - new).getDistance()
             preOffset = new
