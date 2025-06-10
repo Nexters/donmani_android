@@ -23,7 +23,7 @@ enum class DecorationPosition {
 }
 
 enum class DecorationAnimation {
-    VERTICAL, HORIZONTAL, NONE
+    VERTICAL, HORIZONTAL, DIAGONAL, NONE
 }
 
 enum class BottleType {
@@ -40,8 +40,9 @@ fun getDecorationPosition(decorationId: String): DecorationPosition {
 
 fun getDecorationAnimation(decorationId: String): DecorationAnimation {
     return when (decorationId) {
-        "19", "21", "22" -> DecorationAnimation.VERTICAL
+        "19", "21" -> DecorationAnimation.VERTICAL
         "20" -> DecorationAnimation.HORIZONTAL
+        "22" -> DecorationAnimation.DIAGONAL
         else -> DecorationAnimation.NONE
     }
 }

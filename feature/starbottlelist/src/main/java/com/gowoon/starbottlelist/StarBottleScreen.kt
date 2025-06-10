@@ -91,12 +91,12 @@ internal fun StarBottleScreen(
                 bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records
             ) { onClickBottle(state.bbsState.records, state.year, state.month ?: -1) }
-            Decoration(
-                targetRect = targetRect,
-                decoration = state.bbsState.effect
-            )
         }
     }
+    Decoration(
+        targetRect = targetRect,
+        decoration = state.bbsState.decoration
+    )
 }
 
 @Composable

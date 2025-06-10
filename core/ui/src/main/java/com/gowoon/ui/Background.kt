@@ -43,6 +43,7 @@ import com.gowoon.model.reward.DecorationPosition
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.getDecorationAnimation
 import com.gowoon.model.reward.getDecorationPosition
+import com.gowoon.ui.component.StarBottleMode
 import com.gowoon.ui.util.getColor
 
 enum class BGMode { DEFAULT, SPECIAL }
@@ -105,7 +106,7 @@ fun DecoratedBackground(
             model = background,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
+            contentScale = ContentScale.Crop
         )
         LottieAnimation(
             composition = composition,
@@ -116,21 +117,51 @@ fun DecoratedBackground(
 }
 
 @Composable
-fun Decoration(targetRect: Rect, decoration: Gift?) {
+fun Decoration(
+    modifier: Modifier = Modifier,
+    targetRect: Rect,
+    decoration: Gift?,
+    starBottleMode: StarBottleMode = StarBottleMode.Default
+) {
+//    val decoration = decoration?.copy(
+//        id = "23",
+//    )
     decoration?.let {
         val decorationOffset = when (getDecorationPosition(it.id)) {
             DecorationPosition.TOP_START -> {
-                Pair(
-                    targetRect.topLeft.x.pxToDp() - 10.dp,
-                    targetRect.topLeft.y.pxToDp() - 80.dp
-                )
+                when (starBottleMode) {
+                    StarBottleMode.Default -> {
+                        Pair(
+                            targetRect.topLeft.x.pxToDp() - 10.dp,
+                            targetRect.topLeft.y.pxToDp() - 80.dp
+                        )
+                    }
+
+                    StarBottleMode.Preview -> {
+                        Pair(
+                            targetRect.topLeft.x.pxToDp() - 70.dp,
+                            targetRect.topLeft.y.pxToDp() - 10.dp
+                        )
+                    }
+                }
             }
 
             DecorationPosition.BOTTOM_END -> {
-                Pair(
-                    targetRect.bottomRight.x.pxToDp() - 70.dp,
-                    targetRect.bottomRight.y.pxToDp()
-                )
+                when (starBottleMode) {
+                    StarBottleMode.Default -> {
+                        Pair(
+                            targetRect.bottomRight.x.pxToDp() - 70.dp,
+                            targetRect.bottomRight.y.pxToDp()
+                        )
+                    }
+
+                    StarBottleMode.Preview -> {
+                        Pair(
+                            targetRect.bottomRight.x.pxToDp() - 20.dp,
+                            targetRect.bottomRight.y.pxToDp() - 50.dp
+                        )
+                    }
+                }
             }
 
             DecorationPosition.ABOVE_BOTTLE -> {
@@ -142,7 +173,7 @@ fun Decoration(targetRect: Rect, decoration: Gift?) {
         }
         val animationOffset by rememberInfiniteTransition().animateFloat(
             initialValue = 0f,
-            targetValue = 20f,
+            targetValue = 12f,
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 2000, easing = LinearEasing),
                 repeatMode = RepeatMode.Reverse
@@ -157,9 +188,16 @@ fun Decoration(targetRect: Rect, decoration: Gift?) {
                 Modifier.offset(x = animationOffset.dp)
             }
 
+            DecorationAnimation.DIAGONAL -> {
+                Modifier.offset(
+                    x = animationOffset.dp,
+                    y = -animationOffset.dp,
+                )
+            }
+
             DecorationAnimation.NONE -> Modifier
         }
-        Box(Modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize()) {
             AsyncImage(
                 modifier = Modifier
                     .offset(
@@ -168,7 +206,7 @@ fun Decoration(targetRect: Rect, decoration: Gift?) {
                     )
                     .then(animatedModifier)
                     .size(80.dp),
-                model = decoration,
+                model = decoration.resourceUrl,
                 contentDescription = null
             )
         }

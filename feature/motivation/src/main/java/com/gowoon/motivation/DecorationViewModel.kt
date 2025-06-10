@@ -167,14 +167,8 @@ class DecorationViewModel @Inject constructor(
 
     private fun hideHiddenItemBottomSheet() {
         viewModelScope.launch {
-            when (readHiddenItemUseCase()) {
-                is Result.Error -> {
-                    // TODO error handling
-                }
-
-                is Result.Success -> {
-                    setState(currentState.copy(showHiddenGiftBottomSheet = false))
-                }
+            readHiddenItemUseCase().also {
+                setState(currentState.copy(showHiddenGiftBottomSheet = false))
             }
         }
     }

@@ -29,6 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,6 +72,8 @@ internal fun DecorationScreen(
     val context = LocalContext.current
     var player = remember { ExoPlayer.Builder(context).build() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var targetRect by remember { mutableStateOf(Rect.Zero) }
     val enableConfirm by remember {
         derivedStateOf {
             viewModel.isChangedDecorationState(
@@ -145,9 +150,10 @@ internal fun DecorationScreen(
                 DecorationResultContent(
                     records = state.bbsState.records,
                     bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
-                    decoration = state.savedItems[GiftCategory.DECORATION],
                     isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty()
-                )
+                ) {
+                    targetRect = it
+                }
             }
         }
         DecorationItemContent(
@@ -166,6 +172,12 @@ internal fun DecorationScreen(
         )
     }
 
+    Decoration(
+        targetRect = targetRect,
+        decoration = state.savedItems[GiftCategory.DECORATION],
+        starBottleMode = StarBottleMode.Preview
+    )
+
     DisposableEffect(Unit) {
         onDispose {
             player.release()
@@ -179,18 +191,16 @@ private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     bottleType: BottleType,
-    decoration: Gift?,
-    isPlay: Boolean
+    isPlay: Boolean,
+    onChangeStarBottleRect: (Rect) -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
     var targetRect by remember { mutableStateOf(Rect.Zero) }
     Box(modifier = modifier.fillMaxSize()) {
-        Decoration(
-            targetRect = targetRect,
-            decoration = decoration
-        )
         StarBottle(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .onGloballyPositioned { onChangeStarBottleRect(it.boundsInRoot()) },
             starBottleMode = StarBottleMode.Preview,
             bottleType = bottleType,
             records = records
@@ -273,6 +283,7 @@ private fun DecorationItemContent(
                     AsyncImage(
                         modifier = finalModifier.align(Alignment.Center),
                         model = it.thumbnailImageUrl,
+                        contentScale = if (currentSelectedInventory.currentCategory == GiftCategory.BACKGROUND) ContentScale.FillBounds else ContentScale.Fit,
                         contentDescription = null
                     )
                 }
