@@ -156,6 +156,7 @@ internal fun DecorationScreen(
                 DecorationResultContent(
                     records = state.bbsState.records,
                     bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
+                    showSoundIcon = state.currentSelectedCategory == GiftCategory.BGM,
                     isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty(),
                     onChangeStarBottleRect = { targetRect = it },
                     onChangeDiff = { gravityDiff = it }
@@ -198,6 +199,7 @@ private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     bottleType: BottleType,
+    showSoundIcon: Boolean,
     isPlay: Boolean,
     onChangeStarBottleRect: (Rect) -> Unit,
     onChangeDiff: (Float) -> Unit
@@ -213,16 +215,18 @@ private fun DecorationResultContent(
             records = records,
             onChangeDiff = onChangeDiff
         ) { }
-        LottieAnimation(
-            composition = composition,
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-                .size(24.dp)
-                .alpha(if (isPlay) 1f else 0.2f)
-                .align(Alignment.BottomStart),
-            isPlaying = isPlay,
-            iterations = LottieConstants.IterateForever
-        )
+        if (showSoundIcon) {
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier
+                    .padding(bottom = 20.dp)
+                    .size(24.dp)
+                    .alpha(if (isPlay) 1f else 0.2f)
+                    .align(Alignment.BottomStart),
+                isPlaying = isPlay,
+                iterations = LottieConstants.IterateForever
+            )
+        }
     }
 }
 

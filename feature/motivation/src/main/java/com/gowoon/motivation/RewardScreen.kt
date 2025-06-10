@@ -68,7 +68,7 @@ internal fun RewardScreen(
     onClickBack: () -> Unit,
     onClickGoToRecord: () -> Unit,
     onClickReview: () -> Unit,
-    onClickGoToDecoration: () -> Unit
+    onClickGoToDecoration: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val onClickNext = { viewModel.setEvent(RewardEvent.GoToNextStep) }
@@ -127,7 +127,9 @@ internal fun RewardScreen(
                 is Step.GiftConfirm -> {
                     GiftConfirmContent(
                         giftList = step.giftList,
-                        onClickGoToDecoration = onClickGoToDecoration
+                        onClickGoToDecoration = {
+                            onClickGoToDecoration(step.giftList.last().category.name)
+                        }
                     )
                 }
 

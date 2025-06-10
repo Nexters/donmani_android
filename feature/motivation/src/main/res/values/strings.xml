@@ -36,8 +36,8 @@
     <!-- reward feedback -->
     <string name="reward_feedback_title_prefix">%s님,</string>
     <string name="reward_feedback_title_suffix">소비 했네요!</string>
-    <string name="reward_feedback_today">오늘</string>
-    <string name="reward_feedback_lately">요즘</string>
+    <string name="reward_feedback_today">오늘은</string>
+    <string name="reward_feedback_lately">요즘은</string>
     <!-- reward feedback card -->
     <string name="reward_feedback_card_topper">토비의 한마디</string>
     <!-- button -->

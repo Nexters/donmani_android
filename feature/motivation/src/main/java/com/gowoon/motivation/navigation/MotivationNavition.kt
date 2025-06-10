@@ -6,20 +6,25 @@ import androidx.navigation.compose.composable
 import com.gowoon.motivation.BuildConfig
 import com.gowoon.motivation.DecorationScreen
 import com.gowoon.motivation.RewardScreen
+import kotlinx.serialization.Serializable
 
 const val RewardNavigationRoute = "motivation_route"
-const val DecorationNavigationRoute = "decoration_route"
+
+@Serializable
+data class DecorationNavigationRoute(
+    val selected: String? = null
+)
 
 fun NavController.navigateToReward() {
     navigate(route = RewardNavigationRoute)
 }
 
 fun NavController.navigateToDecoration() {
-    navigate(route = DecorationNavigationRoute)
+    navigate(route = DecorationNavigationRoute())
 }
 
-fun NavController.navigateToDecorationAndPopUpTo() {
-    navigate(route = DecorationNavigationRoute) {
+fun NavController.navigateToDecorationAndPopUpTo(selected: String) {
+    navigate(route = DecorationNavigationRoute(selected)) {
         currentBackStackEntry?.destination?.id?.let {
             popUpTo(it) { inclusive = true }
         }
@@ -30,7 +35,7 @@ fun NavGraphBuilder.motivationScreen(
     onClickBack: () -> Unit,
     navigateToRecord: () -> Unit,
     navigateToWebView: (String) -> Unit,
-    navigateToDecoration: () -> Unit,
+    navigateToDecoration: (String) -> Unit,
     navigateToHome: (String) -> Unit
 ) {
     composable(route = RewardNavigationRoute) {
@@ -41,7 +46,7 @@ fun NavGraphBuilder.motivationScreen(
             onClickGoToDecoration = navigateToDecoration
         )
     }
-    composable(route = DecorationNavigationRoute) {
+    composable<DecorationNavigationRoute>() {
         DecorationScreen(
             onClickBack = onClickBack,
             onClickSave = navigateToHome

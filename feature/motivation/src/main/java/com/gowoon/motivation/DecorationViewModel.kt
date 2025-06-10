@@ -1,6 +1,8 @@
 package com.gowoon.motivation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
@@ -15,6 +17,7 @@ import com.gowoon.domain.usecase.reward.UpdateDecorationUseCase
 import com.gowoon.model.common.BBSState
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
+import com.gowoon.motivation.navigation.DecorationNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -23,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DecorationViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getInventoryUseCase: GetInventoryUseCase,
     private val getRecordListUseCase: GetRecordListUseCase,
     private val updateDecorationUseCase: UpdateDecorationUseCase,
@@ -30,6 +34,7 @@ class DecorationViewModel @Inject constructor(
     private val hideDecorationFirstBottomSheetUseCase: HideDecorationFirstBottomSheetUseCase,
     private val readHiddenItemUseCase: ReadHiddenItemUseCase
 ) : BaseViewModel<DecorationState, DecorationEvent, DecorationEffect>() {
+    private val selectedCategory = savedStateHandle.toRoute<DecorationNavigationRoute>().selected
     override fun createInitialState(): DecorationState {
         return DecorationState()
     }
@@ -83,6 +88,11 @@ class DecorationViewModel @Inject constructor(
                     Result.Success(
                         currentState.copy(
                             inventoryList = inventory.data,
+                            currentSelectedCategory = selectedCategory?.let {
+                                GiftCategory.valueOf(
+                                    it
+                                )
+                            } ?: GiftCategory.BACKGROUND,
                             bbsState = bbsState.data,
                             savedItems = mutableMapOf<GiftCategory, Gift?>().apply {
                                 put(
