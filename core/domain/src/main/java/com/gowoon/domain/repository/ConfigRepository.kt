@@ -16,4 +16,6 @@ interface ConfigRepository {
     suspend fun setStarBottleListBannerState(state: Boolean): Result<Unit>
     suspend fun getStarBottleOpenShownMonth(): Flow<Result<Int>>
     suspend fun setStarBottleOpenShownMonth(month: Int): Result<Unit>
+    suspend fun getBgmPlayState(): Flow<Result<Boolean>>
+    suspend fun setBgmPlayState(state: Boolean): Result<Unit>
 }

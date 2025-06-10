@@ -21,6 +21,10 @@ annotation class TooltipDataStore
 @Qualifier
 annotation class UserDataStore
 
+@Retention(AnnotationRetention.RUNTIME)
+@Qualifier
+annotation class RewardDataStore
+
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
@@ -43,6 +47,17 @@ object DataStoreModule {
     ): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create {
             context.preferencesDataStoreFile("donmani_user_preference")
+        }
+    }
+
+    @RewardDataStore
+    @Provides
+    @Singleton
+    fun provideRewardDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("donmani_reward_preference")
         }
     }
 }

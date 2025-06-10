@@ -11,7 +11,6 @@ import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.donmani_android.navigation.DonmaniNavHost
-import com.gowoon.ui.BGMode
 import com.gowoon.ui.GradientBackground
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
             DonmaniTheme {
                 val navController = rememberNavController()
                 val appState = rememberAppState(navController)
-                GradientBackground(if (appState.isBeforeHome) BGMode.SPECIAL else BGMode.DEFAULT) {
+                GradientBackground {
                     DonmaniNavHost(navController = navController, isFromFcm = isFromFcm)
                 }
             }

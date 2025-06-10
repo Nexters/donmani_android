@@ -14,7 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,8 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
+import com.gowoon.ui.BGMode
+import com.gowoon.ui.GradientBackground
 import kotlinx.coroutines.delay
 
 @Composable
@@ -51,18 +56,26 @@ internal fun SplashScreen(
         }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = DonmaniTheme.dimens.Margin20)
-    ) {
-        TitleLogo(Modifier.padding(top = 120.dp))
-        Icon(
-            modifier = Modifier.align(Alignment.Center),
-            painter = painterResource(com.gowoon.designsystem.R.drawable.splash_icon),
-            tint = Color.Unspecified,
-            contentDescription = null
-        )
+    GradientBackground(mode = BGMode.SPECIAL) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = DonmaniTheme.dimens.Margin20)
+        ) {
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                imageVector = ImageVector.vectorResource(R.drawable.star_background),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
+            TitleLogo(Modifier.padding(top = 120.dp))
+            Icon(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(com.gowoon.designsystem.R.drawable.splash_icon),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
+        }
     }
 }
 

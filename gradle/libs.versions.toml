@@ -4,8 +4,8 @@ applicationId = "com.gowoon.donmani_android"
 compileSdk = "35"
 minSdk = "28"
 targetSdk = "35"
-versionCode = "14"
-versionName = "1.2.2"
+versionCode = "16"
+versionName = "2.0.0"
 apiVersion = "v1"
 
 # android
@@ -20,6 +20,7 @@ datastore = "1.1.2"
 androidHilt = "1.2.0"
 splashScreen = "1.0.0"
 playReview = "2.0.2"
+exoPlayer = "1.7.1"
 
 # kotlin
 kotlin = "2.1.10"
@@ -50,6 +51,8 @@ retrofit = "2.11.0"
 okhttp = "4.12.0"
 napier = "2.7.1"
 physicsLayout = "0.4.1"
+lottie = "6.5.0"
+coil = "3.2.0"
 
 [libraries]
 # androidX
@@ -81,6 +84,8 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ## hilt
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidHilt" }
+## exo player
+androidx-media-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoPlayer" }
 
 # kotlin
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -116,6 +121,12 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 napier = { group = "io.github.aakira", name = "napier", version.ref = "napier" }
 ## physict compose
 physics-layout-compose = { group = "io.github.klassenkonstantin", name = "physics-layout", version.ref = "physicsLayout" }
+## lottie
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+## coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif", version.ref = "coil" }
 
 # gradle plugin
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

@@ -40,7 +40,8 @@ dependencies {
     implementation(projects.feature.splash)
     implementation(projects.feature.statistics)
     implementation(projects.feature.starbottlelist)
-
+    implementation(projects.feature.motivation)
+    
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

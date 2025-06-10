@@ -41,7 +41,8 @@ import com.gowoon.model.record.GoodCategory
 import com.gowoon.model.record.getTitle
 import com.gowoon.model.record.isDeleted
 import com.gowoon.statistics.component.PercentageIndicator
-import com.gowoon.ui.TransparentScaffold
+import com.gowoon.ui.BBSScaffold
+import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StatisticsCategoryChip
 
@@ -59,7 +60,8 @@ internal fun StatisticsScreen(
             eventName = "insight"
         )
     }
-    TransparentScaffold(
+    BBSScaffold(
+        background = { GradientBackground() },
         topBar = {
             AppBar(
                 title = stringResource(
