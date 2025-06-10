@@ -32,7 +32,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,8 +46,10 @@ import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.Record
+import com.gowoon.model.reward.BottleType
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
+import com.gowoon.model.reward.getBottleType
 import com.gowoon.motivation.component.DecorationFirstAccessBottomSheet
 import com.gowoon.motivation.component.DecorationHiddenItemBottomSheet
 import com.gowoon.motivation.component.GiftItemChip
@@ -56,6 +57,7 @@ import com.gowoon.ui.DecoratedBackground
 import com.gowoon.ui.Decoration
 import com.gowoon.ui.component.AlertDialog
 import com.gowoon.ui.component.StarBottle
+import com.gowoon.ui.component.StarBottleMode
 import io.github.aakira.napier.Napier
 
 @Composable
@@ -114,7 +116,7 @@ internal fun DecorationScreen(
     }
     Column(Modifier.fillMaxSize()) {
         Box(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1.2f)
         ) {
             DecoratedBackground(
                 background = state.savedItems[GiftCategory.BACKGROUND]?.resourceUrl ?: "",
@@ -142,7 +144,7 @@ internal fun DecorationScreen(
                 )
                 DecorationResultContent(
                     records = state.bbsState.records,
-                    bottleUrl = state.savedItems[GiftCategory.CASE]?.resourceUrl ?: "",
+                    bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
                     decoration = state.savedItems[GiftCategory.DECORATION],
                     isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty()
                 )
@@ -176,7 +178,7 @@ internal fun DecorationScreen(
 private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
-    bottleUrl: String,
+    bottleType: BottleType,
     decoration: Gift?,
     isPlay: Boolean
 ) {
@@ -189,8 +191,8 @@ private fun DecorationResultContent(
         )
         StarBottle(
             modifier = Modifier.align(Alignment.Center),
-            bottleSize = DpSize(208.dp, 260.dp),
-            starSize = 30.dp,
+            starBottleMode = StarBottleMode.Preview,
+            bottleType = bottleType,
             records = records
         ) { }
         LottieAnimation(

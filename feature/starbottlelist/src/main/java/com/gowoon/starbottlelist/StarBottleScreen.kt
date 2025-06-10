@@ -31,6 +31,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Record
+import com.gowoon.model.reward.BottleType
+import com.gowoon.model.reward.getBottleType
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.DecoratedBackground
 import com.gowoon.ui.Decoration
@@ -86,6 +88,7 @@ internal fun StarBottleScreen(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .onGloballyPositioned { targetRect = it.boundsInRoot() },
+                bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records
             ) { onClickBottle(state.bbsState.records, state.year, state.month ?: -1) }
             Decoration(
@@ -99,12 +102,14 @@ internal fun StarBottleScreen(
 @Composable
 private fun StarBottleContent(
     modifier: Modifier = Modifier,
+    bottleType: BottleType,
     records: List<Record>,
     onClickBottle: () -> Unit
 ) {
     if (records.isNotEmpty()) {
         StarBottle(
             modifier = modifier,
+            bottleType = bottleType,
             records = records,
             onClickBottle = onClickBottle
         )

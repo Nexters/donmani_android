@@ -26,6 +26,10 @@ enum class DecorationAnimation {
     VERTICAL, HORIZONTAL, NONE
 }
 
+enum class BottleType {
+    DEFAULT, CIRCLE, HEART
+}
+
 fun getDecorationPosition(decorationId: String): DecorationPosition {
     return when (decorationId) {
         "20" -> DecorationPosition.BOTTOM_END
@@ -42,3 +46,10 @@ fun getDecorationAnimation(decorationId: String): DecorationAnimation {
     }
 }
 
+fun getBottleType(bottleId: String): BottleType {
+    return when (bottleId) {
+        "24" -> BottleType.CIRCLE
+        "25" -> BottleType.HEART
+        else -> BottleType.DEFAULT
+    }
+}

@@ -46,6 +46,8 @@ import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
+import com.gowoon.model.reward.BottleType
+import com.gowoon.model.reward.getBottleType
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.DecoratedBackground
 import com.gowoon.ui.Decoration
@@ -184,6 +186,7 @@ internal fun HomeScreen(
         ) {
             Title(text = state.nickname)
             HomeContent(
+                bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records,
                 newRecord = state.newRecord,
                 recordAdded = state.recordAdded,
@@ -266,6 +269,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeContent(
     modifier: Modifier = Modifier,
+    bottleType: BottleType,
     records: List<Record>,
     newRecord: Record?,
     recordAdded: Boolean,
@@ -290,6 +294,7 @@ private fun HomeContent(
         modifier = modifier
             .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
             .onGloballyPositioned { onChangePosition(it.boundsInRoot()) },
+        bottleType = bottleType,
         records = records,
         newRecord = newRecord,
         recordAdded = recordAdded,

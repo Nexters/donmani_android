@@ -9,11 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
@@ -27,9 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -40,8 +41,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
+import coil3.compose.AsyncImage
+import com.airbnb.lottie.model.content.CircleShape
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.Record
+import com.gowoon.model.reward.BottleType
+import com.gowoon.ui.R
 import de.apuri.physicslayout.lib.PhysicsLayout
 import de.apuri.physicslayout.lib.drag.DragConfig
 import de.apuri.physicslayout.lib.physicsBody
@@ -50,39 +55,152 @@ import de.apuri.physicslayout.lib.simulation.rememberSimulation
 import kotlinx.coroutines.delay
 
 private const val COL_COUNT = 5
-private const val STAR_SIZE_DP = 45
+
+enum class StarBottleMode { Default, Preview }
 
 @Composable
 fun StarBottle(
     modifier: Modifier = Modifier,
-    bottleSize: DpSize = DpSize(width = 300.dp, height = 400.dp),
-    starSize: Dp = STAR_SIZE_DP.dp,
+    starBottleMode: StarBottleMode = StarBottleMode.Default,
+    bottleType: BottleType,
     records: List<Record>,
     newRecord: Record? = null,
     recordAdded: Boolean = false,
     onClickBottle: () -> Unit
 ) {
+    val resource = when(bottleType){
+        BottleType.DEFAULT -> com.gowoon.designsystem.R.drawable.bottle
+        BottleType.CIRCLE -> com.gowoon.designsystem.R.drawable.bottle_circle
+        BottleType.HEART -> com.gowoon.designsystem.R.drawable.bottle_heart
+    }
+    val shape = when (bottleType) {
+        BottleType.DEFAULT -> {
+            when(starBottleMode){
+                StarBottleMode.Default -> {
+                    RoundedCornerShape(65.dp)
+                }
+                StarBottleMode.Preview -> {
+                    RoundedCornerShape(50.dp)
+                }
+            }
+        }
+
+        BottleType.CIRCLE -> {
+            CircleShape
+        }
+
+        BottleType.HEART -> {
+            when(starBottleMode){
+                StarBottleMode.Default -> {
+                    CutCornerShape(
+                        topStart = 50.dp,
+                        topEnd = 50.dp,
+                        bottomStart = 135.dp,
+                        bottomEnd = 135.dp
+                    )
+                }
+                StarBottleMode.Preview -> {
+                    CutCornerShape(
+                        topStart = 25.dp,
+                        topEnd = 25.dp,
+                        bottomStart = 90.dp,
+                        bottomEnd = 90.dp
+                    )
+                }
+            }
+        }
+    }
+    val shapeModifier = when (bottleType) {
+        BottleType.DEFAULT -> {
+            when(starBottleMode){
+                StarBottleMode.Default -> {
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = 50.dp)
+                        .padding(horizontal = 10.dp)
+                        .padding(10.dp)
+                }
+                StarBottleMode.Preview -> {
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = 30.dp)
+                        .padding(horizontal = 10.dp)
+                        .padding(5.dp)
+                }
+            }
+        }
+
+        BottleType.CIRCLE -> {
+            when(starBottleMode){
+                StarBottleMode.Default -> {
+                    Modifier
+                        .padding(top = 20.dp)
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(10.dp)
+                }
+                StarBottleMode.Preview -> {
+                    Modifier
+                        .padding(top = 13.dp)
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .padding(8.dp)
+                }
+            }
+        }
+
+        BottleType.HEART -> {
+            when(starBottleMode){
+                StarBottleMode.Default -> {
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = 65.dp, bottom = 45.dp, start = 25.dp, end = 25.dp)
+                }
+                StarBottleMode.Preview -> {
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = 45.dp, bottom = 30.dp, start = 15.dp, end = 15.dp)
+                }
+            }
+        }
+    }
+    val sizeModifier = when(starBottleMode){
+        StarBottleMode.Default -> Modifier
+            .width(330.dp)
+            .height(400.dp)
+        StarBottleMode.Preview -> Modifier
+            .width(215.dp)
+            .height(260.dp)
+    }
     Box(
         modifier = modifier
-            .width(bottleSize.width)
-            .height(bottleSize.height)
+            .then(sizeModifier)
             .noRippleClickable { onClickBottle() }
     ) {
         StarBottlePhysicsBody(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 50.dp)
-                .padding(10.dp)
-                .background(color = Color.Transparent, shape = RoundedCornerShape(65.dp)),
-            starSize = starSize,
+            modifier = shapeModifier.then(Modifier.background(color = Color.Transparent, shape = shape)),
+            bottleMode = starBottleMode,
+            bottleShape = shape,
+            starSize = when(starBottleMode){
+                StarBottleMode.Default -> {
+                    when(bottleType){
+                        BottleType.HEART -> 35.dp
+                        else -> 40.dp
+                    }
+                }
+                StarBottleMode.Preview -> {
+                    when(bottleType){
+                        BottleType.HEART -> 20.dp
+                        else -> 23.dp
+                    }
+                }
+            },
             records = records,
             newRecord = if (recordAdded) newRecord else null
         )
         Image(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .graphicsLayer { alpha = 0.7f },
-            painter = painterResource(com.gowoon.designsystem.R.drawable.bottle),
+            modifier = Modifier.align(Alignment.Center),
+            painter = painterResource(resource),
             contentDescription = null
         )
     }
@@ -91,7 +209,8 @@ fun StarBottle(
 @Composable
 internal fun StarBottlePhysicsBody(
     modifier: Modifier = Modifier,
-    bottleShape: Shape = RoundedCornerShape(65.dp),
+    bottleMode: StarBottleMode,
+    bottleShape: Shape,
     starSize: Dp,
     records: List<Record>,
     newRecord: Record?
@@ -118,6 +237,17 @@ internal fun StarBottlePhysicsBody(
             modifier = Modifier
                 .wrapContentSize()
                 .align(Alignment.BottomCenter)
+                .padding(
+                    bottom = if(bottleShape is RoundedCornerShape){
+                        20.dp
+                    } else {
+                        when(bottleMode){
+                            StarBottleMode.Default -> 50.dp
+                            StarBottleMode.Preview -> 30.dp
+                        }
+                    }
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             records.filterNot { it == newRecord }.chunked(COL_COUNT).forEach { rowItems ->
                 Row {
@@ -133,7 +263,7 @@ internal fun StarBottlePhysicsBody(
 @Composable
 private fun Ball(
     modifier: Modifier = Modifier,
-    size: Dp = STAR_SIZE_DP.dp,
+    size: Dp,
     record: Record
 ) {
     Box(
