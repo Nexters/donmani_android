@@ -8,6 +8,6 @@ data class BBSState(
     val effect: Gift? = null,
     val decoration: Gift? = null,
     val case: Gift? = null,
-    val bgm: Gift? = null,
+//    val bgm: Gift? = null,
     val records: List<Record> = listOf()
 )

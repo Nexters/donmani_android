@@ -23,12 +23,12 @@ interface RewardRepository {
         effectId: Int,
         decorationId: Int,
         caseId: Int,
-        bgmId: Int
+//        bgmId: Int
     ): Result<Unit>
 
     suspend fun getShowFirstAccessDecorationBottomSheet(): Flow<Result<Boolean>>
     suspend fun setShowFirstAccessDecorationBottomSheet(state: Boolean): Result<Unit>
-    suspend fun hasBgmItems(): Result<Boolean>
-    suspend fun setBgmItemsOwned(): Result<Unit>
+//    suspend fun hasBgmItems(): Result<Boolean>
+//    suspend fun setBgmItemsOwned(): Result<Unit>
     suspend fun readHiddenItem(year: Int, month: Int): Result<Unit>
 }

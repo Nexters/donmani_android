@@ -12,8 +12,8 @@ data class InventoryResponse(
     val effect: List<RewardDto>,
     @SerialName("CASE")
     val case: List<RewardDto>,
-    @SerialName("BGM")
-    val bgm: List<RewardDto>,
+//    @SerialName("BGM")
+//    val bgm: List<RewardDto>,
     @SerialName("BACKGROUND")
     val background: List<RewardDto>
 )

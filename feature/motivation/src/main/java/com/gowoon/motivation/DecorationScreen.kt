@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
@@ -38,14 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import coil3.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
@@ -70,9 +60,9 @@ internal fun DecorationScreen(
     onClickSave: (String) -> Unit
 ) {
     val context = LocalContext.current
-    var player = remember { ExoPlayer.Builder(context).build() }
+//    var player = remember { ExoPlayer.Builder(context).build() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var gravityDiff by remember { mutableStateOf(0f) }
+//    var gravityDiff by remember { mutableStateOf(0f) }
     var targetRect by remember { mutableStateOf(Rect.Zero) }
     val enableConfirm by remember {
         derivedStateOf {
@@ -82,29 +72,29 @@ internal fun DecorationScreen(
                     GiftCategory.EFFECT to state.bbsState.effect,
                     GiftCategory.DECORATION to state.bbsState.decoration,
                     GiftCategory.CASE to state.bbsState.case,
-                    GiftCategory.BGM to state.bbsState.bgm
+//                    GiftCategory.BGM to state.bbsState.bgm
                 ),
                 state.savedItems
             )
         }
     }
 
-    LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
-        state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
-            player.setMediaItem(MediaItem.fromUri(it))
-            player.prepare()
-            player?.repeatMode = Player.REPEAT_MODE_ONE
-            player.play()
-        }
-    }
-
-    LaunchedEffect(gravityDiff) {
-        player?.volume = if (gravityDiff < 2f) {
-            0f
-        } else {
-            gravityDiff
-        }
-    }
+//    LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
+//        state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
+//            player.setMediaItem(MediaItem.fromUri(it))
+//            player.prepare()
+//            player?.repeatMode = Player.REPEAT_MODE_ONE
+//            player.play()
+//        }
+//    }
+//
+//    LaunchedEffect(gravityDiff) {
+//        player?.volume = if (gravityDiff < 2f) {
+//            0f
+//        } else {
+//            gravityDiff
+//        }
+//    }
 
     if (state.showDialog) {
         AlertDialog(
@@ -123,7 +113,7 @@ internal fun DecorationScreen(
         DecorationFirstAccessBottomSheet { viewModel.setEvent(DecorationEvent.HideFirstBottomSheet) }
     }
     if (state.showHiddenGiftBottomSheet) {
-        DecorationHiddenItemBottomSheet { viewModel.setEvent(DecorationEvent.HideHiddenBttomSheet) }
+        DecorationHiddenItemBottomSheet { viewModel.setEvent(DecorationEvent.HideHiddenBottomSheet) }
     }
     Column(Modifier.fillMaxSize()) {
         Box(
@@ -156,10 +146,10 @@ internal fun DecorationScreen(
                 DecorationResultContent(
                     records = state.bbsState.records,
                     bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
-                    showSoundIcon = state.currentSelectedCategory == GiftCategory.BGM,
-                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty(),
+//                    showSoundIcon = state.currentSelectedCategory == GiftCategory.BGM,
+//                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty(),
                     onChangeStarBottleRect = { targetRect = it },
-                    onChangeDiff = { gravityDiff = it }
+//                    onChangeDiff = { gravityDiff = it }
                 )
             }
         }
@@ -186,11 +176,11 @@ internal fun DecorationScreen(
         bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: "")
     )
 
-    DisposableEffect(Unit) {
-        onDispose {
-            player.release()
-        }
-    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            player.release()
+//        }
+//    }
 
 }
 
@@ -199,12 +189,12 @@ private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     bottleType: BottleType,
-    showSoundIcon: Boolean,
-    isPlay: Boolean,
+//    showSoundIcon: Boolean,
+//    isPlay: Boolean,
     onChangeStarBottleRect: (Rect) -> Unit,
-    onChangeDiff: (Float) -> Unit
+//    onChangeDiff: (Float) -> Unit
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
+//    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
     Box(modifier = modifier.fillMaxSize()) {
         StarBottle(
             modifier = Modifier
@@ -213,20 +203,20 @@ private fun DecorationResultContent(
             starBottleMode = StarBottleMode.Preview,
             bottleType = bottleType,
             records = records,
-            onChangeDiff = onChangeDiff
+//            onChangeDiff = onChangeDiff
         ) { }
-        if (showSoundIcon) {
-            LottieAnimation(
-                composition = composition,
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .size(24.dp)
-                    .alpha(if (isPlay) 1f else 0.2f)
-                    .align(Alignment.BottomStart),
-                isPlaying = isPlay,
-                iterations = LottieConstants.IterateForever
-            )
-        }
+//        if (showSoundIcon) {
+//            LottieAnimation(
+//                composition = composition,
+//                modifier = Modifier
+//                    .padding(bottom = 20.dp)
+//                    .size(24.dp)
+//                    .alpha(if (isPlay) 1f else 0.2f)
+//                    .align(Alignment.BottomStart),
+//                isPlaying = isPlay,
+//                iterations = LottieConstants.IterateForever
+//            )
+//        }
     }
 }
 
@@ -245,7 +235,7 @@ private fun DecorationItemContent(
                 GiftCategory.EFFECT -> Modifier.padding(12.dp)
                 GiftCategory.DECORATION -> Modifier.padding(12.dp)
                 GiftCategory.CASE -> Modifier.padding(12.dp)
-                GiftCategory.BGM -> Modifier.padding(30.dp)
+//                GiftCategory.BGM -> Modifier.padding(30.dp)
             }
         )
     Column(
@@ -302,13 +292,13 @@ private fun DecorationItemContent(
                 }
             }
         }
-        if (currentSelectedInventory.currentCategory == GiftCategory.BGM) {
-            Text(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                text = stringResource(R.string.decoration_bgm_message),
-                style = DonmaniTheme.typography.Body2,
-                color = DonmaniTheme.colors.DeepBlue90
-            )
-        }
+//        if (currentSelectedInventory.currentCategory == GiftCategory.BGM) {
+//            Text(
+//                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+//                text = stringResource(R.string.decoration_bgm_message),
+//                style = DonmaniTheme.typography.Body2,
+//                color = DonmaniTheme.colors.DeepBlue90
+//            )
+//        }
     }
 }

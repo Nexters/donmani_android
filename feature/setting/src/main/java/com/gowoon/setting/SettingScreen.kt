@@ -152,20 +152,20 @@ internal fun SettingScreen(
                             onClickDecoration()
                         }
                     ),
-                    SettingItem(
-                        title = stringResource(R.string.setting_sound),
-                        toggleState = state.soundState,
-                        gaEventName = "", // TODO
-                        onClick = {
-                            viewModel.setEvent(
-                                SettingEvent.OnClickSoundToggle(
-                                    context.getString(
-                                        R.string.no_bgm_toast_message
-                                    )
-                                )
-                            )
-                        }
-                    ),
+//                    SettingItem(
+//                        title = stringResource(R.string.setting_sound),
+//                        toggleState = state.soundState,
+//                        gaEventName = "", // TODO
+//                        onClick = {
+//                            viewModel.setEvent(
+//                                SettingEvent.OnClickSoundToggle(
+//                                    context.getString(
+//                                        R.string.no_bgm_toast_message
+//                                    )
+//                                )
+//                            )
+//                        }
+//                    ),
                     SettingItem(
                         title = stringResource(R.string.setting_push),
                         toggleState = notificationStatus,

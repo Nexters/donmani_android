@@ -14,7 +14,7 @@ fun RewardDto.toModel(): Gift = Gift(
         GiftCategory.EFFECT -> this.jsonUrl
         GiftCategory.DECORATION -> this.imageUrl
         GiftCategory.CASE -> this.imageUrl
-        GiftCategory.BGM -> this.mp3Url
+//        GiftCategory.BGM -> this.mp3Url
     } ?: "",
     isNew = this.newAcquiredFlag,
     hidden = this.hidden

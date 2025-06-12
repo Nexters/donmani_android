@@ -13,7 +13,7 @@ class UpdateDecorationUseCase @Inject constructor(
         effectId: String,
         decorationId: String,
         caseId: String,
-        bgmId: String
+//        bgmId: String
     ): Result<Unit> {
         return rewardRepository.updateReward(
             year = LocalDate.now().year,
@@ -22,7 +22,7 @@ class UpdateDecorationUseCase @Inject constructor(
             effectId = effectId.toInt(),
             decorationId = decorationId.toInt(),
             caseId = caseId.toInt(),
-            bgmId = bgmId.toInt()
+//            bgmId = bgmId.toInt()
         )
     }
 }

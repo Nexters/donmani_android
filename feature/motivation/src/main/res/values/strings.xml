@@ -5,7 +5,7 @@
     <string name="reward_main_title_no_record">앗! 아직 기록을 작성하지 않았어요</string>
     <string name="reward_main_title_no_gift">오늘까지 받을 수 있는 선물을\n모두 받았어요</string>
     <string name="reward_main_title_done">준비한 선물을 모두 받았어요!\n이번 선물 어떠셨나요?</string>
-    <string name="reward_main_description_default">14번 기록하면 특별한 선물을 받아요</string>
+    <string name="reward_main_description_default">12번 기록하면 특별한 선물을 받아요</string>
     <string name="reward_main_description_no_record">오늘부터 기록하고 숨겨진 14개 선물을 받아 보세요!</string>
     <string name="reward_main_description_done">다섯 분을 선정해 스타벅스 기프티콘을 드려요</string>
     <!-- button -->
@@ -16,7 +16,7 @@
     <!-- message -->
     <string name="reward_main_no_gift_message">내일 다시 만나요!</string>
     <!-- bottom sheet -->
-    <string name="reward_first_access_bottom_sheet_title">오늘부터 14번 기록하면\n특별한 선물을 받아요</string>
+    <string name="reward_first_access_bottom_sheet_title">오늘부터 12번 기록하면\n특별한 선물을 받아요</string>
     <string name="reward_first_access_bottom_sheet_description">기록할 때마다 하나씩, 모두 모으면 숨겨진 선물이?!</string>
     <string name="reward_first_access_bottom_sheet_button_title">첫 선물 받기</string>
 
@@ -64,6 +64,6 @@
     <string name="decoration_bottom_sheet_button_title">확인했어요</string>
 
     <string name="decoration_hidden_bottom_sheet_title">축하해요! 🎉</string>
-    <string name="decoration_hidden_bottom_sheet_description">14개 선물을 모두 모아\n토비의 우주바캉스🏝️를 받았어요!</string>
+    <string name="decoration_hidden_bottom_sheet_description">12개 선물을 모두 모아\n토비의 우주바캉스🏝️를 받았어요!</string>
     <string name="decoration_hidden_bottom_sheet_button_title">히든 아이템 받기</string>
 </resources>

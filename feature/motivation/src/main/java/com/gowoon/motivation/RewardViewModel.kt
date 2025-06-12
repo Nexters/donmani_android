@@ -6,7 +6,6 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.domain.common.Result
-import com.gowoon.domain.usecase.config.SetBgmOwnedUseCase
 import com.gowoon.domain.usecase.reward.GetFeedbackSummaryUseCase
 import com.gowoon.domain.usecase.reward.GetFeedbackUseCase
 import com.gowoon.domain.usecase.reward.GetGiftCountUseCase
@@ -14,7 +13,6 @@ import com.gowoon.domain.usecase.reward.HideRewardFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.OpenGiftListUseCase
 import com.gowoon.domain.usecase.reward.ShowRewardFirstOpenBottomSheetUseCase
 import com.gowoon.model.reward.Gift
-import com.gowoon.model.reward.GiftCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -28,7 +26,7 @@ class RewardViewModel @Inject constructor(
     private val getFeedbackUseCase: GetFeedbackUseCase,
     private val getGiftCountUseCase: GetGiftCountUseCase,
     private val openGiftListUseCase: OpenGiftListUseCase,
-    private val setBgmOwnedUseCase: SetBgmOwnedUseCase
+//    private val setBgmOwnedUseCase: SetBgmOwnedUseCase
 ) : BaseViewModel<RewardState, RewardEvent, RewardEffect>() {
     override fun createInitialState(): RewardState {
         return RewardState()
@@ -158,11 +156,11 @@ class RewardViewModel @Inject constructor(
                     }
 
                     is Result.Success -> {
-                        if (result.data.any { it.category == GiftCategory.BGM }) {
-                            if (setBgmOwnedUseCase() is Result.Error) {
-                                // TODO error handling
-                            }
-                        }
+//                        if (result.data.any { it.category == GiftCategory.BGM }) {
+//                            if (setBgmOwnedUseCase() is Result.Error) {
+//                                // TODO error handling
+//                            }
+//                        }
                         setState(currentState.copy(step = Step.GiftConfirm(result.data)))
                     }
                 }

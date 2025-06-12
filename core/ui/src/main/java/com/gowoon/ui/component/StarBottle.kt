@@ -60,7 +60,7 @@ fun StarBottle(
     records: List<Record>,
     newRecord: Record? = null,
     recordAdded: Boolean = false,
-    onChangeDiff: (Float) -> Unit,
+//    onChangeDiff: (Float) -> Unit,
     onClickBottle: () -> Unit
 ) {
     key(bottleType) {
@@ -210,7 +210,7 @@ fun StarBottle(
                 },
                 records = records,
                 newRecord = if (recordAdded) newRecord else null,
-                onChangeDiff = onChangeDiff
+//                onChangeDiff = onChangeDiff
             )
         }
     }
@@ -224,13 +224,13 @@ internal fun StarBottlePhysicsBody(
     starSize: Dp,
     records: List<Record>,
     newRecord: Record?,
-    onChangeDiff: (Float) -> Unit
+//    onChangeDiff: (Float) -> Unit
 ) {
     var show by remember { mutableStateOf(false) }
     val simulation = rememberSimulation(rememberClock())
 
-    var lastHandledTime by remember { mutableStateOf(0L) }
-    var preOffset by remember { mutableStateOf(Offset.Zero) }
+//    var lastHandledTime by remember { mutableStateOf(0L) }
+//    var preOffset by remember { mutableStateOf(Offset.Zero) }
 
     LaunchedEffect(true) {
         delay(1000)
@@ -238,15 +238,15 @@ internal fun StarBottlePhysicsBody(
     }
     GravitySensor { (x, y) ->
         simulation.setGravity(Offset(-x, y).times(6f))
-        val now = System.currentTimeMillis()
-        if (now - lastHandledTime >= 1000L) {
-            lastHandledTime = now
-
-            val new = Offset(x, y)
-            val diff = (preOffset - new).getDistance()
-            preOffset = new
-            onChangeDiff(diff)
-        }
+//        val now = System.currentTimeMillis()
+//        if (now - lastHandledTime >= 1000L) {
+//            lastHandledTime = now
+//
+//            val new = Offset(x, y)
+//            val diff = (preOffset - new).getDistance()
+//            preOffset = new
+//            onChangeDiff(diff)
+//        }
     }
     PhysicsLayout(
         modifier = modifier, simulation = simulation, shape = bottleShape

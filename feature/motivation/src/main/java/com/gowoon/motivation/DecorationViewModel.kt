@@ -72,7 +72,7 @@ class DecorationViewModel @Inject constructor(
                 hideFirstBottomSheet()
             }
 
-            is DecorationEvent.HideHiddenBttomSheet -> {
+            is DecorationEvent.HideHiddenBottomSheet -> {
                 hideHiddenItemBottomSheet()
             }
         }
@@ -107,9 +107,9 @@ class DecorationViewModel @Inject constructor(
                                 put(
                                     GiftCategory.CASE,
                                     inventory.data[GiftCategory.CASE]?.find { it.id == bbsState.data.case?.id })
-                                put(
-                                    GiftCategory.BGM,
-                                    inventory.data[GiftCategory.BGM]?.find { it.id == bbsState.data.bgm?.id })
+//                                put(
+//                                    GiftCategory.BGM,
+//                                    inventory.data[GiftCategory.BGM]?.find { it.id == bbsState.data.bgm?.id })
                             },
                             showHiddenGiftBottomSheet = hidden ?: false
                         )
@@ -152,7 +152,7 @@ class DecorationViewModel @Inject constructor(
                     effectId = currentState.savedItems[GiftCategory.EFFECT]?.id ?: "",
                     decorationId = currentState.savedItems[GiftCategory.DECORATION]?.id ?: "",
                     caseId = currentState.savedItems[GiftCategory.CASE]?.id ?: "",
-                    bgmId = currentState.savedItems[GiftCategory.BGM]?.id ?: ""
+//                    bgmId = currentState.savedItems[GiftCategory.BGM]?.id ?: ""
                 )
             ) {
                 is Result.Error -> {
@@ -212,7 +212,7 @@ sealed interface DecorationEvent : UiEvent {
     data class ShowDialog(val show: Boolean) : DecorationEvent
     data class SaveDecoration(val callback: () -> Unit) : DecorationEvent
     data object HideFirstBottomSheet : DecorationEvent
-    data object HideHiddenBttomSheet : DecorationEvent
+    data object HideHiddenBottomSheet : DecorationEvent
 }
 
 sealed interface DecorationEffect : UiEffect
