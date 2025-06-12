@@ -61,6 +61,7 @@ import com.gowoon.motivation.component.RewardBackground
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.MessageBox
+import com.gowoon.ui.util.getNoConsumptionTitle
 
 @Composable
 internal fun RewardScreen(
@@ -284,14 +285,16 @@ private fun FeedbackContent(
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = feedback.category.getTitle(),
+                    text = feedback.category?.getTitle() ?: stringResource(getNoConsumptionTitle()),
                     style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
                     color = DonmaniTheme.colors.DeepBlue99
                 )
             }
             Spacer(Modifier.width(8.dp))
             Text(
-                text = stringResource(R.string.reward_feedback_title_suffix),
+                text = if (feedback.category == null) stringResource(R.string.reward_feedback_title_suffix_for_no_consumption) else stringResource(
+                    R.string.reward_feedback_title_suffix
+                ),
                 style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
                 color = DonmaniTheme.colors.DeepBlue99
             )

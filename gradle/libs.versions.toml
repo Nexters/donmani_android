@@ -4,7 +4,7 @@ applicationId = "com.gowoon.donmani_android"
 compileSdk = "35"
 minSdk = "28"
 targetSdk = "35"
-versionCode = "17"
+versionCode = "18"
 versionName = "2.0.0"
 apiVersion = "v1"
 

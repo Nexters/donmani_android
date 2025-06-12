@@ -5,7 +5,7 @@ import com.gowoon.model.reward.Feedback
 import com.gowoon.network.dto.response.FeedbackResponse
 
 fun FeedbackResponse.toModel(): Feedback = Feedback(
-    category = this.category.getCategory(),
+    category = if (this.category == "NONE") null else this.category.getCategory(),
     title = this.title,
     description = this.content,
     nickname = this.name,

@@ -30,6 +30,7 @@ import com.gowoon.model.reward.Feedback
 import com.gowoon.motivation.R
 import com.gowoon.ui.component.CardCategoryChip
 import com.gowoon.ui.util.getColor
+import com.gowoon.ui.util.getNoConsumptionColor
 
 @Composable
 internal fun FeedbackCard(modifier: Modifier = Modifier, feedback: Feedback) {
@@ -42,7 +43,8 @@ internal fun FeedbackCard(modifier: Modifier = Modifier, feedback: Feedback) {
                 color = Color.White.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(24.dp)
             ),
-        backgroundColor = feedback.category.getColor().copy(alpha = 0.5f)
+        backgroundColor = (feedback.category?.getColor()
+            ?: getNoConsumptionColor()).copy(alpha = 0.5f)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

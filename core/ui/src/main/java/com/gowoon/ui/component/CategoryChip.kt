@@ -9,9 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -20,15 +18,16 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.ui.util.getDefaultResId
 import com.gowoon.ui.util.getImageResId
+import com.gowoon.ui.util.getNoConsumptionResId
 
 @Composable
 fun CardCategoryChip(
     modifier: Modifier = Modifier,
-    category: Category,
+    category: Category?,
 ) {
     CategoryChip(
         modifier = modifier,
-        resId = category.getImageResId(),
+        resId = category?.getImageResId() ?: getNoConsumptionResId(), // TODO 배경 있는 애로 받아서 바꾸기
         size = 78.dp,
         radius = 20.dp,
         border = 3.dp
@@ -69,7 +68,7 @@ fun InputCategoryChip(
 fun StatisticsCategoryChip(
     modifier: Modifier = Modifier,
     category: Category
-){
+) {
     CategoryChip(
         modifier = modifier,
         resId = category.getImageResId(),

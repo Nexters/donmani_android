@@ -78,3 +78,4 @@ fun Category.getImageResId(): Int = when (val category = this) {
 
 fun getNoConsumptionColor() = Color(0xff83D8DB)
 fun getNoConsumptionResId() = R.drawable.icon_no_consumption
+fun getNoConsumptionTitle() = com.gowoon.ui.R.string.no_consumption_title

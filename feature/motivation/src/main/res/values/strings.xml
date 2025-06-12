@@ -36,6 +36,7 @@
     <!-- reward feedback -->
     <string name="reward_feedback_title_prefix">%s님,</string>
     <string name="reward_feedback_title_suffix">소비 했네요!</string>
+    <string name="reward_feedback_title_suffix_for_no_consumption">했네요!</string>
     <string name="reward_feedback_today">오늘은</string>
     <string name="reward_feedback_lately">요즘은</string>
     <!-- reward feedback card -->
