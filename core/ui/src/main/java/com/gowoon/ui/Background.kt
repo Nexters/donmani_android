@@ -164,18 +164,23 @@ fun Decoration(
             }
 
             DecorationPosition.ABOVE_BOTTLE -> {
-                val times = when (starBottleMode) {
-                    StarBottleMode.Default -> 1.3f
-                    StarBottleMode.Preview -> 1.0f
-                }
-                val additional = when (bottleType) {
-                    BottleType.DEFAULT -> Pair(50.dp, 0.dp)
+                val default = when (bottleType) {
+                    BottleType.DEFAULT -> Pair(50.dp, (-15).dp)
                     BottleType.CIRCLE -> Pair(0.dp, 0.dp)
-                    BottleType.HEART -> Pair(60.dp, 30.dp)
+                    BottleType.HEART -> Pair(60.dp, 20.dp)
+                }
+                val additional = if (starBottleMode == StarBottleMode.Default) {
+                    when (bottleType) {
+                        BottleType.DEFAULT -> Pair(15.dp, 0.dp)
+                        BottleType.CIRCLE -> Pair(0.dp, 10.dp)
+                        BottleType.HEART -> Pair(25.dp, 18.dp)
+                    }
+                } else {
+                    Pair(0.dp, 0.dp)
                 }
                 Pair(
-                    targetRect.topCenter.x.pxToDp() - 40.dp + additional.first * times,
-                    targetRect.topCenter.y.pxToDp() - 40.dp + additional.second * times
+                    targetRect.topCenter.x.pxToDp() - 40.dp + default.first + additional.first,
+                    targetRect.topCenter.y.pxToDp() - 40.dp + default.second + additional.second
                 )
             }
         }

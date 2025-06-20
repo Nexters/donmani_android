@@ -265,7 +265,7 @@ internal fun StarBottlePhysicsBody(
                         20.dp
                     } else {
                         when (bottleMode) {
-                            StarBottleMode.Default -> 50.dp
+                            StarBottleMode.Default -> 60.dp
                             StarBottleMode.Preview -> 30.dp
                         }
                     }

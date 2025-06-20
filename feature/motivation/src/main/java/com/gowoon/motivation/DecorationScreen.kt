@@ -227,17 +227,6 @@ private fun DecorationItemContent(
     onClickCategory: (GiftCategory) -> Unit,
     onClickItem: (GiftCategory, Gift?) -> Unit
 ) {
-    val thumbnailModifier = Modifier
-        .fillMaxSize()
-        .then(
-            when (currentSelectedInventory.currentCategory) {
-                GiftCategory.BACKGROUND -> Modifier
-                GiftCategory.EFFECT -> Modifier.padding(12.dp)
-                GiftCategory.DECORATION -> Modifier.padding(12.dp)
-                GiftCategory.CASE -> Modifier.padding(12.dp)
-//                GiftCategory.BGM -> Modifier.padding(30.dp)
-            }
-        )
     Column(
         modifier
             .fillMaxWidth()
@@ -269,14 +258,10 @@ private fun DecorationItemContent(
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 20.dp)
         ) {
             items(currentSelectedInventory.categoryItems) {
-                val finalModifier = if (it.resourceUrl.isNullOrEmpty()) {
+                val finalModifier = if (it.resourceUrl.isEmpty()) {
                     Modifier.size(32.dp)
                 } else {
-                    if (it.hidden) {
-                        Modifier.fillMaxSize()
-                    } else {
-                        thumbnailModifier
-                    }
+                    Modifier
                 }
                 GiftItemChip(
                     selected = it.id == currentSelectedInventory.currentSelectItem,
@@ -286,7 +271,7 @@ private fun DecorationItemContent(
                     AsyncImage(
                         modifier = finalModifier.align(Alignment.Center),
                         model = it.thumbnailImageUrl,
-                        contentScale = if (currentSelectedInventory.currentCategory == GiftCategory.BACKGROUND) ContentScale.FillBounds else ContentScale.Fit,
+                        contentScale = if (currentSelectedInventory.currentCategory == GiftCategory.BACKGROUND || it.hidden) ContentScale.Crop else ContentScale.Fit,
                         contentDescription = null
                     )
                 }
