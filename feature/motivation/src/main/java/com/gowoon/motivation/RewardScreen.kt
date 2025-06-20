@@ -82,7 +82,7 @@ import kotlinx.coroutines.delay
 internal fun RewardScreen(
     viewModel: RewardViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    onClickGoToRecord: () -> Unit,
+    onClickGoToRecord: (Boolean, Boolean) -> Unit,
     onClickReview: () -> Unit,
     onClickGoToDecoration: (String) -> Unit
 ) {
@@ -126,7 +126,9 @@ internal fun RewardScreen(
                         state = it.state,
                         dayStreakCount = state.dayStreakCount,
                         onClickGetGift = onClickNext,
-                        onClickGoToRecord = onClickGoToRecord,
+                        onClickGoToRecord = {
+                            onClickGoToRecord(state.hasTodayRecord, state.hasYesterdayRecord)
+                        },
                         onClickGoToHome = onClickBack,
                         onClickReview = onClickReview
                     )

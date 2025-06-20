@@ -8,15 +8,19 @@ import com.gowoon.motivation.DecorationScreen
 import com.gowoon.motivation.RewardScreen
 import kotlinx.serialization.Serializable
 
-const val RewardNavigationRoute = "motivation_route"
+@Serializable
+data class RewardNavigationRoute(
+    val hasTodayRecord: Boolean,
+    val hasYesterdayRecord: Boolean,
+)
 
 @Serializable
 data class DecorationNavigationRoute(
     val selected: String? = null
 )
 
-fun NavController.navigateToReward() {
-    navigate(route = RewardNavigationRoute)
+fun NavController.navigateToReward(hasToday: Boolean, hasYesterday: Boolean) {
+    navigate(route = RewardNavigationRoute(hasToday, hasYesterday))
 }
 
 fun NavController.navigateToDecoration() {
@@ -33,12 +37,12 @@ fun NavController.navigateToDecorationAndPopUpTo(selected: String) {
 
 fun NavGraphBuilder.motivationScreen(
     onClickBack: () -> Unit,
-    navigateToRecord: () -> Unit,
+    navigateToRecord: (Boolean, Boolean) -> Unit,
     navigateToWebView: (String) -> Unit,
     navigateToDecoration: (String) -> Unit,
     navigateToHome: (String) -> Unit
 ) {
-    composable(route = RewardNavigationRoute) {
+    composable<RewardNavigationRoute> {
         RewardScreen(
             onClickBack = onClickBack,
             onClickGoToRecord = navigateToRecord,

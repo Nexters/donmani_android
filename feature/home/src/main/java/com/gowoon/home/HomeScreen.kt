@@ -63,7 +63,7 @@ internal fun HomeScreen(
     changedState: String?,
     dataFromRecord: String?,
     onClickSetting: () -> Unit,
-    onClickStore: () -> Unit,
+    onClickStore: (Boolean, Boolean) -> Unit,
     onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
@@ -178,7 +178,7 @@ internal fun HomeScreen(
                     )
                 },
                 onClickStore = {
-                    onClickStore()
+                    onClickStore(state.hasToday, state.hasYesterday)
                     viewModel.setEvent(HomeEvent.UpdateRewardTooltipState(false))
                 }
             )

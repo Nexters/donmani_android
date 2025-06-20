@@ -1,6 +1,8 @@
 package com.gowoon.motivation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
@@ -13,6 +15,7 @@ import com.gowoon.domain.usecase.reward.HideRewardFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.OpenGiftListUseCase
 import com.gowoon.domain.usecase.reward.ShowRewardFirstOpenBottomSheetUseCase
 import com.gowoon.model.reward.Gift
+import com.gowoon.motivation.navigation.RewardNavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -20,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RewardViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val showRewardFirstOpenBottomSheetUseCase: ShowRewardFirstOpenBottomSheetUseCase,
     private val hideRewardFirstBottomSheetUseCase: HideRewardFirstBottomSheetUseCase,
     private val getFeedbackSummaryUseCase: GetFeedbackSummaryUseCase,
@@ -28,6 +32,8 @@ class RewardViewModel @Inject constructor(
     private val openGiftListUseCase: OpenGiftListUseCase,
 //    private val setBgmOwnedUseCase: SetBgmOwnedUseCase
 ) : BaseViewModel<RewardState, RewardEvent, RewardEffect>() {
+    private val hasTodayRecord = savedStateHandle.toRoute<RewardNavigationRoute>().hasTodayRecord
+    private val hasYesterdayRecord = savedStateHandle.toRoute<RewardNavigationRoute>().hasYesterdayRecord
     override fun createInitialState(): RewardState {
         return RewardState()
     }
@@ -54,6 +60,8 @@ class RewardViewModel @Inject constructor(
                 if (feedback is Result.Success && show is Result.Success) {
                     Result.Success(
                         currentState.copy(
+                            hasTodayRecord = hasTodayRecord,
+                            hasYesterdayRecord = hasYesterdayRecord,
                             step = Step.Main(
                                 getMainState(
                                     feedback.data.second,
@@ -91,7 +99,11 @@ class RewardViewModel @Inject constructor(
                 if (dayStreakCount >= 14) {
                     MainState.DONE
                 } else {
-                    MainState.NO_AVAILABLE_GIFT
+                    if(hasYesterdayRecord || hasTodayRecord){
+                        MainState.NO_RECORD
+                    } else {
+                        MainState.NO_AVAILABLE_GIFT
+                    }
                 }
             }
         }
@@ -178,6 +190,8 @@ class RewardViewModel @Inject constructor(
 }
 
 data class RewardState(
+    val hasTodayRecord: Boolean = false,
+    val hasYesterdayRecord: Boolean = false,
     val step: Step? = null,
     val dayStreakCount: Int = 0,
     val showFirstBottomSheet: Boolean = false
