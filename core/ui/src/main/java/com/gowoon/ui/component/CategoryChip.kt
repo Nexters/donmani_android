@@ -18,7 +18,7 @@ import com.gowoon.model.record.ConsumptionType
 import com.gowoon.model.record.GoodCategory
 import com.gowoon.ui.util.getDefaultResId
 import com.gowoon.ui.util.getImageResId
-import com.gowoon.ui.util.getNoConsumptionResId
+import com.gowoon.ui.util.getNoConsumptionChipResId
 
 @Composable
 fun CardCategoryChip(
@@ -27,7 +27,7 @@ fun CardCategoryChip(
 ) {
     CategoryChip(
         modifier = modifier,
-        resId = category?.getImageResId() ?: getNoConsumptionResId(), // TODO 배경 있는 애로 받아서 바꾸기
+        resId = category?.getImageResId() ?: getNoConsumptionChipResId(),
         size = 78.dp,
         radius = 20.dp,
         border = 3.dp
