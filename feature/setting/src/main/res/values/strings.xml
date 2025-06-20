@@ -2,7 +2,7 @@
     <string name="setting_appbar_title">설정</string>
     <string name="setting_decoration">꾸미기</string>
     <string name="setting_sound">별통이 효과음</string>
-    <string name="setting_push">앱푸시 알림</string>
+    <string name="setting_push">앱 푸시 알림</string>
     <string name="setting_notice">공지사항</string>
     <string name="setting_bbs_rule">별별소 기록 규칙</string>
     <string name="setting_private_privacy">개인정보 처리방침</string>
