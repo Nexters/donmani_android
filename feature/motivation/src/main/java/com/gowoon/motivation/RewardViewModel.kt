@@ -33,7 +33,9 @@ class RewardViewModel @Inject constructor(
 //    private val setBgmOwnedUseCase: SetBgmOwnedUseCase
 ) : BaseViewModel<RewardState, RewardEvent, RewardEffect>() {
     private val hasTodayRecord = savedStateHandle.toRoute<RewardNavigationRoute>().hasTodayRecord
-    private val hasYesterdayRecord = savedStateHandle.toRoute<RewardNavigationRoute>().hasYesterdayRecord
+    private val hasYesterdayRecord =
+        savedStateHandle.toRoute<RewardNavigationRoute>().hasYesterdayRecord
+
     override fun createInitialState(): RewardState {
         return RewardState()
     }
@@ -96,10 +98,10 @@ class RewardViewModel @Inject constructor(
             if (hasNotOpened) {
                 MainState.AVAILABLE_GIFT
             } else {
-                if (dayStreakCount >= 14) {
+                if (dayStreakCount >= 12) {
                     MainState.DONE
                 } else {
-                    if(hasYesterdayRecord || hasTodayRecord){
+                    if (hasYesterdayRecord || hasTodayRecord) {
                         MainState.NO_RECORD
                     } else {
                         MainState.NO_AVAILABLE_GIFT

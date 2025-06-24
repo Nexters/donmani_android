@@ -1,7 +1,6 @@
 package com.gowoon.motivation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -42,16 +41,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -342,7 +341,7 @@ private fun FeedbackContent(
                             modifier = Modifier.align(Alignment.Center),
                             text = feedback.category?.getTitle()
                                 ?: stringResource(getNoConsumptionTitle()),
-                            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
+                            style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold),
                             color = DonmaniTheme.colors.DeepBlue99
                         )
                     }
@@ -554,11 +553,13 @@ private fun GiftItem(
         Box(
             Modifier
                 .size(200.dp)
+                .clip(RoundedCornerShape(60.dp))
                 .background(
                     color = DonmaniTheme.colors.DeepBlue70,
                     shape = RoundedCornerShape(60.dp)
                 )
                 .align(Alignment.CenterHorizontally)
+                .clipToBounds()
         ) {
             AsyncImage(
                 modifier = thumbnailModifier.align(Alignment.Center),

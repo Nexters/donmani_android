@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,7 +34,8 @@ internal fun GiftItemChip(
     ) else modifier
     Box(
         modifier = borderModifier
-            .size(105.dp)
+            .aspectRatio(1f)
+//            .size(105.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(DonmaniTheme.colors.DeepBlue50.copy(alpha = 0.5f))
             .noRippleClickable { onClick() }

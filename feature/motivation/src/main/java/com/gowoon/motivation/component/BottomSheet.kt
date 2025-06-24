@@ -81,17 +81,20 @@ internal fun DecorationFirstAccessBottomSheet(onDismissRequest: () -> Unit) {
     )
 }
 
+@Preview
 @Composable
 private fun DecorationFirstAccessBottomSheetContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp)
+            .padding(top = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.decoration_bottom_sheet_title),
             color = DonmaniTheme.colors.DeepBlue99,
-            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold)
+            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
+            textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
         Text(
@@ -120,7 +123,6 @@ internal fun DecorationHiddenItemBottomSheet(onDismissRequest: () -> Unit) {
     )
 }
 
-@Preview
 @Composable
 private fun DecorationHiddenItemBottomSheetContent() {
     val imageLoader = ImageLoader.Builder(LocalContext.current)

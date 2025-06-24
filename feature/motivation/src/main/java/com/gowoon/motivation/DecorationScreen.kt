@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -251,18 +252,25 @@ private fun DecorationItemContent(
             }
         }
         LazyVerticalGrid(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxHeight(),
             columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 20.dp)
         ) {
             items(currentSelectedInventory.categoryItems) {
-                val finalModifier = if (it.resourceUrl.isEmpty()) {
-                    Modifier.size(32.dp)
-                } else {
-                    Modifier
-                }
+                val finalModifier =
+                    if (it.resourceUrl.isEmpty()) {
+                        Modifier.size(32.dp)
+                    } else {
+                        Modifier.fillMaxSize()
+                        when (it.category) {
+                            GiftCategory.BACKGROUND -> Modifier.fillMaxSize()
+                            else -> Modifier
+                                .fillMaxSize()
+                                .then(if (!it.hidden) Modifier.padding(12.5.dp) else Modifier)
+                        }
+                    }
                 GiftItemChip(
                     selected = it.id == currentSelectedInventory.currentSelectItem,
                     isNew = it.isNew,

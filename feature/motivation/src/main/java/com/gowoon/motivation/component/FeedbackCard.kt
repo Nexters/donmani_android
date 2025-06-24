@@ -88,7 +88,7 @@ internal fun FeedbackCard(modifier: Modifier = Modifier, feedback: Feedback) {
                 style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
                 color = DonmaniTheme.colors.Common0
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 text = feedback.description,
                 style = DonmaniTheme.typography.Body2,
