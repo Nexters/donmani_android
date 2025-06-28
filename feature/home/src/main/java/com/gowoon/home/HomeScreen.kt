@@ -3,6 +3,7 @@ package com.gowoon.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -331,9 +333,14 @@ private fun HomeFooter(
 ) {
     Box(modifier) {
         if (hasToday && hasYesterday) {
+            Image(
+                painter = painterResource(com.gowoon.designsystem.R.drawable.message_box_bg),
+                contentDescription = null
+            )
             MessageBox(
                 modifier = Modifier.align(Alignment.Center),
-                message = stringResource(R.string.footer_message_when_has_today_and_yesterday)
+                message = stringResource(R.string.footer_message_when_has_today_and_yesterday),
+                textColor = DonmaniTheme.colors.Common0
             )
         } else {
             HomeCircleButton(

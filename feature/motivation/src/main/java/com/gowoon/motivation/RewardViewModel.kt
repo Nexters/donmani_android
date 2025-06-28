@@ -101,10 +101,10 @@ class RewardViewModel @Inject constructor(
                 if (dayStreakCount >= 12) {
                     MainState.DONE
                 } else {
-                    if (hasYesterdayRecord || hasTodayRecord) {
-                        MainState.NO_RECORD
-                    } else {
+                    if (hasYesterdayRecord && hasTodayRecord) {
                         MainState.NO_AVAILABLE_GIFT
+                    } else {
+                        MainState.NO_RECORD
                     }
                 }
             }
