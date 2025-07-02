@@ -6,7 +6,7 @@
     <string name="reward_main_title_no_gift">오늘까지 받을 수 있는 선물을\n모두 받았어요</string>
     <string name="reward_main_title_done">준비한 선물을 모두 받았어요!\n이번 선물 어떠셨나요?</string>
     <string name="reward_main_description_default">12번 기록하면 특별한 선물을 받아요</string>
-    <string name="reward_main_description_no_record">오늘부터 기록하고 숨겨진 14개 선물을 받아 보세요!</string>
+    <string name="reward_main_description_no_record">오늘부터 기록하고 숨겨진 12개 선물을 받아 보세요!</string>
     <string name="reward_main_description_done">다섯 분을 선정해 스타벅스 기프티콘을 드려요</string>
     <!-- button -->
     <string name="reward_main_get_gift_button_title">지금 선물받기</string>
@@ -35,7 +35,7 @@
 
     <!-- reward feedback -->
     <string name="reward_feedback_title_prefix">%s님,</string>
-    <string name="reward_feedback_title_suffix">소비 했네요!</string>
+    <string name="reward_feedback_title_suffix">소비를 했네요!</string>
     <string name="reward_feedback_title_suffix_for_no_consumption">했네요!</string>
     <string name="reward_feedback_today">오늘은</string>
     <string name="reward_feedback_lately">요즘은</string>

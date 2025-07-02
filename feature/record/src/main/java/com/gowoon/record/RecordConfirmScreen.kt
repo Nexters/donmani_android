@@ -63,7 +63,7 @@ internal fun RecordConfirmScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = DonmaniTheme.dimens.Margin20)
-            .padding(top = 72.dp, bottom = 10.dp),
+            .padding(top = 72.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
