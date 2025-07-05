@@ -78,6 +78,10 @@ internal fun SettingScreen(
     val focusRequester = remember { FocusRequester() }
     var notificationStatus by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("setting")
+    }
+
     LaunchedEffect(true) {
         viewModel.uiEffect.collectLatest {
             if (it is SettingEffect.ShowToast) {
@@ -146,7 +150,7 @@ internal fun SettingScreen(
                     SettingItem(
                         title = stringResource(R.string.setting_decoration),
                         showReddot = state.newItem,
-                        gaEventName = "", // TODO
+                        gaEventName = "setting_customize",
                         onClick = {
                             viewModel.setEvent(SettingEvent.UpdateDecorationStatusAsRead)
                             onClickDecoration()

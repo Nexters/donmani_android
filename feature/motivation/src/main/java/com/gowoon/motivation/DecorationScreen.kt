@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
@@ -97,6 +99,15 @@ internal fun DecorationScreen(
 //        }
 //    }
 
+    LaunchedEffect(Unit) {
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "customize",
+//            state.savedItems.entries.map { Pair(it.key.title, it.value?.name ?: "") }.toList()
+//        )
+        FirebaseAnalyticsUtil.sendScreenView("customize")
+    }
+
     if (state.showDialog) {
         AlertDialog(
             title = stringResource(R.string.decoration_confirm_dialog_title),
@@ -105,6 +116,12 @@ internal fun DecorationScreen(
             negativeTitle = stringResource(R.string.decoration_confirm_dialog_negative_button),
             onClickPositive = {
                 viewModel.setEvent(DecorationEvent.SaveDecoration { onClickSave(state.savedItems.toString()) })
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "customize_submit_button",
+                    state.savedItems.entries.map { Pair(it.key.title, it.value?.name ?: "") }
+                        .toList()
+                )
             },
             onDismissRequest = { viewModel.setEvent(DecorationEvent.ShowDialog(false)) }
         )

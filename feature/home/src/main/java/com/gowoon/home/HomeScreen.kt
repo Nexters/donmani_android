@@ -92,6 +92,10 @@ internal fun HomeScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("main")
+    }
+
     LaunchedEffect(true) {
         viewModel.uiEffect.collect {
             if (it is HomeEffect.ShowToast) {
@@ -100,11 +104,12 @@ internal fun HomeScreen(
         }
     }
 
-    LaunchedEffect(referrer) {
-        if (!referrer.first) {
-            viewModel.sendViewMainGA4Event()
-        }
-    }
+//    LaunchedEffect(referrer) {
+//        if (!referrer.first) {
+//            viewModel.sendViewMainGA4Event()
+//        }
+//    }
+
     LaunchedEffect(isFromFcm) {
         if (!isFromFcm.first && isFromFcm.second) {
             onClickAdd(state.hasToday, state.hasYesterday, "notification")
@@ -182,6 +187,10 @@ internal fun HomeScreen(
                 onClickStore = {
                     onClickStore(state.hasToday, state.hasYesterday)
                     viewModel.setEvent(HomeEvent.UpdateRewardTooltipState(false))
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "main_shop_button"
+                    )
                 }
             )
         }

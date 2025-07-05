@@ -49,12 +49,23 @@ object FirebaseAnalyticsUtil {
         sendEvent(trigger, eventName, bundle)
     }
 
+    fun sendScreenView(screenName: String, vararg params: Pair<String, String>) {
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
+            putString(FirebaseAnalytics.Param.SCREEN_CLASS, screenName)
+            params.forEach {
+                putString(it.first, it.second)
+            }
+        }
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, bundle)
+    }
+
     enum class EventTrigger(val prefix: String) {
-        OPEN("O"),
-        CLICK("C"),
-        VIEW("V"),
-        IMPRESSION("I"),
-        SUBMIT("S"),
-        RECEIVE("R")
+        OPEN("open"),
+        CLICK("click"),
+        VIEW("view"),
+        IMPRESSION("impression"),
+        SUBMIT("submit"),
+        RECEIVE("receive")
     }
 }

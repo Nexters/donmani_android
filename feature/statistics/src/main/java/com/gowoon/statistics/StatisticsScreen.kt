@@ -55,10 +55,11 @@ internal fun StatisticsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        FirebaseAnalyticsUtil.sendEvent(
-            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
-            eventName = "insight"
-        )
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "insight"
+//        )
+        FirebaseAnalyticsUtil.sendScreenView("insight")
     }
     BBSScaffold(
         background = { GradientBackground() },

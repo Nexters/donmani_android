@@ -50,7 +50,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,6 +57,7 @@ import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
@@ -124,7 +124,13 @@ internal fun RewardScreen(
                     MainContent(
                         state = it.state,
                         dayStreakCount = state.dayStreakCount,
-                        onClickGetGift = onClickNext,
+                        onClickGetGift = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_button"
+                            )
+                        },
                         onClickGoToRecord = {
                             onClickGoToRecord(state.hasTodayRecord, state.hasYesterdayRecord)
                         },
@@ -143,7 +149,13 @@ internal fun RewardScreen(
                 (state.step as? Step.Feedback)?.let {
                     FeedbackContent(
                         feedback = it.feedback,
-                        onClickNext = onClickNext
+                        onClickNext = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_feedback_button"
+                            )
+                        }
                     )
                 }
             }
@@ -157,7 +169,13 @@ internal fun RewardScreen(
                 (state.step as? Step.GiftOpen)?.let {
                     GiftOpenContent(
                         giftCount = it.giftCount,
-                        onClickOpen = onClickNext
+                        onClickOpen = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_received_button"
+                            )
+                        }
                     )
                 }
             }
@@ -173,6 +191,10 @@ internal fun RewardScreen(
                         giftList = it.giftList,
                         onClickGoToDecoration = {
                             onClickGoToDecoration(it.giftList.last().category.name)
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "customize_reward_button"
+                            )
                         }
                     )
                 }
@@ -219,6 +241,10 @@ private fun MainContent(
                 stringResource(R.string.reward_main_description_done)
             )
         }
+    }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("reward")
     }
 
     Column(
@@ -299,6 +325,10 @@ private fun FeedbackContent(
     onClickNext: () -> Unit
 ) {
     val visibleStates = remember { List(3) { mutableStateOf(false) } }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("feedback")
+    }
 
     LaunchedEffect(Unit) {
         visibleStates.forEachIndexed { index, state ->
@@ -492,6 +522,9 @@ private fun GiftConfirmContent(
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("confetti.json"))
     val pagerState = rememberPagerState { giftList.size }
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("received")
+    }
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = modifier.fillMaxSize()) {
             HorizontalPager(state = pagerState) {

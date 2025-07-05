@@ -50,10 +50,14 @@ internal fun RecordConfirmScreen(
     onClick: (Boolean) -> Unit
 ) {
     LaunchedEffect(Unit) {
-        FirebaseAnalyticsUtil.sendEvent(
-            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
-            eventName = "confirm",
-            Pair("referrer", "true")
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "confirm",
+//            Pair("referrer", "true")
+//        )
+        FirebaseAnalyticsUtil.sendScreenView(
+            "confirm",
+            Pair("screen_type", screenType)
         )
     }
     Column(

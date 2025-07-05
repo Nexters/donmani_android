@@ -92,6 +92,13 @@ internal fun RecordInputScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView(
+            "record",
+            Pair("screen_type", viewModel.GA4GetScreenType())
+        )
+    }
+
     BBSScaffold(
         background = { CategoryBackground(state.category) },
         topBar = {
