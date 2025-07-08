@@ -468,7 +468,7 @@ private fun GiftOpenContent(
         if (giftCount > 1) {
             GiftOpenBanner(
                 modifier = Modifier.alpha(exitAnimatedOffset),
-                giftCount = giftCount
+                giftCount = giftCount - 1
             )
         }
         RoundedButton(

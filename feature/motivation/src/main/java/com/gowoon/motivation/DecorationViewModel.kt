@@ -84,7 +84,8 @@ class DecorationViewModel @Inject constructor(
                 getInventoryUseCase()
             ) { bbsState, inventory ->
                 if (bbsState is Result.Success && inventory is Result.Success) {
-                    val hidden = inventory.data[GiftCategory.DECORATION]?.any { it.hidden }
+                    val hidden =
+                        inventory.data[GiftCategory.DECORATION]?.find { it.hidden }?.isNew == true
                     Result.Success(
                         currentState.copy(
                             inventoryList = inventory.data,

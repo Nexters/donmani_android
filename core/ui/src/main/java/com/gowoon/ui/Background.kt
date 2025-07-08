@@ -171,9 +171,9 @@ fun Decoration(
                 }
                 val additional = if (starBottleMode == StarBottleMode.Default) {
                     when (bottleType) {
-                        BottleType.DEFAULT -> Pair(15.dp, 0.dp)
+                        BottleType.DEFAULT -> Pair(20.dp, -5.dp)
                         BottleType.CIRCLE -> Pair(0.dp, 10.dp)
-                        BottleType.HEART -> Pair(25.dp, 18.dp)
+                        BottleType.HEART -> Pair(20.dp, 18.dp)
                     }
                 } else {
                     Pair(0.dp, 0.dp)
@@ -218,8 +218,8 @@ fun Decoration(
                         y = decorationOffset.second
                     )
                     .then(animatedModifier)
-                    .size(80.dp),
-                model = decoration.resourceUrl,
+                    .size(if (it.hidden && starBottleMode == StarBottleMode.Default) 100.dp else 80.dp),
+                model = it.resourceUrl,
                 contentDescription = null
             )
         }
