@@ -48,7 +48,8 @@ class RecordRepositoryImpl @Inject constructor(
 //                                        ?.toModel(),
                                     records = body.responseData.records?.mapNotNull { record ->
                                         record.toModel()
-                                    } ?: listOf()
+                                    } ?: listOf(),
+                                    hasNotOpenedRewards = body.responseData.hasNotOpenedRewards
                                 )
                             )
                         } ?: Result.Error(message = "empty body")

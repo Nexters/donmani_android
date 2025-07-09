@@ -263,7 +263,7 @@ internal fun HomeScreen(
         }
     }
 
-    if (state.showRewardTooltip) {
+    if (state.showRewardTooltip && state.bbsState.hasNotOpenedRewards) {
         Tooltip(
             modifier = Modifier
                 .offset(
