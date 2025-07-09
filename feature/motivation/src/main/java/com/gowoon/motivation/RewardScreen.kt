@@ -134,7 +134,7 @@ internal fun RewardScreen(
                         onClickGoToRecord = {
                             onClickGoToRecord(state.hasTodayRecord, state.hasYesterdayRecord)
                         },
-                        onClickGoToHome = onClickBack,
+                        onClickGoToDecoration = onClickGoToDecoration,
                         onClickReview = onClickReview
                     )
                 }
@@ -210,7 +210,7 @@ private fun MainContent(
     dayStreakCount: Int,
     onClickGetGift: () -> Unit,
     onClickGoToRecord: () -> Unit,
-    onClickGoToHome: () -> Unit,
+    onClickGoToDecoration: (String) -> Unit,
     onClickReview: () -> Unit
 ) {
     val (title, description) = when (state) {
@@ -287,8 +287,8 @@ private fun MainContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                label = stringResource(R.string.reward_main_go_to_home_button_title),
-                onClick = onClickGoToHome
+                label = stringResource(R.string.reward_main_go_to_decoration_button_title),
+                onClick = { onClickGoToDecoration(GiftCategory.BACKGROUND.name) }
             )
         } else {
             if (state == MainState.NO_AVAILABLE_GIFT) {

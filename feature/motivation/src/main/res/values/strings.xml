@@ -12,7 +12,7 @@
     <string name="reward_main_get_gift_button_title">지금 선물받기</string>
     <string name="reward_main_go_to_record_button_title">기록하러 가기</string>
     <string name="reward_main_go_to_review_button_title">후기 알려주기</string>
-    <string name="reward_main_go_to_home_button_title">홈으로</string>
+    <string name="reward_main_go_to_decoration_button_title">받은 선물 꾸며보기</string>
     <!-- message -->
     <string name="reward_main_no_gift_message">내일 다시 만나요!</string>
     <!-- bottom sheet -->
