@@ -17,5 +17,6 @@ fun RewardDto.toModel(): Gift = Gift(
 //        GiftCategory.BGM -> this.mp3Url
     } ?: "",
     isNew = this.newAcquiredFlag,
-    hidden = this.hidden
+    hidden = this.hidden,
+    hiddenRead = this.hiddenRead
 )

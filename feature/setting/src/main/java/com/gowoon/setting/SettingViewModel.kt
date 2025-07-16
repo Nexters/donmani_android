@@ -10,9 +10,10 @@ import com.gowoon.domain.usecase.user.GetNoticeStatusUseCase
 import com.gowoon.domain.usecase.user.GetRewardStatusUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.domain.usecase.user.UpdateNoticeStatusUseCase
-import com.gowoon.domain.usecase.user.UpdateRewardStatusUseCase
 import com.gowoon.domain.usecase.user.UpdateUserNicknameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +25,6 @@ class SettingViewModel @Inject constructor(
     private val getNoticeStatusUseCase: GetNoticeStatusUseCase,
     private val updateNoticeStatusUseCase: UpdateNoticeStatusUseCase,
     private val getRewardStatusUseCase: GetRewardStatusUseCase,
-    private val updateRewardStatusUseCase: UpdateRewardStatusUseCase,
 //    private val getBgmStateUseCase: GetBgmStateUseCase,
 //    private val updateBgmStateUseCase: UpdateBgmStateUseCase,
 //    private val hasBgmItemUseCase: HasBgmItemUseCase
@@ -52,10 +52,6 @@ class SettingViewModel @Inject constructor(
 //            is SettingEvent.OnClickSoundToggle -> {
 //                updateBgmState(event.toastMessage)
 //            }
-
-            is SettingEvent.UpdateDecorationStatusAsRead -> {
-                updateRewardStatus()
-            }
         }
     }
 
@@ -74,24 +70,28 @@ class SettingViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            when (val result = getNoticeStatusUseCase()) {
-                is Result.Success -> {
-                    setState(currentState.copy(newNotice = !result.data))
-                }
+            uiEffect.filter { it is SettingEffect.RefreshTrigger }.collectLatest {
+                when (val result = getNoticeStatusUseCase()) {
+                    is Result.Success -> {
+                        setState(currentState.copy(newNotice = !result.data))
+                    }
 
-                is Result.Error -> {
-                    // TODO error handling
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
                 }
             }
         }
         viewModelScope.launch {
-            when (val result = getRewardStatusUseCase()) {
-                is Result.Success -> {
-                    setState(currentState.copy(newItem = !result.data))
-                }
+            uiEffect.filter { it is SettingEffect.RefreshTrigger }.collectLatest {
+                when (val result = getRewardStatusUseCase()) {
+                    is Result.Success -> {
+                        setState(currentState.copy(newItem = !result.data))
+                    }
 
-                is Result.Error -> {
-                    // TODO error handling
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
                 }
             }
         }
@@ -140,14 +140,6 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun updateRewardStatus() {
-        viewModelScope.launch {
-            if (updateRewardStatusUseCase() is Result.Error) {
-                // TODO error handling
-            }
-        }
-    }
-
 //    private fun updateBgmState(toastMessage: String) {
 //        viewModelScope.launch {
 //            when (val result = hasBgmItemUseCase()) {
@@ -174,6 +166,10 @@ class SettingViewModel @Inject constructor(
     fun showToast(message: String) {
         setEffect(SettingEffect.ShowToast(message))
     }
+
+    fun refreshReddot() {
+        setEffect(SettingEffect.RefreshTrigger)
+    }
 }
 
 data class SettingState(
@@ -192,10 +188,10 @@ sealed interface SettingEvent : UiEvent {
         SettingEvent
 
     data object UpdateNoticeStatusAsRead : SettingEvent
-    data object UpdateDecorationStatusAsRead : SettingEvent
 //    data class OnClickSoundToggle(val toastMessage: String) : SettingEvent
 }
 
 sealed interface SettingEffect : UiEffect {
     data class ShowToast(val message: String) : SettingEffect
+    data object RefreshTrigger : SettingEffect
 }

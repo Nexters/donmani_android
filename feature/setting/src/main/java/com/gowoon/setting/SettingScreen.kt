@@ -79,6 +79,7 @@ internal fun SettingScreen(
     var notificationStatus by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.refreshReddot()
         FirebaseAnalyticsUtil.sendScreenView("setting")
     }
 
@@ -91,6 +92,7 @@ internal fun SettingScreen(
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refreshReddot()
         notificationStatus = NotificationPermissionUtil.isNotificationPermissionGranted(context)
     }
 
@@ -151,10 +153,7 @@ internal fun SettingScreen(
                         title = stringResource(R.string.setting_decoration),
                         showReddot = state.newItem,
                         gaEventName = "setting_customize",
-                        onClick = {
-                            viewModel.setEvent(SettingEvent.UpdateDecorationStatusAsRead)
-                            onClickDecoration()
-                        }
+                        onClick = onClickDecoration
                     ),
 //                    SettingItem(
 //                        title = stringResource(R.string.setting_sound),

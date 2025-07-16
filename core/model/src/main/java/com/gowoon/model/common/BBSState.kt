@@ -10,5 +10,5 @@ data class BBSState(
     val case: Gift? = null,
 //    val bgm: Gift? = null,
     val records: List<Record> = listOf(),
-    val hasNotOpenedRewards: Boolean = false
+    val totalCount: Int? = null
 )

@@ -105,6 +105,7 @@ internal fun DecorationScreen(
 //            eventName = "customize",
 //            state.savedItems.entries.map { Pair(it.key.title, it.value?.name ?: "") }.toList()
 //        )
+        viewModel.setEvent(DecorationEvent.UpdateDecorationStatusAsRead)
         FirebaseAnalyticsUtil.sendScreenView("customize")
     }
 

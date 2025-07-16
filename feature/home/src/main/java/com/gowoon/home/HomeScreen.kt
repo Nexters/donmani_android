@@ -263,7 +263,7 @@ internal fun HomeScreen(
         }
     }
 
-    if (state.showRewardTooltip && state.bbsState.hasNotOpenedRewards) {
+    if (state.showRewardTooltip && (state.bbsState.totalCount ?: 0) <= 12) {
         Tooltip(
             modifier = Modifier
                 .offset(

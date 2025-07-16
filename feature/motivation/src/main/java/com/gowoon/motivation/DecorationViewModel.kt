@@ -14,6 +14,7 @@ import com.gowoon.domain.usecase.reward.HideDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.ReadHiddenItemUseCase
 import com.gowoon.domain.usecase.reward.ShowDecorationFirstBottomSheetUseCase
 import com.gowoon.domain.usecase.reward.UpdateDecorationUseCase
+import com.gowoon.domain.usecase.user.UpdateRewardStatusUseCase
 import com.gowoon.model.common.BBSState
 import com.gowoon.model.reward.Gift
 import com.gowoon.model.reward.GiftCategory
@@ -32,7 +33,8 @@ class DecorationViewModel @Inject constructor(
     private val updateDecorationUseCase: UpdateDecorationUseCase,
     private val showDecorationFirstBottomSheetUseCase: ShowDecorationFirstBottomSheetUseCase,
     private val hideDecorationFirstBottomSheetUseCase: HideDecorationFirstBottomSheetUseCase,
-    private val readHiddenItemUseCase: ReadHiddenItemUseCase
+    private val readHiddenItemUseCase: ReadHiddenItemUseCase,
+    private val updateRewardStatusUseCase: UpdateRewardStatusUseCase
 ) : BaseViewModel<DecorationState, DecorationEvent, DecorationEffect>() {
     private val selectedCategory = savedStateHandle.toRoute<DecorationNavigationRoute>().selected
     override fun createInitialState(): DecorationState {
@@ -75,6 +77,10 @@ class DecorationViewModel @Inject constructor(
             is DecorationEvent.HideHiddenBottomSheet -> {
                 hideHiddenItemBottomSheet()
             }
+
+            is DecorationEvent.UpdateDecorationStatusAsRead -> {
+                updateRewardStatus()
+            }
         }
     }
 
@@ -84,8 +90,9 @@ class DecorationViewModel @Inject constructor(
                 getInventoryUseCase()
             ) { bbsState, inventory ->
                 if (bbsState is Result.Success && inventory is Result.Success) {
-                    val hidden =
-                        inventory.data[GiftCategory.DECORATION]?.find { it.hidden }?.isNew == true
+                    val showHiddenBottomSheet =
+                        inventory.data[GiftCategory.DECORATION]?.find { it.hidden }?.hiddenRead == false
+
                     Result.Success(
                         currentState.copy(
                             inventoryList = inventory.data,
@@ -112,7 +119,7 @@ class DecorationViewModel @Inject constructor(
 //                                    GiftCategory.BGM,
 //                                    inventory.data[GiftCategory.BGM]?.find { it.id == bbsState.data.bgm?.id })
                             },
-                            showHiddenGiftBottomSheet = hidden ?: false
+                            showHiddenGiftBottomSheet = showHiddenBottomSheet
                         )
                     )
                 } else {
@@ -183,6 +190,14 @@ class DecorationViewModel @Inject constructor(
         }
     }
 
+    private fun updateRewardStatus() {
+        viewModelScope.launch {
+            if (updateRewardStatusUseCase() is Result.Error) {
+                // TODO error handling
+            }
+        }
+    }
+
     fun isChangedDecorationState(
         origin: Map<GiftCategory, Gift?>,
         current: Map<GiftCategory, Gift?>
@@ -214,6 +229,7 @@ sealed interface DecorationEvent : UiEvent {
     data class SaveDecoration(val callback: () -> Unit) : DecorationEvent
     data object HideFirstBottomSheet : DecorationEvent
     data object HideHiddenBottomSheet : DecorationEvent
+    data object UpdateDecorationStatusAsRead : DecorationEvent
 }
 
 sealed interface DecorationEffect : UiEffect

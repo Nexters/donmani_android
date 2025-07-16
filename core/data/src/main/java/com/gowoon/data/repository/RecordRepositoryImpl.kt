@@ -49,7 +49,7 @@ class RecordRepositoryImpl @Inject constructor(
                                     records = body.responseData.records?.mapNotNull { record ->
                                         record.toModel()
                                     } ?: listOf(),
-                                    hasNotOpenedRewards = body.responseData.hasNotOpenedRewards
+                                    totalCount = body.responseData.totalExpensesCount
                                 )
                             )
                         } ?: Result.Error(message = "empty body")

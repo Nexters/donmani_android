@@ -23,4 +23,6 @@ data class RewardDto(
     val newAcquiredFlag: Boolean,
     @SerialName("hidden")
     val hidden: Boolean,
+    @SerialName("hiddenRead")
+    val hiddenRead: Boolean
 )
