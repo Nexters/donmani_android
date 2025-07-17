@@ -86,7 +86,7 @@ class SettingViewModel @Inject constructor(
             uiEffect.filter { it is SettingEffect.RefreshTrigger }.collectLatest {
                 when (val result = getRewardStatusUseCase()) {
                     is Result.Success -> {
-                        setState(currentState.copy(newItem = !result.data))
+                        setState(currentState.copy(newItem = result.data))
                     }
 
                     is Result.Error -> {

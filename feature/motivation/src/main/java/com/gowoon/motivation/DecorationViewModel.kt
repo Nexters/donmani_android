@@ -78,9 +78,9 @@ class DecorationViewModel @Inject constructor(
                 hideHiddenItemBottomSheet()
             }
 
-            is DecorationEvent.UpdateDecorationStatusAsRead -> {
-                updateRewardStatus()
-            }
+//            is DecorationEvent.UpdateDecorationStatusAsRead -> {
+//                updateRewardStatus()
+//            }
         }
     }
 
@@ -190,13 +190,13 @@ class DecorationViewModel @Inject constructor(
         }
     }
 
-    private fun updateRewardStatus() {
-        viewModelScope.launch {
-            if (updateRewardStatusUseCase() is Result.Error) {
-                // TODO error handling
-            }
-        }
-    }
+//    private fun updateRewardStatus() {
+//        viewModelScope.launch {
+//            if (updateRewardStatusUseCase() is Result.Error) {
+//                // TODO error handling
+//            }
+//        }
+//    }
 
     fun isChangedDecorationState(
         origin: Map<GiftCategory, Gift?>,
@@ -229,7 +229,7 @@ sealed interface DecorationEvent : UiEvent {
     data class SaveDecoration(val callback: () -> Unit) : DecorationEvent
     data object HideFirstBottomSheet : DecorationEvent
     data object HideHiddenBottomSheet : DecorationEvent
-    data object UpdateDecorationStatusAsRead : DecorationEvent
+//    data object UpdateDecorationStatusAsRead : DecorationEvent
 }
 
 sealed interface DecorationEffect : UiEffect
