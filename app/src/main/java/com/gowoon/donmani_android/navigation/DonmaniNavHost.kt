@@ -122,8 +122,12 @@ fun DonmaniNavHost(
             })
         motivationScreen(
             onClickBack = navController::popBackStack,
-            navigateToRecord = {
-                navController.navigateToRecordAndPopUpTo("reward")
+            navigateToRecord = { hasToday, hasYesterday ->
+                navController.navigateToRecord(
+                    referrer = "reward",
+                    hasTodayRecord = hasToday,
+                    hasYesterdayRecord = hasYesterday
+                )
             },
             navigateToWebView = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))

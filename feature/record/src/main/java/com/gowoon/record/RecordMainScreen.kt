@@ -109,11 +109,15 @@ internal fun RecordMainScreen(
         }
     }
 
-    val referrer by viewModel.referrer.collectAsStateWithLifecycle()
-    LaunchedEffect(referrer) {
-        if (!referrer.first) {
-            viewModel.sendViewRecordMainGA4Event()
-        }
+//    val referrer by viewModel.referrer.collectAsStateWithLifecycle()
+//    LaunchedEffect(referrer) {
+//        if (!referrer.first) {
+//            viewModel.sendViewRecordMainGA4Event()
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("recordmain")
     }
 
     LaunchedEffect(resultFromInput) {

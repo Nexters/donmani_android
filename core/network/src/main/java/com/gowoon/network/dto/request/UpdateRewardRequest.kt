@@ -19,6 +19,6 @@ data class UpdateRewardRequest(
     val decorationId: Int,
     @SerialName("byeoltongCaseId")
     val byeoltongCaseId: Int,
-    @SerialName("bgmId")
-    val bgmId: Int
+//    @SerialName("bgmId")
+//    val bgmId: Int
 )

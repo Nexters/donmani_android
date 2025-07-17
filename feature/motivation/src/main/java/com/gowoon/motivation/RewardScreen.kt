@@ -1,11 +1,15 @@
 package com.gowoon.motivation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,12 +32,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -45,6 +57,7 @@ import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.component.PositiveButton
@@ -61,14 +74,16 @@ import com.gowoon.motivation.component.RewardBackground
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
 import com.gowoon.ui.component.MessageBox
+import com.gowoon.ui.util.getNoConsumptionTitle
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun RewardScreen(
     viewModel: RewardViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    onClickGoToRecord: () -> Unit,
+    onClickGoToRecord: (Boolean, Boolean) -> Unit,
     onClickReview: () -> Unit,
-    onClickGoToDecoration: () -> Unit
+    onClickGoToDecoration: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val onClickNext = { viewModel.setEvent(RewardEvent.GoToNextStep) }
@@ -98,40 +113,91 @@ internal fun RewardScreen(
                 .padding(it)
                 .padding(top = 16.dp)
         ) {
-            when (val step = state.step) {
-                is Step.Main -> {
+            AnimatedVisibility(
+                visible = state.step is Step.Main,
+                enter = fadeIn(),
+                exit = fadeOut(
+                    animationSpec = tween(1000)
+                )
+            ) {
+                (state.step as? Step.Main)?.let {
                     MainContent(
-                        state = step.state,
+                        state = it.state,
                         dayStreakCount = state.dayStreakCount,
-                        onClickGetGift = onClickNext,
-                        onClickGoToRecord = onClickGoToRecord,
-                        onClickGoToHome = onClickBack,
+                        onClickGetGift = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_button"
+                            )
+                        },
+                        onClickGoToRecord = {
+                            onClickGoToRecord(state.hasTodayRecord, state.hasYesterdayRecord)
+                        },
+                        onClickGoToDecoration = onClickGoToDecoration,
                         onClickReview = onClickReview
                     )
                 }
-
-                is Step.Feedback -> {
+            }
+            AnimatedVisibility(
+                visible = state.step is Step.Feedback,
+                enter = fadeIn(),
+                exit = fadeOut(
+                    animationSpec = tween(1000)
+                )
+            ) {
+                (state.step as? Step.Feedback)?.let {
                     FeedbackContent(
-                        feedback = step.feedback,
-                        onClickNext = onClickNext
+                        feedback = it.feedback,
+                        onClickNext = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_feedback_button"
+                            )
+                        }
                     )
                 }
-
-                is Step.GiftOpen -> {
+            }
+            AnimatedVisibility(
+                visible = state.step is Step.GiftOpen,
+                enter = fadeIn(),
+                exit = fadeOut(
+                    animationSpec = tween(1000)
+                )
+            ) {
+                (state.step as? Step.GiftOpen)?.let {
                     GiftOpenContent(
-                        giftCount = step.giftCount,
-                        onClickOpen = onClickNext
+                        giftCount = it.giftCount,
+                        onClickOpen = {
+                            onClickNext()
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "reward_received_button"
+                            )
+                        }
                     )
                 }
-
-                is Step.GiftConfirm -> {
+            }
+            AnimatedVisibility(
+                visible = state.step is Step.GiftConfirm,
+                enter = fadeIn(),
+                exit = fadeOut(
+                    animationSpec = tween(1000)
+                )
+            ) {
+                (state.step as? Step.GiftConfirm)?.let {
                     GiftConfirmContent(
-                        giftList = step.giftList,
-                        onClickGoToDecoration = onClickGoToDecoration
+                        giftList = it.giftList,
+                        onClickGoToDecoration = {
+                            onClickGoToDecoration(it.giftList.last().category.name)
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "customize_reward_button"
+                            )
+                        }
                     )
                 }
-
-                null -> {}
             }
         }
     }
@@ -144,7 +210,7 @@ private fun MainContent(
     dayStreakCount: Int,
     onClickGetGift: () -> Unit,
     onClickGoToRecord: () -> Unit,
-    onClickGoToHome: () -> Unit,
+    onClickGoToDecoration: (String) -> Unit,
     onClickReview: () -> Unit
 ) {
     val (title, description) = when (state) {
@@ -175,6 +241,10 @@ private fun MainContent(
                 stringResource(R.string.reward_main_description_done)
             )
         }
+    }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("reward")
     }
 
     Column(
@@ -217,8 +287,8 @@ private fun MainContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
-                label = stringResource(R.string.reward_main_go_to_home_button_title),
-                onClick = onClickGoToHome
+                label = stringResource(R.string.reward_main_go_to_decoration_button_title),
+                onClick = { onClickGoToDecoration(GiftCategory.BACKGROUND.name) }
             )
         } else {
             if (state == MainState.NO_AVAILABLE_GIFT) {
@@ -254,62 +324,93 @@ private fun FeedbackContent(
     feedback: Feedback,
     onClickNext: () -> Unit
 ) {
+    val visibleStates = remember { List(3) { mutableStateOf(false) } }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("feedback")
+    }
+
+    LaunchedEffect(Unit) {
+        visibleStates.forEachIndexed { index, state ->
+            delay(300L * index)
+            state.value = true
+        }
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = DonmaniTheme.dimens.Margin20)
     ) {
-        Text(
-            text = stringResource(R.string.reward_feedback_title_prefix, feedback.nickname),
-            style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
-            color = DonmaniTheme.colors.DeepBlue99
-        )
-        Spacer(Modifier.height(6.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(if (feedback.isToday) R.string.reward_feedback_today else R.string.reward_feedback_lately),
-                style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
-                color = DonmaniTheme.colors.DeepBlue99
-            )
-            Spacer(Modifier.width(8.dp))
-            Box(
-                Modifier
-                    .background(
-                        color = DonmaniTheme.colors.DeepBlue99.copy(0.1f),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(vertical = 4.dp, horizontal = 12.dp)
-            ) {
+        AnimatedVisibility(
+            visible = visibleStates[0].value,
+            enter = fadeIn(animationSpec = tween(1000))
+        ) {
+            Column {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = feedback.category.getTitle(),
+                    text = stringResource(R.string.reward_feedback_title_prefix, feedback.nickname),
                     style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
                     color = DonmaniTheme.colors.DeepBlue99
                 )
+                Spacer(Modifier.height(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(if (feedback.isToday) R.string.reward_feedback_today else R.string.reward_feedback_lately),
+                        style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
+                        color = DonmaniTheme.colors.DeepBlue99
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        Modifier
+                            .background(
+                                color = DonmaniTheme.colors.DeepBlue99.copy(0.1f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(vertical = 4.dp, horizontal = 12.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = feedback.category?.getTitle()
+                                ?: stringResource(getNoConsumptionTitle()),
+                            style = DonmaniTheme.typography.Heading3.copy(fontWeight = FontWeight.Bold),
+                            color = DonmaniTheme.colors.DeepBlue99
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = if (feedback.category == null) stringResource(R.string.reward_feedback_title_suffix_for_no_consumption) else stringResource(
+                            R.string.reward_feedback_title_suffix
+                        ),
+                        style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
+                        color = DonmaniTheme.colors.DeepBlue99
+                    )
+                }
+                Spacer(Modifier.height(70.dp))
             }
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.reward_feedback_title_suffix),
-                style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
-                color = DonmaniTheme.colors.DeepBlue99
-            )
         }
-        Spacer(Modifier.height(70.dp))
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            FeedbackCard(modifier = Modifier.align(Alignment.TopCenter), feedback = feedback)
-        }
-        RoundedButton(
+        AnimatedVisibility(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            type = RoundedButtonRadius.Row,
-            label = stringResource(R.string.reward_feedback_button_title),
-            onClick = onClickNext
-        )
+                .weight(1f),
+            visible = visibleStates[1].value,
+            enter = fadeIn(animationSpec = tween(1000))
+        ) {
+            Box(Modifier.fillMaxSize()) {
+                FeedbackCard(modifier = Modifier.align(Alignment.TopCenter), feedback = feedback)
+            }
+        }
+        AnimatedVisibility(
+            visible = visibleStates[2].value,
+            enter = fadeIn(animationSpec = tween(1000))
+        ) {
+            RoundedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                type = RoundedButtonRadius.Row,
+                label = stringResource(R.string.reward_feedback_button_title),
+                onClick = onClickNext
+            )
+        }
     }
 }
 
@@ -319,14 +420,22 @@ private fun GiftOpenContent(
     giftCount: Int,
     onClickOpen: () -> Unit
 ) {
+    var exit by remember { mutableStateOf(false) }
     val giftAnimatedOffset by rememberInfiniteTransition().animateFloat(
         initialValue = 0f,
-        targetValue = 20f,
+        targetValue = 40f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2000, easing = LinearEasing),
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
+    val exitAnimatedOffset by animateFloatAsState(
+        targetValue = if (!exit) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000)
+    )
+    LaunchedEffect(exitAnimatedOffset) {
+        if (exitAnimatedOffset == 0f) onClickOpen()
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -335,7 +444,7 @@ private fun GiftOpenContent(
         Text(
             text = stringResource(R.string.reward_open_title),
             style = DonmaniTheme.typography.Heading2.copy(fontWeight = FontWeight.Bold),
-            color = DonmaniTheme.colors.DeepBlue99
+            color = DonmaniTheme.colors.DeepBlue99.copy(alpha = exitAnimatedOffset)
         )
         Box(
             Modifier
@@ -345,22 +454,31 @@ private fun GiftOpenContent(
             Image(
                 modifier = Modifier
                     .offset(y = giftAnimatedOffset.dp)
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .graphicsLayer {
+                        scaleX = exitAnimatedOffset
+                        scaleY = exitAnimatedOffset
+                    }
+                    .alpha(exitAnimatedOffset),
                 painter = painterResource(com.gowoon.designsystem.R.drawable.gift_box),
                 contentDescription = null
             )
 
         }
         if (giftCount > 1) {
-            GiftOpenBanner(giftCount = giftCount)
+            GiftOpenBanner(
+                modifier = Modifier.alpha(exitAnimatedOffset),
+                giftCount = giftCount - 1
+            )
         }
         RoundedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 8.dp)
+                .alpha(exitAnimatedOffset),
             type = RoundedButtonRadius.Row,
             label = stringResource(R.string.reward_open_button_title),
-            onClick = onClickOpen
+            onClick = { exit = true }
         )
     }
 }
@@ -404,6 +522,9 @@ private fun GiftConfirmContent(
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("confetti.json"))
     val pagerState = rememberPagerState { giftList.size }
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("received")
+    }
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = modifier.fillMaxSize()) {
             HorizontalPager(state = pagerState) {
@@ -465,15 +586,18 @@ private fun GiftItem(
         Box(
             Modifier
                 .size(200.dp)
+                .clip(RoundedCornerShape(60.dp))
                 .background(
                     color = DonmaniTheme.colors.DeepBlue70,
                     shape = RoundedCornerShape(60.dp)
                 )
                 .align(Alignment.CenterHorizontally)
+                .clipToBounds()
         ) {
             AsyncImage(
                 modifier = thumbnailModifier.align(Alignment.Center),
                 model = gift.thumbnailImageUrl,
+                contentScale = ContentScale.Crop,
                 contentDescription = null
             )
         }

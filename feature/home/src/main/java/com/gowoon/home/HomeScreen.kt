@@ -3,6 +3,7 @@ package com.gowoon.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,16 +26,12 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.CustomSnackBarHost
@@ -69,7 +65,7 @@ internal fun HomeScreen(
     changedState: String?,
     dataFromRecord: String?,
     onClickSetting: () -> Unit,
-    onClickStore: () -> Unit,
+    onClickStore: (Boolean, Boolean) -> Unit,
     onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit
@@ -84,17 +80,21 @@ internal fun HomeScreen(
 
     var decorationOffset by remember { mutableStateOf(Rect.Zero) }
 
-    val player by remember {
-        derivedStateOf {
-            if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null
-        }
-    }
-    var gravityDiff by remember { mutableStateOf(0f) }
+//    val player by remember {
+//        derivedStateOf {
+//            if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null
+//        }
+//    }
+//    var gravityDiff by remember { mutableStateOf(0f) }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
     val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("main")
+    }
 
     LaunchedEffect(true) {
         viewModel.uiEffect.collect {
@@ -104,11 +104,12 @@ internal fun HomeScreen(
         }
     }
 
-    LaunchedEffect(referrer) {
-        if (!referrer.first) {
-            viewModel.sendViewMainGA4Event()
-        }
-    }
+//    LaunchedEffect(referrer) {
+//        if (!referrer.first) {
+//            viewModel.sendViewMainGA4Event()
+//        }
+//    }
+
     LaunchedEffect(isFromFcm) {
         if (!isFromFcm.first && isFromFcm.second) {
             onClickAdd(state.hasToday, state.hasYesterday, "notification")
@@ -143,29 +144,29 @@ internal fun HomeScreen(
         viewModel.setEvent(HomeEvent.OnAddRecord(record, recordAdded))
     }
 
-    LaunchedEffect(state.bbsState.bgm) {
-        state.bbsState.bgm?.resourceUrl?.let {
-            player?.setMediaItem(MediaItem.fromUri(it))
-            player?.prepare()
-            player?.repeatMode = Player.REPEAT_MODE_ONE
-        }
-    }
-
-    LaunchedEffect(gravityDiff) {
-        player?.volume = if (gravityDiff < 2f) {
-            0f
-        } else {
-            gravityDiff
-        }
-    }
-
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        player?.play()
-    }
-
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-        player?.pause()
-    }
+//    LaunchedEffect(state.bbsState.bgm) {
+//        state.bbsState.bgm?.resourceUrl?.let {
+//            player?.setMediaItem(MediaItem.fromUri(it))
+//            player?.prepare()
+//            player?.repeatMode = Player.REPEAT_MODE_ONE
+//        }
+//    }
+//
+//    LaunchedEffect(gravityDiff) {
+//        player?.volume = if (gravityDiff < 2f) {
+//            0f
+//        } else {
+//            gravityDiff
+//        }
+//    }
+//
+//    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+//        player?.play()
+//    }
+//
+//    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+//        player?.pause()
+//    }
 
     BBSScaffold(
         background = {
@@ -184,8 +185,12 @@ internal fun HomeScreen(
                     )
                 },
                 onClickStore = {
-                    onClickStore()
+                    onClickStore(state.hasToday, state.hasYesterday)
                     viewModel.setEvent(HomeEvent.UpdateRewardTooltipState(false))
+                    FirebaseAnalyticsUtil.sendEvent(
+                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                        eventName = "main_shop_button"
+                    )
                 }
             )
         }
@@ -214,7 +219,7 @@ internal fun HomeScreen(
                 onChangePosition = {
                     decorationOffset = it
                 },
-                onChangeDiff = { gravityDiff = it },
+//                onChangeDiff = { gravityDiff = it },
                 onClickBottle = {
                     onClickBottle(state.bbsState.records, state.year, state.month)
                     FirebaseAnalyticsUtil.sendEvent(
@@ -258,7 +263,7 @@ internal fun HomeScreen(
         }
     }
 
-    if (state.showRewardTooltip) {
+    if (state.showRewardTooltip && (state.bbsState.totalCount ?: 0) <= 12) {
         Tooltip(
             modifier = Modifier
                 .offset(
@@ -297,7 +302,7 @@ private fun HomeContent(
     newRecord: Record?,
     recordAdded: Boolean,
     onChangePosition: (Rect) -> Unit,
-    onChangeDiff: (Float) -> Unit,
+//    onChangeDiff: (Float) -> Unit,
     onClickBottle: () -> Unit
 ) {
     var isMoved by remember { mutableStateOf(false) }
@@ -322,7 +327,7 @@ private fun HomeContent(
         records = records,
         newRecord = newRecord,
         recordAdded = recordAdded,
-        onChangeDiff = onChangeDiff,
+//        onChangeDiff = onChangeDiff,
         onClickBottle = onClickBottle
     )
 }
@@ -337,9 +342,14 @@ private fun HomeFooter(
 ) {
     Box(modifier) {
         if (hasToday && hasYesterday) {
+            Image(
+                painter = painterResource(com.gowoon.designsystem.R.drawable.message_box_bg),
+                contentDescription = null
+            )
             MessageBox(
                 modifier = Modifier.align(Alignment.Center),
-                message = stringResource(R.string.footer_message_when_has_today_and_yesterday)
+                message = stringResource(R.string.footer_message_when_has_today_and_yesterday),
+                textColor = DonmaniTheme.colors.Common0
             )
         } else {
             HomeCircleButton(

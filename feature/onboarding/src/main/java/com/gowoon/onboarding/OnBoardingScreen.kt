@@ -17,6 +17,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -50,6 +51,10 @@ internal fun OnBoardingScreen(
     navigateToRecord: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        FirebaseAnalyticsUtil.sendScreenView("onboarding")
+    }
     if (state.showBottomSheet) {
         OnBoardingConfirmBottomSheet {
             viewModel.setEvent(OnBoardingEvent.ShowBottomSheet(false))

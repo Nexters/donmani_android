@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
@@ -38,13 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import coil3.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.noRippleClickable
@@ -69,9 +63,9 @@ internal fun DecorationScreen(
     onClickSave: (String) -> Unit
 ) {
     val context = LocalContext.current
-    var player = remember { ExoPlayer.Builder(context).build() }
+//    var player = remember { ExoPlayer.Builder(context).build() }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
+//    var gravityDiff by remember { mutableStateOf(0f) }
     var targetRect by remember { mutableStateOf(Rect.Zero) }
     val enableConfirm by remember {
         derivedStateOf {
@@ -81,19 +75,38 @@ internal fun DecorationScreen(
                     GiftCategory.EFFECT to state.bbsState.effect,
                     GiftCategory.DECORATION to state.bbsState.decoration,
                     GiftCategory.CASE to state.bbsState.case,
-                    GiftCategory.BGM to state.bbsState.bgm
+//                    GiftCategory.BGM to state.bbsState.bgm
                 ),
                 state.savedItems
             )
         }
     }
 
-    LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
-        state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
-            player.setMediaItem(MediaItem.fromUri(it))
-            player.prepare()
-            player.play()
-        }
+//    LaunchedEffect(state.savedItems[GiftCategory.BGM]) {
+//        state.savedItems[GiftCategory.BGM]?.resourceUrl?.let {
+//            player.setMediaItem(MediaItem.fromUri(it))
+//            player.prepare()
+//            player?.repeatMode = Player.REPEAT_MODE_ONE
+//            player.play()
+//        }
+//    }
+//
+//    LaunchedEffect(gravityDiff) {
+//        player?.volume = if (gravityDiff < 2f) {
+//            0f
+//        } else {
+//            gravityDiff
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "customize",
+//            state.savedItems.entries.map { Pair(it.key.title, it.value?.name ?: "") }.toList()
+//        )
+//        viewModel.setEvent(DecorationEvent.UpdateDecorationStatusAsRead)
+        FirebaseAnalyticsUtil.sendScreenView("customize")
     }
 
     if (state.showDialog) {
@@ -104,6 +117,12 @@ internal fun DecorationScreen(
             negativeTitle = stringResource(R.string.decoration_confirm_dialog_negative_button),
             onClickPositive = {
                 viewModel.setEvent(DecorationEvent.SaveDecoration { onClickSave(state.savedItems.toString()) })
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "customize_submit_button",
+                    state.savedItems.entries.map { Pair(it.key.title, it.value?.name ?: "") }
+                        .toList()
+                )
             },
             onDismissRequest = { viewModel.setEvent(DecorationEvent.ShowDialog(false)) }
         )
@@ -113,7 +132,7 @@ internal fun DecorationScreen(
         DecorationFirstAccessBottomSheet { viewModel.setEvent(DecorationEvent.HideFirstBottomSheet) }
     }
     if (state.showHiddenGiftBottomSheet) {
-        DecorationHiddenItemBottomSheet { viewModel.setEvent(DecorationEvent.HideHiddenBttomSheet) }
+        DecorationHiddenItemBottomSheet { viewModel.setEvent(DecorationEvent.HideHiddenBottomSheet) }
     }
     Column(Modifier.fillMaxSize()) {
         Box(
@@ -146,10 +165,11 @@ internal fun DecorationScreen(
                 DecorationResultContent(
                     records = state.bbsState.records,
                     bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: ""),
-                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty()
-                ) {
-                    targetRect = it
-                }
+//                    showSoundIcon = state.currentSelectedCategory == GiftCategory.BGM,
+//                    isPlay = !state.savedItems[GiftCategory.BGM]?.resourceUrl.isNullOrEmpty(),
+                    onChangeStarBottleRect = { targetRect = it },
+//                    onChangeDiff = { gravityDiff = it }
+                )
             }
         }
         DecorationItemContent(
@@ -175,11 +195,11 @@ internal fun DecorationScreen(
         bottleType = getBottleType(state.savedItems[GiftCategory.CASE]?.id ?: "")
     )
 
-    DisposableEffect(Unit) {
-        onDispose {
-            player.release()
-        }
-    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            player.release()
+//        }
+//    }
 
 }
 
@@ -188,10 +208,12 @@ private fun DecorationResultContent(
     modifier: Modifier = Modifier,
     records: List<Record>,
     bottleType: BottleType,
-    isPlay: Boolean,
-    onChangeStarBottleRect: (Rect) -> Unit
+//    showSoundIcon: Boolean,
+//    isPlay: Boolean,
+    onChangeStarBottleRect: (Rect) -> Unit,
+//    onChangeDiff: (Float) -> Unit
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
+//    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("sound.json"))
     Box(modifier = modifier.fillMaxSize()) {
         StarBottle(
             modifier = Modifier
@@ -199,18 +221,21 @@ private fun DecorationResultContent(
                 .onGloballyPositioned { onChangeStarBottleRect(it.boundsInRoot()) },
             starBottleMode = StarBottleMode.Preview,
             bottleType = bottleType,
-            records = records
+            records = records,
+//            onChangeDiff = onChangeDiff
         ) { }
-        LottieAnimation(
-            composition = composition,
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-                .size(24.dp)
-                .alpha(if (isPlay) 1f else 0.2f)
-                .align(Alignment.BottomStart),
-            isPlaying = isPlay,
-            iterations = LottieConstants.IterateForever
-        )
+//        if (showSoundIcon) {
+//            LottieAnimation(
+//                composition = composition,
+//                modifier = Modifier
+//                    .padding(bottom = 20.dp)
+//                    .size(24.dp)
+//                    .alpha(if (isPlay) 1f else 0.2f)
+//                    .align(Alignment.BottomStart),
+//                isPlaying = isPlay,
+//                iterations = LottieConstants.IterateForever
+//            )
+//        }
     }
 }
 
@@ -221,17 +246,6 @@ private fun DecorationItemContent(
     onClickCategory: (GiftCategory) -> Unit,
     onClickItem: (GiftCategory, Gift?) -> Unit
 ) {
-    val thumbnailModifier = Modifier
-        .fillMaxSize()
-        .then(
-            when (currentSelectedInventory.currentCategory) {
-                GiftCategory.BACKGROUND -> Modifier
-                GiftCategory.EFFECT -> Modifier.padding(12.dp)
-                GiftCategory.DECORATION -> Modifier.padding(12.dp)
-                GiftCategory.CASE -> Modifier.padding(12.dp)
-                GiftCategory.BGM -> Modifier.padding(30.dp)
-            }
-        )
     Column(
         modifier
             .fillMaxWidth()
@@ -256,22 +270,25 @@ private fun DecorationItemContent(
             }
         }
         LazyVerticalGrid(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxHeight(),
             columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(vertical = 10.dp, horizontal = 20.dp)
         ) {
             items(currentSelectedInventory.categoryItems) {
-                val finalModifier = if (it.resourceUrl.isNullOrEmpty()) {
-                    Modifier.size(32.dp)
-                } else {
-                    if (it.hidden) {
-                        Modifier.fillMaxSize()
+                val finalModifier =
+                    if (it.resourceUrl.isEmpty()) {
+                        Modifier.size(32.dp)
                     } else {
-                        thumbnailModifier
+                        Modifier.fillMaxSize()
+                        when (it.category) {
+                            GiftCategory.BACKGROUND -> Modifier.fillMaxSize()
+                            else -> Modifier
+                                .fillMaxSize()
+                                .then(if (!it.hidden) Modifier.padding(12.5.dp) else Modifier)
+                        }
                     }
-                }
                 GiftItemChip(
                     selected = it.id == currentSelectedInventory.currentSelectItem,
                     isNew = it.isNew,
@@ -280,19 +297,19 @@ private fun DecorationItemContent(
                     AsyncImage(
                         modifier = finalModifier.align(Alignment.Center),
                         model = it.thumbnailImageUrl,
-                        contentScale = if (currentSelectedInventory.currentCategory == GiftCategory.BACKGROUND) ContentScale.FillBounds else ContentScale.Fit,
+                        contentScale = if (currentSelectedInventory.currentCategory == GiftCategory.BACKGROUND || it.hidden) ContentScale.Crop else ContentScale.Fit,
                         contentDescription = null
                     )
                 }
             }
         }
-        if (currentSelectedInventory.currentCategory == GiftCategory.BGM) {
-            Text(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                text = stringResource(R.string.decoration_bgm_message),
-                style = DonmaniTheme.typography.Body2,
-                color = DonmaniTheme.colors.DeepBlue90
-            )
-        }
+//        if (currentSelectedInventory.currentCategory == GiftCategory.BGM) {
+//            Text(
+//                modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+//                text = stringResource(R.string.decoration_bgm_message),
+//                style = DonmaniTheme.typography.Body2,
+//                color = DonmaniTheme.colors.DeepBlue90
+//            )
+//        }
     }
 }

@@ -30,7 +30,7 @@ fun NavController.navigateToHome(
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
-    navigateToReward: () -> Unit,
+    navigateToReward: (Boolean, Boolean) -> Unit,
     navigateToRecord: (Boolean, Boolean, String) -> Unit,
     navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit

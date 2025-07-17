@@ -12,7 +12,6 @@ import com.gowoon.network.dto.request.ReadHiddenRequest
 import com.gowoon.network.dto.request.UpdateRewardRequest
 import com.gowoon.network.service.RewardService
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -144,7 +143,7 @@ class RewardRepositoryImpl @Inject constructor(
                                 put(
                                     GiftCategory.CASE,
                                     body.responseData.case.map { it.toModel() })
-                                put(GiftCategory.BGM, body.responseData.bgm.map { it.toModel() })
+//                                put(GiftCategory.BGM, body.responseData.bgm.map { it.toModel() })
                             }
                             Result.Success(inventory)
                         } ?: Result.Error(message = "empty body")
@@ -165,7 +164,6 @@ class RewardRepositoryImpl @Inject constructor(
         effectId: Int,
         decorationId: Int,
         caseId: Int,
-        bgmId: Int
     ): Result<Unit> = try {
         rewardService.updateReward(
             UpdateRewardRequest(
@@ -176,7 +174,7 @@ class RewardRepositoryImpl @Inject constructor(
                 effectId = effectId,
                 decorationId = decorationId,
                 byeoltongCaseId = caseId,
-                bgmId = bgmId
+//                bgmId = bgmId
             )
         ).let { result ->
             if (result.isSuccessful) {
@@ -204,17 +202,17 @@ class RewardRepositoryImpl @Inject constructor(
             Result.Error(message = e.message)
         }
 
-    override suspend fun hasBgmItems(): Result<Boolean> = try {
-        Result.Success(rewardDataSource.hasBgmItems().first())
-    } catch (e: Exception) {
-        Result.Error(message = e.message)
-    }
-
-    override suspend fun setBgmItemsOwned(): Result<Unit> = try {
-        Result.Success(rewardDataSource.setBgmOwned())
-    } catch (e: Exception) {
-        Result.Error(message = e.message)
-    }
+//    override suspend fun hasBgmItems(): Result<Boolean> = try {
+//        Result.Success(rewardDataSource.hasBgmItems().first())
+//    } catch (e: Exception) {
+//        Result.Error(message = e.message)
+//    }
+//
+//    override suspend fun setBgmItemsOwned(): Result<Unit> = try {
+//        Result.Success(rewardDataSource.setBgmOwned())
+//    } catch (e: Exception) {
+//        Result.Error(message = e.message)
+//    }
 
     override suspend fun readHiddenItem(year: Int, month: Int): Result<Unit> = try {
         rewardService.readHiddenItem(ReadHiddenRequest(deviceId, year, month)).let { result ->

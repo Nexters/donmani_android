@@ -203,7 +203,7 @@ fun RecordCard(
                         showEdit = showEdit,
                         onClickEdit = {
                             screenType?.let {
-                                onClickEdit(good, screenType)
+                                onClickEdit(bad, screenType)
                             }
                         }
                     )

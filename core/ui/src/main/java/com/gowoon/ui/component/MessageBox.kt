@@ -19,20 +19,24 @@ import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 
 @Composable
-fun MessageBox(modifier: Modifier = Modifier, message: String) {
+fun MessageBox(
+    modifier: Modifier = Modifier,
+    message: String,
+    textColor: Color = DonmaniTheme.colors.PurpleBlue90
+) {
     Row(
         modifier = modifier.padding(vertical = 8.dp, horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.icon_default),
-            tint = Color.Unspecified,
+            tint = textColor,
             contentDescription = null
         )
         Spacer(Modifier.width(4.dp))
         Text(
             text = message,
-            color = DonmaniTheme.colors.PurpleBlue90,
+            color = textColor,
             style = DonmaniTheme.typography.Body2.copy(fontWeight = FontWeight.SemiBold)
         )
     }

@@ -50,10 +50,14 @@ internal fun RecordConfirmScreen(
     onClick: (Boolean) -> Unit
 ) {
     LaunchedEffect(Unit) {
-        FirebaseAnalyticsUtil.sendEvent(
-            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
-            eventName = "confirm",
-            Pair("referrer", "true")
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "confirm",
+//            Pair("referrer", "true")
+//        )
+        FirebaseAnalyticsUtil.sendScreenView(
+            "confirm",
+            Pair("screen_type", screenType)
         )
     }
     Column(
@@ -63,7 +67,7 @@ internal fun RecordConfirmScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = DonmaniTheme.dimens.Margin20)
-            .padding(top = 72.dp, bottom = 10.dp),
+            .padding(top = 72.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {

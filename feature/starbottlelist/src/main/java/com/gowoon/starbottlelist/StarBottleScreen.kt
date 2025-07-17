@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.model.record.Record
@@ -50,22 +45,31 @@ internal fun StarBottleScreen(
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
     var targetRect by remember { mutableStateOf(Rect.Zero) }
-    var player = remember { if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null }
-
-    LaunchedEffect(state.bbsState.bgm) {
-        state.bbsState.bgm?.resourceUrl?.let {
-            player?.setMediaItem(MediaItem.fromUri(it))
-            player?.prepare()
-        }
-    }
-
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        player?.play()
-    }
-
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-        player?.pause()
-    }
+//    var player = remember { if (state.bgmPlayOn) ExoPlayer.Builder(context).build() else null }
+//    var gravityDiff by remember { mutableStateOf(0f) }
+//    LaunchedEffect(state.bbsState.bgm) {
+//        state.bbsState.bgm?.resourceUrl?.let {
+//            player?.setMediaItem(MediaItem.fromUri(it))
+//            player?.prepare()
+//            player?.repeatMode = Player.REPEAT_MODE_ONE
+//        }
+//    }
+//
+//    LaunchedEffect(gravityDiff) {
+//        player?.volume = if (gravityDiff < 2f) {
+//            0f
+//        } else {
+//            gravityDiff
+//        }
+//    }
+//
+//    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+//        player?.play()
+//    }
+//
+//    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+//        player?.pause()
+//    }
 
     BBSScaffold(
         background = {
@@ -98,7 +102,8 @@ internal fun StarBottleScreen(
                     .align(Alignment.Center)
                     .onGloballyPositioned { targetRect = it.boundsInRoot() },
                 bottleType = getBottleType(state.bbsState.case?.id ?: ""),
-                records = state.bbsState.records
+                records = state.bbsState.records,
+//                onChangeDiff = { gravityDiff = it }
             ) { onClickBottle(state.bbsState.records, state.year, state.month ?: -1) }
         }
     }
@@ -114,6 +119,7 @@ private fun StarBottleContent(
     modifier: Modifier = Modifier,
     bottleType: BottleType,
     records: List<Record>,
+//    onChangeDiff: (Float) -> Unit,
     onClickBottle: () -> Unit
 ) {
     if (records.isNotEmpty()) {
@@ -121,6 +127,7 @@ private fun StarBottleContent(
             modifier = modifier,
             bottleType = bottleType,
             records = records,
+//            onChangeDiff = onChangeDiff,
             onClickBottle = onClickBottle
         )
     } else {

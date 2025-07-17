@@ -13,8 +13,8 @@ data class RewardDto(
     val imageUrl: String?,
     @SerialName("jsonUrl")
     val jsonUrl: String?,
-    @SerialName("mp3Url")
-    val mp3Url: String?,
+//    @SerialName("mp3Url")
+//    val mp3Url: String?,
     @SerialName("thumbnailUrl")
     val thumbnailUrl: String?,
     @SerialName("category")
@@ -23,4 +23,6 @@ data class RewardDto(
     val newAcquiredFlag: Boolean,
     @SerialName("hidden")
     val hidden: Boolean,
+    @SerialName("hiddenRead")
+    val hiddenRead: Boolean
 )

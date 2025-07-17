@@ -7,7 +7,8 @@ data class Gift(
     val thumbnailImageUrl: String,
     val resourceUrl: String,
     val isNew: Boolean,
-    val hidden: Boolean
+    val hidden: Boolean,
+    val hiddenRead: Boolean
 )
 
 enum class GiftCategory(val title: String) {
@@ -15,7 +16,7 @@ enum class GiftCategory(val title: String) {
     EFFECT("효과"),
     DECORATION("장식"),
     CASE("별통이"),
-    BGM("효과음")
+//    BGM("효과음")
 }
 
 enum class DecorationPosition {

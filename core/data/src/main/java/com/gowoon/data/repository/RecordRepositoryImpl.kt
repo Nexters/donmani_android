@@ -44,11 +44,12 @@ class RecordRepositoryImpl @Inject constructor(
                                         ?.toModel(),
                                     case = body.responseData.saveItems.find { it.category == GiftCategory.CASE.name }
                                         ?.toModel(),
-                                    bgm = body.responseData.saveItems.find { it.category == GiftCategory.BGM.name }
-                                        ?.toModel(),
+//                                    bgm = body.responseData.saveItems.find { it.category == GiftCategory.BGM.name }
+//                                        ?.toModel(),
                                     records = body.responseData.records?.mapNotNull { record ->
                                         record.toModel()
-                                    } ?: listOf()
+                                    } ?: listOf(),
+                                    totalCount = body.responseData.totalExpensesCount
                                 )
                             )
                         } ?: Result.Error(message = "empty body")

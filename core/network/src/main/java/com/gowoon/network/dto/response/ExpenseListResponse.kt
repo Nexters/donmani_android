@@ -12,5 +12,9 @@ data class ExpenseListResponse(
     @SerialName("records")
     val records: List<RecordDto>?,
     @SerialName("saveItems")
-    val saveItems: List<RewardDto>
+    val saveItems: List<RewardDto>,
+    @SerialName("hasNotOpenedRewards")
+    val hasNotOpenedRewards: Boolean,
+    @SerialName("totalExpensesCount")
+    val totalExpensesCount: Int
 )

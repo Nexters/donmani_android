@@ -39,7 +39,6 @@ object NetworkModule {
             context.contentResolver,
             Settings.Secure.ANDROID_ID
         ) ?: "")
-//        + "1"
     }
 
     @NetworkJson

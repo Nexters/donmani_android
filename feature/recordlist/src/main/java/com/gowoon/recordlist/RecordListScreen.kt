@@ -79,11 +79,12 @@ internal fun RecordListScreen(
     val showActionButton = true // TODO 전체 기록 없을 때로 조건 추가
 
     LaunchedEffect(Unit) {
-        FirebaseAnalyticsUtil.sendEvent(
-            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
-            eventName = "recordhistory",
-            Pair("referrer", "메인")
-        )
+//        FirebaseAnalyticsUtil.sendEvent(
+//            trigger = FirebaseAnalyticsUtil.EventTrigger.VIEW,
+//            eventName = "recordhistory",
+//            Pair("referrer", "메인")
+//        )
+        FirebaseAnalyticsUtil.sendScreenView("recordhistory")
     }
 
     BBSScaffold(

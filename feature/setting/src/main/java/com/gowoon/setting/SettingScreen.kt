@@ -78,6 +78,11 @@ internal fun SettingScreen(
     val focusRequester = remember { FocusRequester() }
     var notificationStatus by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshReddot()
+        FirebaseAnalyticsUtil.sendScreenView("setting")
+    }
+
     LaunchedEffect(true) {
         viewModel.uiEffect.collectLatest {
             if (it is SettingEffect.ShowToast) {
@@ -87,6 +92,7 @@ internal fun SettingScreen(
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refreshReddot()
         notificationStatus = NotificationPermissionUtil.isNotificationPermissionGranted(context)
     }
 
@@ -146,26 +152,23 @@ internal fun SettingScreen(
                     SettingItem(
                         title = stringResource(R.string.setting_decoration),
                         showReddot = state.newItem,
-                        gaEventName = "", // TODO
-                        onClick = {
-                            viewModel.setEvent(SettingEvent.UpdateDecorationStatusAsRead)
-                            onClickDecoration()
-                        }
+                        gaEventName = "setting_customize",
+                        onClick = onClickDecoration
                     ),
-                    SettingItem(
-                        title = stringResource(R.string.setting_sound),
-                        toggleState = state.soundState,
-                        gaEventName = "", // TODO
-                        onClick = {
-                            viewModel.setEvent(
-                                SettingEvent.OnClickSoundToggle(
-                                    context.getString(
-                                        R.string.no_bgm_toast_message
-                                    )
-                                )
-                            )
-                        }
-                    ),
+//                    SettingItem(
+//                        title = stringResource(R.string.setting_sound),
+//                        toggleState = state.soundState,
+//                        gaEventName = "", // TODO
+//                        onClick = {
+//                            viewModel.setEvent(
+//                                SettingEvent.OnClickSoundToggle(
+//                                    context.getString(
+//                                        R.string.no_bgm_toast_message
+//                                    )
+//                                )
+//                            )
+//                        }
+//                    ),
                     SettingItem(
                         title = stringResource(R.string.setting_push),
                         toggleState = notificationStatus,
