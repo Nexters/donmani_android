@@ -76,6 +76,11 @@ class RecordListViewModel @Inject constructor(
             }
         }
     }
+
+    fun isThisMonth(): Boolean {
+        val now = LocalDate.now()
+        return currentState.year == now.year && currentState.month == now.monthValue
+    }
 }
 
 data class RecordListState(

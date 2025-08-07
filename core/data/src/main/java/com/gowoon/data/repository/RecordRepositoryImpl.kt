@@ -4,10 +4,12 @@ import com.gowoon.data.mapper.toDto
 import com.gowoon.data.mapper.toModel
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.repository.RecordRepository
+import com.gowoon.model.common.BBSState
 import com.gowoon.model.record.Category
 import com.gowoon.model.record.MonthlySummary
 import com.gowoon.model.record.Record
 import com.gowoon.model.record.getCategory
+import com.gowoon.model.reward.GiftCategory
 import com.gowoon.network.di.DeviceId
 import com.gowoon.network.dto.request.PostRecordRequest
 import com.gowoon.network.service.ExpenseService
@@ -22,7 +24,7 @@ class RecordRepositoryImpl @Inject constructor(
     override suspend fun getRecordList(
         year: Int,
         month: Int
-    ): Flow<Result<List<Record?>>> = flow {
+    ): Flow<Result<BBSState>> = flow {
         try {
             emit(
                 recordService.getExpenseList(
@@ -33,9 +35,22 @@ class RecordRepositoryImpl @Inject constructor(
                     if (result.isSuccessful) {
                         result.body()?.let { body ->
                             Result.Success(
-                                body.responseData.records.map { record ->
-                                    record.toModel()
-                                }
+                                BBSState(
+                                    background = body.responseData.saveItems.find { it.category == GiftCategory.BACKGROUND.name }
+                                        ?.toModel(),
+                                    effect = body.responseData.saveItems.find { it.category == GiftCategory.EFFECT.name }
+                                        ?.toModel(),
+                                    decoration = body.responseData.saveItems.find { it.category == GiftCategory.DECORATION.name }
+                                        ?.toModel(),
+                                    case = body.responseData.saveItems.find { it.category == GiftCategory.CASE.name }
+                                        ?.toModel(),
+//                                    bgm = body.responseData.saveItems.find { it.category == GiftCategory.BGM.name }
+//                                        ?.toModel(),
+                                    records = body.responseData.records?.mapNotNull { record ->
+                                        record.toModel()
+                                    } ?: listOf(),
+                                    totalCount = body.responseData.totalExpensesCount
+                                )
                             )
                         } ?: Result.Error(message = "empty body")
                     } else {

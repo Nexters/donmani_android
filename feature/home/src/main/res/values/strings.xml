@@ -1,11 +1,15 @@
 <resources>
     <string name="home_title">"%s님의 별통이"</string>
-    <string name="footer_message_when_has_today_and_yesterday">작성할 수 있는 기록 모두 작성했어요!</string>
+    <string name="footer_message_when_has_today_and_yesterday">오늘 남길 수 있는 기록은 모두 작성했어요!</string>
     <string name="tooltip_message_for_yesterday">어제 소비도 정리해 보아요!</string>
+    <string name="tooltip_message_for_reward">선물 도착!✨</string>
 
     <!-- bottom sheet -->
     <string name="star_bottle_open_bottom_sheet_title">%d월 별통이가 열렸어요!</string>
     <string name="star_bottle_open_bottom_sheet_description">매 월 1일에 새로운 별통이가 열려요</string>
     <string name="star_bottle_open_bottom_sheet_go_btn">지난 달 별통이 보러가기</string>
     <string name="star_bottle_open_bottom_sheet_confirm">확인했어요</string>
+
+    <!-- toast -->
+    <string name="result_decoration_toast_message">꾸미기를 반영했어요</string>
 </resources>

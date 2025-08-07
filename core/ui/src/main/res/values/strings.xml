@@ -1,4 +1,5 @@
 <resources>
+    <string name="no_consumption_title">무소비</string>
     <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
     <string name="bbs_rule_bottom_sheet_title">별별소 기록 규칙</string>
     <string name="bbs_rule_bottom_sheet_done_btn">이해완료!</string>

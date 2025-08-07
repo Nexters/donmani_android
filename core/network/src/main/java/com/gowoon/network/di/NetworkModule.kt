@@ -35,10 +35,10 @@ object NetworkModule {
     fun providesDeviceId(
         @ApplicationContext context: Context
     ): String {
-        return Settings.Secure.getString(
+        return (Settings.Secure.getString(
             context.contentResolver,
             Settings.Secure.ANDROID_ID
-        ) ?: ""
+        ) ?: "")
     }
 
     @NetworkJson

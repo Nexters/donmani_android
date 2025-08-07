@@ -11,6 +11,10 @@ import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.home.navigation.homeScreen
 import com.gowoon.home.navigation.navigateToHome
+import com.gowoon.motivation.navigation.motivationScreen
+import com.gowoon.motivation.navigation.navigateToDecoration
+import com.gowoon.motivation.navigation.navigateToDecorationAndPopUpTo
+import com.gowoon.motivation.navigation.navigateToReward
 import com.gowoon.onboarding.navigation.navigateToOnBoarding
 import com.gowoon.onboarding.navigation.onBoardingScreen
 import com.gowoon.record.navigation.navigateToRecord
@@ -32,31 +36,23 @@ import com.gowoon.ui.util.rememberHiltJson
 
 @Composable
 fun DonmaniNavHost(
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
-    isFromFcm: Boolean
+    modifier: Modifier = Modifier, navController: NavHostController, isFromFcm: Boolean
 ) {
-    @FeatureJson
-    val json = rememberHiltJson()
+    @FeatureJson val json = rememberHiltJson()
     val context = LocalContext.current
 
     val startDestination = SplashNavigationRoute
     NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        modifier = modifier
+        navController = navController, startDestination = startDestination, modifier = modifier
     ) {
         splashScreen(
             navigateToHome = {
                 navController.navigateToHome(
-                    referrer = "launcher",
-                    isFromFcm = isFromFcm
+                    referrer = "launcher", isFromFcm = isFromFcm
                 )
-            },
-            navigateToOnBoarding = navController::navigateToOnBoarding
+            }, navigateToOnBoarding = navController::navigateToOnBoarding
         )
-        onBoardingScreen(
-            navigateToHome = { navController.navigateToHome(referrer = "onboarding") },
+        onBoardingScreen(navigateToHome = { navController.navigateToHome(referrer = "onboarding") },
             navigateToRecord = {
                 navController.navigateToRecord(
                     hasTodayRecord = false,
@@ -64,10 +60,10 @@ fun DonmaniNavHost(
                     fromStart = true,
                     referrer = "onboarding"
                 )
-            }
-        )
+            })
         homeScreen(
             navigateToSetting = navController::navigateToSetting,
+            navigateToReward = navController::navigateToReward,
             navigateToRecord = { hasToday, hasYesterday, referrer ->
                 navController.navigateToRecord(
                     hasTodayRecord = hasToday,
@@ -80,26 +76,22 @@ fun DonmaniNavHost(
             },
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
-        recordGraph(
-            onClickBack = navController::popBackStack,
-            navigateToHome = { navController.navigateToHome(referrer = null) },
-            navigateToRecordInput = { type, screenType ->
-                navController.navigateToRecordInput(type = type, screenType = screenType)
-            },
-            navigateToRecordInputWithData = { consumption, screenType ->
-                navController.navigateToRecordInput(
-                    consumption = json.encodeToString(consumption),
-                    screenType = screenType
-                )
-            },
-            popBackStackWithArgument = { key, data ->
-                navController.previousBackStackEntry?.savedStateHandle?.set(
-                    key,
-                    data
-                )
-                navController.popBackStack()
-            }
-        )
+        recordGraph(onClickBack = navController::popBackStack, navigateToHome = { data ->
+            navController.navigateToHome(
+                addedRecord = data, referrer = null
+            )
+        }, navigateToRecordInput = { type, screenType ->
+            navController.navigateToRecordInput(type = type, screenType = screenType)
+        }, navigateToRecordInputWithData = { consumption, screenType ->
+            navController.navigateToRecordInput(
+                consumption = json.encodeToString(consumption), screenType = screenType
+            )
+        }, popBackStackWithArgument = { key, data ->
+            navController.previousBackStackEntry?.savedStateHandle?.set(
+                key, data
+            )
+            navController.popBackStack()
+        })
         recordListScreen(
             onClickBack = navController::popBackStack,
             navigateToRecord = {
@@ -108,22 +100,17 @@ fun DonmaniNavHost(
             navigateToStatistics = navController::navigateToStatistics,
             navigateToStarBottleList = navController::navigateToStarBottleList
         )
-        statisticsScreen(
-            onClickBack = navController::popBackStack,
-            navigateToWebView = {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                context.startActivity(intent)
-            }
-        )
-        starBottleListScreen(
-            onClickBack = navController::popBackStack,
+        statisticsScreen(onClickBack = navController::popBackStack, navigateToWebView = {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+            context.startActivity(intent)
+        })
+        starBottleListScreen(onClickBack = navController::popBackStack,
             navigateToStarBottle = navController::navigateToStarBottle,
             navigateToRecordList = { records, year, month ->
                 navController.navigateToRecordList(json.encodeToString(records), year, month)
-            }
-        )
-        settingScreen(
-            onClickBack = navController::popBackStack,
+            })
+        settingScreen(onClickBack = navController::popBackStack,
+            navigateToDecoration = navController::navigateToDecoration,
             navigateToWebView = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
                 context.startActivity(intent)
@@ -132,6 +119,23 @@ fun DonmaniNavHost(
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.parse("package:${context.packageName}")
                 context.startActivity(intent)
+            })
+        motivationScreen(
+            onClickBack = navController::popBackStack,
+            navigateToRecord = { hasToday, hasYesterday ->
+                navController.navigateToRecord(
+                    referrer = "reward",
+                    hasTodayRecord = hasToday,
+                    hasYesterdayRecord = hasYesterday
+                )
+            },
+            navigateToWebView = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(intent)
+            },
+            navigateToDecoration = navController::navigateToDecorationAndPopUpTo,
+            navigateToHome = {
+                navController.navigateToHome(changedState = it)
             }
         )
     }

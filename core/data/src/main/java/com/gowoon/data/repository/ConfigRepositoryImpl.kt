@@ -93,4 +93,16 @@ class ConfigRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.Error(message = e.message)
         }
+
+//    override suspend fun getBgmPlayState(): Flow<Result<Boolean>> = try {
+//        configDataSource.getBgmPlayStatus().map { Result.Success(it) }
+//    } catch (e: Exception) {
+//        flow { emit(Result.Error(message = e.message)) }
+//    }
+//
+//    override suspend fun setBgmPlayState(state: Boolean): Result<Unit> = try {
+//        Result.Success(configDataSource.setBgmPlayStatus(state))
+//    } catch (e: Exception) {
+//        Result.Error(message = e.message)
+//    }
 }

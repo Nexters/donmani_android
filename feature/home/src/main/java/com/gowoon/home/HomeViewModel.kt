@@ -14,10 +14,15 @@ import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
+import com.gowoon.domain.usecase.reward.GetRewardReceivedTooltipStateUseCase
+import com.gowoon.domain.usecase.reward.HideRewardReceivedTooltipUseCase
+import com.gowoon.domain.usecase.reward.ShowRewardReceivedTooltipUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.home.navigation.HomeNavigationRoute
+import com.gowoon.model.common.BBSState
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
@@ -35,7 +40,11 @@ class HomeViewModel @Inject constructor(
     private val showYesterdayTooltipUseCase: ShowYesterdayTooltipUseCase,
     private val hideYesterdayTooltipUseCase: HideYesterdayTooltipUseCase,
     private val showStarBottleOpenSheetUseCase: ShowStarBottleOpenSheetUseCase,
-    private val hideStarBottleOpenSheetUseCase: HideStarBottleOpenSheetUseCase
+    private val hideStarBottleOpenSheetUseCase: HideStarBottleOpenSheetUseCase,
+    private val getRewardReceivedTooltipStateUseCase: GetRewardReceivedTooltipStateUseCase,
+    private val hideRewardReceivedTooltipUseCase: HideRewardReceivedTooltipUseCase,
+    private val showRewardReceivedTooltipUseCase: ShowRewardReceivedTooltipUseCase,
+//    private val getBgmStateUseCase: GetBgmStateUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
     private val _referrer =
         MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().referrer))
@@ -72,6 +81,16 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.HideBottomSheet -> {
                 hideSheet()
             }
+
+            is HomeEvent.UpdateRewardTooltipState -> {
+                updateRewardTooltip(event.state)
+            }
+
+            is HomeEvent.UpdateDecorationState -> {
+                Napier.d("gowoon babo updatedeco")
+                setState(currentState.copy(storedState = event.changed))
+                setEffect(HomeEffect.ShowToast(event.message))
+            }
         }
     }
 
@@ -97,13 +116,13 @@ class HomeViewModel @Inject constructor(
                 .stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
-                            val records = result.data.filterNotNull()
+                            Napier.d("gowoon success $result")
                             setState(
                                 currentState.copy(
-                                    records = records,
-                                    hasToday = hasRecordOfDay(records, LocalDate.now()),
+                                    bbsState = result.data,
+                                    hasToday = hasRecordOfDay(result.data.records, LocalDate.now()),
                                     hasYesterday = hasRecordOfDay(
-                                        records,
+                                        result.data.records,
                                         LocalDate.now().minusDays(1)
                                     )
                                 )
@@ -112,6 +131,7 @@ class HomeViewModel @Inject constructor(
 
                         is Result.Error -> {
                             // TODO error handling
+                            Napier.d("gowoon error $result")
                         }
                     }
 
@@ -143,6 +163,32 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            getRewardReceivedTooltipStateUseCase().stateIn(this).collect {
+                when (it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(showRewardTooltip = it.data))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
+//            getBgmStateUseCase().stateIn(this).collect {
+//                when (it) {
+//                    is Result.Error -> {
+//                        // TODO error handling
+//                    }
+//
+//                    is Result.Success -> {
+//                        setState(currentState.copy(bgmPlayOn = it.data))
+//                    }
+//                }
+//            }
+        }
     }
 
     private fun hideTooltip() {
@@ -165,6 +211,24 @@ class HomeViewModel @Inject constructor(
         return records.any { record -> record.date == date }
     }
 
+    private fun updateRewardTooltip(state: Boolean) {
+        viewModelScope.launch {
+            if (state) {
+                showRewardReceivedTooltipUseCase().let {
+                    if (it is Result.Error) {
+                        // TODO error handling
+                    }
+                }
+            } else {
+                hideRewardReceivedTooltipUseCase().let {
+                    if (it is Result.Error) {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+    }
+
     fun sendViewMainGA4Event() {
         referrer.value.second?.let { referrerName ->
             FirebaseAnalyticsUtil.sendEvent(
@@ -185,22 +249,28 @@ data class HomeState(
     val year: Int = LocalDate.now().year,
     val month: Int = LocalDate.now().monthValue,
     val nickname: String = "",
-    val records: List<Record> = listOf(),
+    val bbsState: BBSState = BBSState(),
     val newRecord: Record? = null,
     val recordAdded: Boolean = false,
     val hasToday: Boolean = false,
     val hasYesterday: Boolean = false,
     val showTooltip: Boolean = true,
-    val showBottomSheet: Boolean = false
+    val showBottomSheet: Boolean = false,
+    val showRewardTooltip: Boolean = false,
+    val storedState: String? = null,
+//    val bgmPlayOn: Boolean = false
 ) : UiState
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
     data class OnAddRecord(val newRecord: Record?, val recordAdded: Boolean) : HomeEvent
     data object HideBottomSheet : HomeEvent
+    data class UpdateRewardTooltipState(val state: Boolean) : HomeEvent
+    data class UpdateDecorationState(val changed: String, val message: String) : HomeEvent
 }
 
 sealed interface HomeEffect : UiEffect {
     data object RefreshTrigger : HomeEffect
+    data class ShowToast(val message: String) : HomeEffect
 }
 

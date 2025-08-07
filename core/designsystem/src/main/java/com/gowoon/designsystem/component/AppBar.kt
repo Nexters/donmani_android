@@ -3,6 +3,7 @@ package com.gowoon.designsystem.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -20,15 +21,18 @@ import com.gowoon.designsystem.util.noRippleClickable
 
 @Composable
 fun AppBar(
+    modifier: Modifier = Modifier,
     navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.arrow_left),
     onClickNavigation: () -> Unit,
     actionButton: (@Composable () -> Unit)? = null,
     title: String? = null,
+    applyPadding: Boolean = false
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
+            .padding(horizontal = if(applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp)
     ) {
         Icon(
             modifier = Modifier

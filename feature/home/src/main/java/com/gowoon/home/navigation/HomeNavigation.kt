@@ -12,15 +12,17 @@ import kotlinx.serialization.Serializable
 data class HomeNavigationRoute(
     val addedRecord: String?,
     val referrer: String?,
-    val isFromFcm: Boolean
+    val isFromFcm: Boolean,
+    val changedState: String?
 )
 
 fun NavController.navigateToHome(
     addedRecord: String? = null,
     referrer: String? = null,
-    isFromFcm: Boolean = false
+    isFromFcm: Boolean = false,
+    changedState: String? = null
 ) {
-    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcm)) {
+    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcm, changedState)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }
@@ -28,15 +30,19 @@ fun NavController.navigateToHome(
 
 fun NavGraphBuilder.homeScreen(
     navigateToSetting: () -> Unit,
+    navigateToReward: (Boolean, Boolean) -> Unit,
     navigateToRecord: (Boolean, Boolean, String) -> Unit,
     navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit
 ) {
     composable<HomeNavigationRoute> { backStackEntry ->
-        val result = backStackEntry.toRoute<HomeNavigationRoute>().addedRecord
+        val addedRecord = backStackEntry.toRoute<HomeNavigationRoute>().addedRecord
+        val changedState = backStackEntry.toRoute<HomeNavigationRoute>().changedState
         HomeScreen(
-            resultFromRecord = result,
+            changedState = changedState,
+            dataFromRecord = addedRecord,
             onClickSetting = navigateToSetting,
+            onClickStore = navigateToReward,
             onClickAdd = navigateToRecord,
             onClickBottle = navigateToRecordList,
             onClickGoToStarBottle = navigateToStarBottleList

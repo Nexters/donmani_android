@@ -1,10 +1,13 @@
 <resources>
     <string name="setting_appbar_title">설정</string>
-    <string name="setting_push">앱푸시 알림</string>
+    <string name="setting_decoration">꾸미기</string>
+    <string name="setting_sound">별통이 효과음</string>
+    <string name="setting_push">앱 푸시 알림</string>
     <string name="setting_notice">공지사항</string>
     <string name="setting_bbs_rule">별별소 기록 규칙</string>
     <string name="setting_private_privacy">개인정보 처리방침</string>
-    <string name="setting_feedback">피드백</string>
+    <string name="setting_feedback">별별소에게 부탁하기</string>
     <string name="btn_edit_nickname_done">완료</string>
     <string name="edit_nickname_additional_message">최소 2자 이상, 최대 12자 이하\n한글, 영문, 숫자, 띄어쓰기 가능</string>
+    <string name="no_bgm_toast_message">앗! 아직 효과음이 없어요</string>
 </resources>

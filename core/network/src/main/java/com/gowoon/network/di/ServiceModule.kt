@@ -1,6 +1,7 @@
 package com.gowoon.network.di
 
 import com.gowoon.network.service.ExpenseService
+import com.gowoon.network.service.RewardService
 import com.gowoon.network.service.UserService
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,11 @@ object ServiceModule {
     @Singleton
     fun providesExpenseService(retrofit: Retrofit): ExpenseService {
         return retrofit.create(ExpenseService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providesRewardService(retrofit: Retrofit): RewardService {
+        return retrofit.create(RewardService::class.java)
     }
 }

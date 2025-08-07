@@ -49,6 +49,12 @@ fun Category.isDeleted(): Boolean = kotlin.runCatching {
     (this as BadCategory).deleted
 }
 
+fun Category.getTitle(): String = kotlin.runCatching {
+    (this as GoodCategory).title
+}.getOrElse {
+    (this as BadCategory).title
+}
+
 fun String.getCategory(): Category = kotlin.runCatching {
     GoodCategory.valueOf(this)
 }.getOrElse {

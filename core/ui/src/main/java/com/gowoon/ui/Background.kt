@@ -1,5 +1,11 @@
 package com.gowoon.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,70 +13,66 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import com.gowoon.designsystem.R
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.model.record.Category
+import com.gowoon.model.reward.BottleType
+import com.gowoon.model.reward.DecorationAnimation
+import com.gowoon.model.reward.DecorationPosition
+import com.gowoon.model.reward.Gift
+import com.gowoon.model.reward.getDecorationAnimation
+import com.gowoon.model.reward.getDecorationPosition
+import com.gowoon.ui.component.StarBottleMode
 import com.gowoon.ui.util.getColor
 
 enum class BGMode { DEFAULT, SPECIAL }
 
 @Composable
-fun CategoryBackground(category: Category?, content: @Composable () -> Unit) {
-    GradientBackground {
-        Box(Modifier.fillMaxSize()) {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.5f)
-                    .background(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                category?.getColor() ?: Color.Transparent,
-                                Color.Transparent
-                            )
+fun CategoryBackground(category: Category?) {
+    Box(Modifier.fillMaxSize()) {
+        GradientBackground()
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(1.5f)
+                .background(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            category?.getColor() ?: Color.Transparent,
+                            Color.Transparent
                         )
                     )
-            )
-            content()
-        }
+                )
+        )
     }
 }
 
 @Composable
-fun GradientBackground(mode: BGMode = BGMode.DEFAULT, content: @Composable () -> Unit) {
-    GradientBackground(
-        startColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(
-            0xFF020617
-        ),
-        endColor = if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
-            0xFF091958
-        ),
-        showStarBg = mode == BGMode.SPECIAL,
-        content = content
-    )
-}
-
-@Composable
 fun GradientBackground(
-    startColor: Color,
-    endColor: Color,
-    showStarBg: Boolean,
-    content: @Composable () -> Unit
+    mode: BGMode = BGMode.DEFAULT,
+    content: @Composable () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -78,27 +80,157 @@ fun GradientBackground(
             .background(
                 brush = Brush.verticalGradient(
                     listOf(
-                        startColor,
-                        endColor
+                        if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue30 else Color(
+                            0xFF020617
+                        ),
+                        if (mode == BGMode.DEFAULT) DonmaniTheme.colors.DeepBlue50 else Color(
+                            0xFF091958
+                        )
                     )
                 )
             )
     ) {
-        if (showStarBg) {
-            Icon(
-                modifier = Modifier.align(Alignment.Center),
-                imageVector = ImageVector.vectorResource(R.drawable.star_background),
-                tint = Color.Unspecified,
-                contentDescription = null
-            )
-        }
         content()
     }
 }
 
 @Composable
-fun TransparentScaffold(
+fun DecoratedBackground(
+    background: String,
+    effect: String
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.Url(effect))
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AsyncImage(
+            model = background,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+fun Decoration(
     modifier: Modifier = Modifier,
+    targetRect: Rect,
+    decoration: Gift?,
+    starBottleMode: StarBottleMode = StarBottleMode.Default,
+    bottleType: BottleType
+) {
+    decoration?.let {
+        val decorationOffset = when (getDecorationPosition(it.id)) {
+            DecorationPosition.TOP_START -> {
+                when (starBottleMode) {
+                    StarBottleMode.Default -> {
+                        Pair(
+                            targetRect.topLeft.x.pxToDp() - 10.dp,
+                            targetRect.topLeft.y.pxToDp() - 80.dp
+                        )
+                    }
+
+                    StarBottleMode.Preview -> {
+                        Pair(
+                            targetRect.topLeft.x.pxToDp() - 70.dp,
+                            targetRect.topLeft.y.pxToDp() - 10.dp
+                        )
+                    }
+                }
+            }
+
+            DecorationPosition.BOTTOM_END -> {
+                when (starBottleMode) {
+                    StarBottleMode.Default -> {
+                        Pair(
+                            targetRect.bottomRight.x.pxToDp() - 70.dp,
+                            targetRect.bottomRight.y.pxToDp()
+                        )
+                    }
+
+                    StarBottleMode.Preview -> {
+                        Pair(
+                            targetRect.bottomRight.x.pxToDp() - 20.dp,
+                            targetRect.bottomRight.y.pxToDp() - 50.dp
+                        )
+                    }
+                }
+            }
+
+            DecorationPosition.ABOVE_BOTTLE -> {
+                val default = when (bottleType) {
+                    BottleType.DEFAULT -> Pair(50.dp, (-15).dp)
+                    BottleType.CIRCLE -> Pair(0.dp, 0.dp)
+                    BottleType.HEART -> Pair(60.dp, 20.dp)
+                }
+                val additional = if (starBottleMode == StarBottleMode.Default) {
+                    when (bottleType) {
+                        BottleType.DEFAULT -> Pair(20.dp, -5.dp)
+                        BottleType.CIRCLE -> Pair(0.dp, 10.dp)
+                        BottleType.HEART -> Pair(20.dp, 18.dp)
+                    }
+                } else {
+                    Pair(0.dp, 0.dp)
+                }
+                Pair(
+                    targetRect.topCenter.x.pxToDp() - 40.dp + default.first + additional.first,
+                    targetRect.topCenter.y.pxToDp() - 40.dp + default.second + additional.second
+                )
+            }
+        }
+        val animationOffset by rememberInfiniteTransition().animateFloat(
+            initialValue = 0f,
+            targetValue = 12f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+        val animatedModifier = when (getDecorationAnimation(it.id)) {
+            DecorationAnimation.VERTICAL -> {
+                Modifier.offset(y = animationOffset.dp)
+            }
+
+            DecorationAnimation.HORIZONTAL -> {
+                Modifier.offset(x = animationOffset.dp)
+            }
+
+            DecorationAnimation.DIAGONAL -> {
+                Modifier.offset(
+                    x = animationOffset.dp,
+                    y = -animationOffset.dp,
+                )
+            }
+
+            DecorationAnimation.NONE -> Modifier
+        }
+        Box(modifier.fillMaxSize()) {
+            AsyncImage(
+                modifier = Modifier
+                    .offset(
+                        x = decorationOffset.first,
+                        y = decorationOffset.second
+                    )
+                    .then(animatedModifier)
+                    .size(if (it.hidden && starBottleMode == StarBottleMode.Default) 100.dp else 80.dp),
+                model = it.resourceUrl,
+                contentDescription = null
+            )
+        }
+    }
+}
+
+@Composable
+fun BBSScaffold(
+    modifier: Modifier = Modifier,
+    background: @Composable () -> Unit = {},
+    applyPadding: Boolean = true,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -109,18 +241,21 @@ fun TransparentScaffold(
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Scaffold(
-        modifier = modifier
-            .safeDrawingPadding()
-            .padding(horizontal = DonmaniTheme.dimens.Margin20),
-        topBar = topBar,
-        bottomBar = bottomBar,
-        snackbarHost = snackbarHost,
-        floatingActionButton = floatingActionButton,
-        floatingActionButtonPosition = floatingActionButtonPosition,
-        containerColor = Color.Transparent,
-        contentColor = contentColor,
-        contentWindowInsets = contentWindowInsets,
-        content = content
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        background()
+        Scaffold(
+            modifier = modifier
+                .safeDrawingPadding()
+                .padding(horizontal = if (applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp),
+            topBar = topBar,
+            bottomBar = bottomBar,
+            snackbarHost = snackbarHost,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            containerColor = Color.Transparent,
+            contentColor = contentColor,
+            contentWindowInsets = contentWindowInsets,
+            content = content
+        )
+    }
 }
