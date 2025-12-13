@@ -1,12 +1,18 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.donmani.android.application)
 }
 
 android {
     namespace = "com.gowoon.donmani_android"
+    defaultConfig {
+        manifestPlaceholders["adAppKey"] =
+            gradleLocalProperties(rootDir, providers).getProperty("AD_APPLICATION_ID")
+    }
     buildTypes {
         release {
-            isMinifyEnabled = false
+//            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -41,11 +47,12 @@ dependencies {
     implementation(projects.feature.statistics)
     implementation(projects.feature.starbottlelist)
     implementation(projects.feature.motivation)
-    
+
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.android.ui.test)
 }

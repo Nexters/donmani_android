@@ -17,6 +17,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.ads.AdRequest
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.designsystem.component.AppBar
@@ -49,7 +52,9 @@ import com.gowoon.setting.component.EditNicknameBottomSheet
 import com.gowoon.setting.component.Reddot
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.component.AdBanner
 import com.gowoon.ui.component.BBSRuleBottomSheet
+import com.gowoon.ui.util.rememberAdView
 import kotlinx.coroutines.flow.collectLatest
 
 @Stable
@@ -72,15 +77,20 @@ internal fun SettingScreen(
     onClickPush: () -> Unit
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val focusRequester = remember { FocusRequester() }
     var notificationStatus by remember { mutableStateOf(false) }
 
+    val adView = rememberAdView(context, configuration)
+
     LaunchedEffect(Unit) {
         viewModel.refreshReddot()
         FirebaseAnalyticsUtil.sendScreenView("setting")
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     LaunchedEffect(true) {
@@ -146,7 +156,9 @@ internal fun SettingScreen(
                 )
                 viewModel.setEvent(SettingEvent.ShowDialog(SettingDialogType.EDIT_NICKNAME))
             }
-            Spacer(Modifier.height(60.dp))
+            Spacer(Modifier.height(24.dp))
+            AdBanner(adView, Modifier.clip(shape = RoundedCornerShape(16.dp)))
+            Spacer(Modifier.height(24.dp))
             SettingContent(
                 listOf(
                     SettingItem(
@@ -199,6 +211,10 @@ internal fun SettingScreen(
                 )
             )
         }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { adView.destroy() }
     }
 
 }
