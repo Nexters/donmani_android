@@ -17,12 +17,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.ads.AdRequest
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -43,8 +48,10 @@ import com.gowoon.model.record.isDeleted
 import com.gowoon.statistics.component.PercentageIndicator
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.component.AdBanner
 import com.gowoon.ui.component.NoticeBanner
 import com.gowoon.ui.component.StatisticsCategoryChip
+import com.gowoon.ui.util.rememberAdView
 
 @Composable
 internal fun StatisticsScreen(
@@ -52,7 +59,12 @@ internal fun StatisticsScreen(
     onClickBack: () -> Unit,
     onClickRequest: () -> Unit
 ) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val adView = rememberAdView(context, configuration)
 
     LaunchedEffect(Unit) {
 //        FirebaseAnalyticsUtil.sendEvent(
@@ -60,6 +72,8 @@ internal fun StatisticsScreen(
 //            eventName = "insight"
 //        )
         FirebaseAnalyticsUtil.sendScreenView("insight")
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
     BBSScaffold(
         background = { GradientBackground() },
@@ -80,6 +94,8 @@ internal fun StatisticsScreen(
                 .padding(it)
                 .verticalScroll(rememberScrollState())
         ) {
+            Spacer(Modifier.height(8.dp))
+            AdBanner(adView, Modifier.clip(shape = RoundedCornerShape(16.dp)))
             Spacer(Modifier.height(16.dp))
             HeaderNoticeBanner(onClick = onClickRequest)
             Spacer(Modifier.height(24.dp))
@@ -87,6 +103,10 @@ internal fun StatisticsScreen(
             Spacer(Modifier.height(118.dp))
         }
 
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { adView.destroy() }
     }
 }
 

@@ -13,17 +13,21 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.ads.AdRequest
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CustomSnackBarHost
@@ -46,7 +51,9 @@ import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.BottleState
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.component.AdBanner
 import com.gowoon.ui.component.NoticeBanner
+import com.gowoon.ui.util.rememberAdView
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
@@ -57,8 +64,12 @@ internal fun StarBottleListScreen(
     onClickBottle: (Int, String) -> Unit
 ) {
     val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val adView = rememberAdView(context, configuration)
 
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collectLatest {
@@ -66,6 +77,11 @@ internal fun StarBottleListScreen(
                 snackbarHostState.showSnackbar(it.message)
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     BBSScaffold(
@@ -81,9 +97,12 @@ internal fun StarBottleListScreen(
         LazyVerticalGrid(
             modifier = Modifier.padding(it),
             columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 22.dp),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 22.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            item(span = { GridItemSpan(3) }) {
+                AdBanner(adView, Modifier.clip(shape = RoundedCornerShape(16.dp)))
+            }
             if (state.showBanner) {
                 item(span = { GridItemSpan(3) }) {
                     StarBottleListHeader { viewModel.setEvent(StarBottleListEvent.HideBanner) }
@@ -126,6 +145,10 @@ internal fun StarBottleListScreen(
                 }
             }
         }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { adView.destroy() }
     }
 }
 

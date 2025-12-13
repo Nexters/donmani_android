@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.ads.AdRequest
 import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.RoundedButton
@@ -60,9 +64,11 @@ import com.gowoon.model.record.Record
 import com.gowoon.model.record.Record.ConsumptionRecord
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
+import com.gowoon.ui.component.AdBanner
 import com.gowoon.ui.component.ConsumptionCard
 import com.gowoon.ui.component.NoConsumptionCard
 import com.gowoon.ui.component.RecordCard
+import com.gowoon.ui.util.rememberAdView
 
 @Composable
 internal fun RecordListScreen(
@@ -72,9 +78,14 @@ internal fun RecordListScreen(
     onClickSummary: (Int, Int) -> Unit,
     onClickActionButton: () -> Unit
 ) {
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var tooltipOffset by remember { mutableStateOf(Offset.Zero) }
     var tooltipSize by remember { mutableStateOf(IntSize.Zero) }
+
+    val adView = rememberAdView(context, configuration)
 
     val showActionButton = true // TODO 전체 기록 없을 때로 조건 추가
 
@@ -85,6 +96,8 @@ internal fun RecordListScreen(
 //            Pair("referrer", "메인")
 //        )
         FirebaseAnalyticsUtil.sendScreenView("recordhistory")
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     BBSScaffold(
@@ -116,46 +129,58 @@ internal fun RecordListScreen(
                             contentDescription = null
                         )
                     }
-                }
+                },
+                applyPadding = true
             )
-        }
+        },
+        applyPadding = false
     ) {
-        if (state.records.isEmpty()) {
+        Column {
             Box(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
-                    .padding(it)
+                    .padding(horizontal = DonmaniTheme.dimens.Margin20)
+                    .weight(1f)
             ) {
-                SummaryCardHeader(
-                    month = state.month,
-                    goodCount = 0,
-                    badCount = 0
-                )
-                EmptyContent(
-                    modifier = Modifier.align(Alignment.Center),
-                    onClickAdd = {
-                        onClickAdd()
-                        FirebaseAnalyticsUtil.sendEvent(
-                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                            eventName = "recordhistory_record_button"
+                if (state.records.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it)
+                    ) {
+                        SummaryCardHeader(
+                            month = state.month,
+                            goodCount = 0,
+                            badCount = 0
+                        )
+                        EmptyContent(
+                            modifier = Modifier.align(Alignment.Center),
+                            onClickAdd = {
+                                onClickAdd()
+                                FirebaseAnalyticsUtil.sendEvent(
+                                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                    eventName = "recordhistory_record_button"
+                                )
+                            }
                         )
                     }
-                )
+                } else {
+                    RecordListContent(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                        records = state.records,
+                        month = state.month
+                    ) {
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "insight_button"
+                        )
+                        onClickSummary(state.year, state.month)
+                    }
+                }
             }
-        } else {
-            RecordListContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it),
-                records = state.records,
-                month = state.month
-            ) {
-                FirebaseAnalyticsUtil.sendEvent(
-                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                    eventName = "insight_button"
-                )
-                onClickSummary(state.year, state.month)
-            }
+            AdBanner(adView)
         }
     }
     if (state.showTooltip && showActionButton) {
@@ -172,6 +197,10 @@ internal fun RecordListScreen(
             contentColor = DonmaniTheme.colors.Common0,
             message = stringResource(R.string.action_btn_tooltip_message)
         ) { viewModel.setEvent(RecordListEvent.HideTooltip) }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { adView.destroy() }
     }
 }
 
