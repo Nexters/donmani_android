@@ -32,6 +32,7 @@ class AndroidApplicationPlugin : Plugin<Project> {
 
             dependencies {
                 "implementation"(platform(libs.findLibrary("firebase-bom").get()))
+                "implementation"(libs.findLibrary("google.admob").get())
                 "implementation"(libs.findBundle("firebase").get())
             }
         }
