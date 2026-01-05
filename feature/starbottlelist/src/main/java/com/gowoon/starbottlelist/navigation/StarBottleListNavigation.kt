@@ -11,19 +11,19 @@ import kotlinx.serialization.Serializable
 const val StarBottleListNavigationRoute = "star_bottle_list_route"
 
 @Serializable
-data class StarBottleNavigationRoute(val month: Int, val state: String)
+data class StarBottleNavigationRoute(val year: Int, val month: Int, val state: String)
 
 fun NavController.navigateToStarBottleList() {
     navigate(StarBottleListNavigationRoute)
 }
 
-fun NavController.navigateToStarBottle(month: Int, state: String) {
-    navigate(StarBottleNavigationRoute(month, state))
+fun NavController.navigateToStarBottle(year: Int, month: Int, state: String) {
+    navigate(StarBottleNavigationRoute(year, month, state))
 }
 
 fun NavGraphBuilder.starBottleListScreen(
     onClickBack: () -> Unit,
-    navigateToStarBottle: (Int, String) -> Unit,
+    navigateToStarBottle: (Int, Int, String) -> Unit,
     navigateToRecordList: (list: List<Record>, Int, Int) -> Unit
 ) {
     composable(route = StarBottleListNavigationRoute) {

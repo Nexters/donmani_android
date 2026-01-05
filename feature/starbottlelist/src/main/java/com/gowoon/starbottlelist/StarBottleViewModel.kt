@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +24,7 @@ class StarBottleViewModel @Inject constructor(
     private val getRecordListUseCase: GetRecordListUseCase,
 //    private val getBgmStateUseCase: GetBgmStateUseCase
 ) : BaseViewModel<StarBottleState, StarBottleEvent, StarBottleEffect>() {
+    private val year = savedStateHandle.toRoute<StarBottleNavigationRoute>().year
     private val month = savedStateHandle.toRoute<StarBottleNavigationRoute>().month
     private val bottleState = savedStateHandle.toRoute<StarBottleNavigationRoute>().state
 
@@ -32,8 +32,7 @@ class StarBottleViewModel @Inject constructor(
         initialState()
     }
 
-    override fun createInitialState() =
-        StarBottleState(year = LocalDate.now().year)
+    override fun createInitialState() = StarBottleState()
 
     override fun handleEvent(event: StarBottleEvent) {}
 
@@ -41,13 +40,14 @@ class StarBottleViewModel @Inject constructor(
         viewModelScope.launch {
             if (bottleState == BottleState.OPENED::class.simpleName) {
                 getRecordListUseCase(
-                    year = currentState.year,
+                    year = year,
                     month = month
                 ).stateIn(this).collect {
                     when (val result = it) {
                         is Result.Success -> {
                             setState(
                                 currentState.copy(
+                                    year = year,
                                     month = month,
                                     bbsState = result.data
                                 )
@@ -62,7 +62,7 @@ class StarBottleViewModel @Inject constructor(
 
                 }
             } else {
-                setState(currentState.copy(month = month))
+                setState(currentState.copy(year = year, month = month))
             }
         }
 //        viewModelScope.launch {
@@ -82,7 +82,7 @@ class StarBottleViewModel @Inject constructor(
 }
 
 data class StarBottleState(
-    val year: Int,
+    val year: Int? = null,
     val month: Int? = null,
     val bbsState: BBSState = BBSState(),
 //    val bgmPlayOn: Boolean = false

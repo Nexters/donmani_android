@@ -13,18 +13,17 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -41,19 +40,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.ads.AdRequest
 import com.gowoon.common.util.FirebaseAnalyticsUtil
-import com.gowoon.designsystem.component.AppBar
 import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.theme.pretendard_fontfamily
 import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.model.record.BottleState
+import com.gowoon.starbottlelist.component.StarBottleListAppBar
+import com.gowoon.starbottlelist.component.YearPickerBottomSheet
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.GradientBackground
-import com.gowoon.ui.component.AdBanner
 import com.gowoon.ui.component.NoticeBanner
-import com.gowoon.ui.util.rememberAdView
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
 
@@ -61,7 +58,7 @@ import java.time.LocalDate
 internal fun StarBottleListScreen(
     viewModel: StarBottleListViewModel = hiltViewModel(),
     onClickBack: () -> Unit,
-    onClickBottle: (Int, String) -> Unit
+    onClickBottle: (Int, Int, String) -> Unit
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -69,7 +66,11 @@ internal fun StarBottleListScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val adView = rememberAdView(context, configuration)
+//    val adView = rememberAdView(context, configuration)
+
+    val pagerState =
+        rememberPagerState(initialPage = state.yearList.indexOf(state.selectedYear)) { state.yearList.size }
+
 
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collectLatest {
@@ -79,67 +80,105 @@ internal fun StarBottleListScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
+    LaunchedEffect(state.selectedYear) {
+        pagerState.scrollToPage(state.yearList.indexOf(state.selectedYear))
+    }
+
+//    LaunchedEffect(Unit) {
+//        val adRequest = AdRequest.Builder().build()
+//        adView.loadAd(adRequest)
+//    }
+
+    if (state.showYearPickerBottomSheet) {
+        YearPickerBottomSheet(
+            items = state.yearList.map { it.toString() },
+            initialItem = state.selectedYear.toString(),
+            onItemSelected = {
+                it.toIntOrNull()?.let {
+                    viewModel.setEvent(StarBottleListEvent.ChangeCurrentYear(it))
+                    viewModel.setEvent(StarBottleListEvent.FetchMonthlySummaryData(it))
+                }
+            }
+        ) {
+            viewModel.setEvent(StarBottleListEvent.ShowYearPicker(false))
+        }
     }
 
     BBSScaffold(
         background = { GradientBackground() },
         topBar = {
-            AppBar(
-                title = stringResource(R.string.star_bottle_list_app_bar_title),
-                onClickNavigation = onClickBack
+            StarBottleListAppBar(
+                year = state.selectedYear.toString(),
+                onClickArrow = {
+                    viewModel.setEvent(StarBottleListEvent.ShowYearPicker(true))
+                },
+                onClickBack = onClickBack
             )
         },
         snackbarHost = { CustomSnackBarHost(snackbarHostState) }
     ) {
-        LazyVerticalGrid(
-            modifier = Modifier.padding(it),
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 22.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            item(span = { GridItemSpan(3) }) {
-                AdBanner(adView, Modifier.clip(shape = RoundedCornerShape(16.dp)))
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = 1
+        ) { page ->
+            LaunchedEffect(page) {
+                viewModel.setEvent(StarBottleListEvent.FetchMonthlySummaryData(state.yearList[page]))
             }
-            if (state.showBanner) {
-                item(span = { GridItemSpan(3) }) {
-                    StarBottleListHeader { viewModel.setEvent(StarBottleListEvent.HideBanner) }
-                }
+            LaunchedEffect(pagerState.currentPage) {
+                viewModel.setEvent(StarBottleListEvent.ChangeCurrentYear(state.yearList[pagerState.currentPage]))
             }
-            items(state.monthlySummaryList) {
-                StarBottleListItem(it.first, it.second) {
-                    FirebaseAnalyticsUtil.sendEvent(
-                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                        eventName = "list_별통이_button",
-                        params = mutableListOf(
-                            Pair(
-                                "별통이_id",
-                                LocalDate.now().year.toString().takeLast(2) + String.format(
-                                    "%02d",
-                                    it.first
-                                )
-                            )
-                        )
-                    )
-                    when (val state = it.second) {
-                        is BottleState.OPENED -> {
-                            if (state.count == 0) {
-                                viewModel.showToast(context.getString(R.string.star_bottle_list_no_record_toast_message))
-                            } else {
-                                onClickBottle(
-                                    it.first,
-                                    BottleState.OPENED::class.simpleName ?: "OPENED"
-                                )
-                            }
-                        }
 
-                        is BottleState.LOCKED -> {
-                            onClickBottle(
-                                it.first,
-                                BottleState.LOCKED::class.simpleName ?: "LOCKED"
+            LazyVerticalGrid(
+                modifier = Modifier.padding(it),
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 22.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+//                item(span = { GridItemSpan(3) }) {
+//                    AdBanner(adView, Modifier.clip(shape = RoundedCornerShape(16.dp)))
+//                }
+                if (state.showBanner) {
+                    item(span = { GridItemSpan(3) }) {
+                        StarBottleListHeader { viewModel.setEvent(StarBottleListEvent.HideBanner) }
+                    }
+                }
+                state.monthlySummaryList[state.yearList[page]]?.let {
+                    items(it) {
+                        StarBottleListItem(it.first, it.second) {
+                            FirebaseAnalyticsUtil.sendEvent(
+                                trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                                eventName = "list_별통이_button",
+                                params = mutableListOf(
+                                    Pair(
+                                        "별통이_id",
+                                        LocalDate.now().year.toString().takeLast(2) + String.format(
+                                            "%02d",
+                                            it.first
+                                        )
+                                    )
+                                )
                             )
+                            when (val bottleState = it.second) {
+                                is BottleState.OPENED -> {
+                                    if (bottleState.count == 0) {
+                                        viewModel.showToast(context.getString(R.string.star_bottle_list_no_record_toast_message))
+                                    } else {
+                                        onClickBottle(
+                                            state.yearList[page],
+                                            it.first,
+                                            BottleState.OPENED::class.simpleName ?: "OPENED"
+                                        )
+                                    }
+                                }
+
+                                is BottleState.LOCKED -> {
+                                    onClickBottle(
+                                        state.yearList[page],
+                                        it.first,
+                                        BottleState.LOCKED::class.simpleName ?: "LOCKED"
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -147,9 +186,9 @@ internal fun StarBottleListScreen(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose { adView.destroy() }
-    }
+//    DisposableEffect(Unit) {
+//        onDispose { adView.destroy() }
+//    }
 }
 
 @Composable
