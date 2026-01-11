@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,11 +34,9 @@ import com.gowoon.designsystem.component.RoundedButton
 import com.gowoon.designsystem.component.RoundedButtonRadius
 import com.gowoon.designsystem.component.Title
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.onboarding.component.Indicator
 import com.gowoon.onboarding.component.OnBoardingConfirmBottomSheet
-import com.gowoon.onboarding.component.OnBoardingEvent
-import com.gowoon.onboarding.component.OnBoardingViewModel
-import com.gowoon.onboarding.component.Route
-import com.gowoon.onboarding.component.Step
+import com.gowoon.onboarding.component.SkipButton
 import com.gowoon.onboarding.component.SubTitle
 import kotlinx.coroutines.launch
 
@@ -74,34 +70,48 @@ internal fun OnBoardingScreen(
     ) {
         when (state.step) {
             Step.INTRO -> {
-                GuideIntro {
-                    viewModel.setEvent(OnBoardingEvent.GoToGuide)
-                    FirebaseAnalyticsUtil.sendEvent(
-                        trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
-                        eventName = "onboarding_start_button"
-                    )
-                }
+                GuideIntro(
+                    onClickSkip = {
+                        viewModel.setEvent(OnBoardingEvent.SkipOnBoarding)
+                        navigateToHome()
+                    },
+                    onClickGuideButton = {
+                        viewModel.setEvent(OnBoardingEvent.GoToGuide)
+                        FirebaseAnalyticsUtil.sendEvent(
+                            trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                            eventName = "onboarding_start_button"
+                        )
+                    }
+                )
             }
 
             Step.GUIDE -> {
-                GuideScreen { route ->
-                    viewModel.setEvent(OnBoardingEvent.ShowBottomSheet(true))
-                    viewModel.setEvent(OnBoardingEvent.UpdateNextRoute(route))
-                }
+                GuideScreen(
+                    onClickSkip = {
+                        viewModel.setEvent(OnBoardingEvent.SkipOnBoarding)
+                        navigateToHome()
+                    },
+                    onClick = { route ->
+                        viewModel.setEvent(OnBoardingEvent.ShowBottomSheet(true))
+                        viewModel.setEvent(OnBoardingEvent.UpdateNextRoute(route))
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun GuideIntro(onClick: () -> Unit) {
+private fun GuideIntro(onClickSkip: () -> Unit, onClickGuideButton: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = DonmaniTheme.dimens.Margin20)
-            .padding(top = 76.dp, bottom = 8.dp),
+            .padding(top = 17.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        SkipButton(modifier = Modifier.align(Alignment.End), onClick = onClickSkip)
+        Spacer(Modifier.height(37.dp))
         Title(text = stringResource(R.string.onboarding_intro_title))
         Icon(
             modifier = Modifier.padding(vertical = 10.dp),
@@ -120,22 +130,28 @@ private fun GuideIntro(onClick: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             type = RoundedButtonRadius.Row,
             label = stringResource(R.string.onboarding_intro_btn),
-            onClick = onClick
+            onClick = onClickGuideButton
         )
     }
 }
 
 @Composable
-private fun GuideScreen(onClick: (Route) -> Unit) {
+private fun GuideScreen(onClickSkip: () -> Unit, onClick: (Route) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { 5 }
     Column(
         Modifier
             .fillMaxSize()
-            .padding(top = 50.dp, bottom = 8.dp),
+            .padding(top = 17.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        SkipButton(
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(horizontal = DonmaniTheme.dimens.Margin20), onClick = onClickSkip
+        )
+        Spacer(Modifier.height(11.dp))
         Indicator(pageCount = pagerState.pageCount, selectedIndex = pagerState.currentPage)
         HorizontalPager(
             state = pagerState, modifier = Modifier
@@ -212,20 +228,6 @@ private fun GuideScreen(onClick: (Route) -> Unit) {
                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun Indicator(pageCount: Int, selectedIndex: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        repeat(pageCount) { index ->
-            val alpha = if (index == selectedIndex) 1f else 0.1f
-            Box(
-                Modifier
-                    .size(6.dp)
-                    .background(Color.White.copy(alpha = alpha), shape = CircleShape)
-            )
         }
     }
 }
