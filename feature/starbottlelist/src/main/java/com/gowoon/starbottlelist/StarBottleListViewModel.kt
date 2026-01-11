@@ -11,6 +11,10 @@ import com.gowoon.domain.usecase.config.ShowStarBottleListBannerUseCase
 import com.gowoon.domain.usecase.record.GetMonthlySummaryUseCase
 import com.gowoon.model.record.BottleState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +32,20 @@ class StarBottleListViewModel @Inject constructor(
 
     override fun handleEvent(event: StarBottleListEvent) {
         when (event) {
-            StarBottleListEvent.HideBanner -> hideBanner()
+            is StarBottleListEvent.HideBanner -> hideBanner()
+            is StarBottleListEvent.ShowYearPicker -> {
+                setState(currentState.copy(showYearPickerBottomSheet = event.show))
+            }
+
+            is StarBottleListEvent.ChangeCurrentYear -> {
+                setState(currentState.copy(selectedYear = event.year))
+            }
+
+            is StarBottleListEvent.FetchMonthlySummaryData -> {
+                if (!currentState.monthlySummaryList.containsKey(event.year)) {
+                    setEffect(StarBottleListEffect.RefreshTrigger(event.year))
+                }
+            }
         }
     }
 
@@ -47,31 +64,55 @@ class StarBottleListViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            getMonthlySummaryUseCase().collect {
-                when (val result = it) {
-                    is Result.Success -> {
-                        val lastMonth = result.data.last().month
-                        val summaryList = result.data.map {
-                            Pair(
-                                it.month,
-                                BottleState.OPENED(
-                                    count = it.recordCount,
-                                    total = it.totalDaysInMonth
+            uiEffect.filterIsInstance<StarBottleListEffect.RefreshTrigger>()
+                .flatMapMerge { effect ->
+                    getMonthlySummaryUseCase(effect.year).map { Pair(effect.year, it) }
+                }
+                .stateIn(this).collect { data ->
+                    when (val result = data.second) {
+                        is Result.Success -> {
+                            val lastMonth = result.data.last().month
+                            val summaryList = result.data.map {
+                                Pair(
+                                    it.month,
+                                    BottleState.OPENED(
+                                        count = it.recordCount,
+                                        total = it.totalDaysInMonth
+                                    )
+                                )
+//                                val date = LocalDate.now()
+//                                if (data.first > date.year || (data.first == date.year && it.month > date.monthValue)) {
+//                                    Pair(
+//                                        it.month,
+//                                        BottleState.LOCKED
+//                                    )
+//                                } else {
+//                                    Pair(
+//                                        it.month,
+//                                        BottleState.OPENED(
+//                                            count = it.recordCount,
+//                                            total = it.totalDaysInMonth
+//                                        )
+//                                    )
+//                                }
+                            }.toMutableList<Pair<Int, BottleState>>().apply {
+                                for (i in lastMonth + 1..12) {
+                                    add(Pair(i, BottleState.LOCKED))
+                                }
+
+                            }
+                            setState(
+                                currentState.copy(
+                                    monthlySummaryList = currentState.monthlySummaryList + (data.first to summaryList)
                                 )
                             )
-                        }.toMutableList<Pair<Int, BottleState>>().apply {
-                            for (i in lastMonth + 1..12) {
-                                add(Pair(i, BottleState.LOCKED))
-                            }
                         }
-                        setState(currentState.copy(monthlySummaryList = summaryList))
-                    }
 
-                    is Result.Error -> {
-                        // TODO error handling
+                        is Result.Error -> {
+                            // TODO error handling
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -96,13 +137,22 @@ class StarBottleListViewModel @Inject constructor(
 
 data class StarBottleListState(
     val showBanner: Boolean = false,
-    val monthlySummaryList: List<Pair<Int, BottleState>> = listOf()
+    val showYearPickerBottomSheet: Boolean = false,
+    val yearList: List<Int> = listOf(2025, 2026)
+    //(2025..LocalDate.now().year).toList()
+    ,
+    val selectedYear: Int = yearList.last(),
+    val monthlySummaryList: Map<Int, List<Pair<Int, BottleState>>> = mapOf()
 ) : UiState
 
 sealed interface StarBottleListEvent : UiEvent {
     data object HideBanner : StarBottleListEvent
+    data class ShowYearPicker(val show: Boolean) : StarBottleListEvent
+    data class ChangeCurrentYear(val year: Int) : StarBottleListEvent
+    data class FetchMonthlySummaryData(val year: Int) : StarBottleListEvent
 }
 
 sealed interface StarBottleListEffect : UiEffect {
     data class ShowToast(val message: String) : StarBottleListEffect
+    data class RefreshTrigger(val year: Int) : StarBottleListEffect
 }

@@ -104,7 +104,7 @@ internal fun StarBottleScreen(
                 bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records,
 //                onChangeDiff = { gravityDiff = it }
-            ) { onClickBottle(state.bbsState.records, state.year, state.month ?: -1) }
+            ) { onClickBottle(state.bbsState.records, state.year ?: -1, state.month ?: -1) }
         }
     }
     Decoration(

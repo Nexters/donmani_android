@@ -25,34 +25,84 @@ fun AppBar(
     navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.arrow_left),
     onClickNavigation: () -> Unit,
     actionButton: (@Composable () -> Unit)? = null,
+    title: (@Composable () -> Unit),
+    applyPadding: Boolean = false
+) {
+    AppBarBase(
+        modifier = modifier,
+        navigationButton = {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .noRippleClickable { onClickNavigation() },
+                imageVector = navigationIcon,
+                tint = DonmaniTheme.colors.DeepBlue99,
+                contentDescription = null,
+            )
+        },
+        actionButton = actionButton,
+        title = title,
+        applyPadding = applyPadding
+    )
+}
+
+@Composable
+fun AppBar(
+    modifier: Modifier = Modifier,
+    navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.arrow_left),
+    onClickNavigation: () -> Unit,
+    actionButton: (@Composable () -> Unit)? = null,
     title: String? = null,
+    applyPadding: Boolean = false
+) {
+    AppBarBase(
+        modifier = modifier,
+        navigationButton = {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .noRippleClickable { onClickNavigation() },
+                imageVector = navigationIcon,
+                tint = DonmaniTheme.colors.DeepBlue99,
+                contentDescription = null,
+            )
+        },
+        actionButton = actionButton,
+        title = title?.let{
+            {
+                Text(
+                    text = it,
+                    style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
+                    color = DonmaniTheme.colors.Gray95
+                )
+            }
+        },
+        applyPadding = applyPadding
+    )
+}
+
+@Composable
+fun AppBarBase(
+    modifier: Modifier = Modifier,
+    navigationButton: (@Composable () -> Unit)? = null,
+    actionButton: (@Composable () -> Unit)? = null,
+    title: (@Composable () -> Unit)? = null,
     applyPadding: Boolean = false
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = if(applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp)
+            .padding(horizontal = if (applyPadding) DonmaniTheme.dimens.Margin20 else 0.dp)
     ) {
-        Icon(
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.CenterStart)
-                .noRippleClickable { onClickNavigation() },
-            imageVector = navigationIcon,
-            tint = DonmaniTheme.colors.DeepBlue99,
-            contentDescription = null,
-        )
-        title?.let {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = it,
-                style = DonmaniTheme.typography.Body1.copy(fontWeight = FontWeight.Bold),
-                color = DonmaniTheme.colors.Gray95
-            )
+        Box(Modifier.align(Alignment.CenterStart)){
+            navigationButton?.invoke()
         }
-        actionButton?.let {
-            Box(modifier = Modifier.align(Alignment.CenterEnd)) { it() }
+        Box(Modifier.align(Alignment.Center)){
+            title?.invoke()
+        }
+        Box(Modifier.align(Alignment.CenterEnd)){
+            actionButton?.invoke()
         }
     }
 }
