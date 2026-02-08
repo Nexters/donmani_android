@@ -1,10 +1,11 @@
-package com.gowoon.onboarding.component
+package com.gowoon.onboarding
 
 import androidx.lifecycle.viewModelScope
 import com.gowoon.common.base.BaseViewModel
 import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
+import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideOnBoardingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +38,14 @@ class OnBoardingViewModel @Inject constructor(
             is OnBoardingEvent.UpdateNextRoute -> {
                 setState(currentState.copy(route = event.route))
             }
+
+            OnBoardingEvent.SkipOnBoarding -> {
+                FirebaseAnalyticsUtil.sendEvent(
+                    trigger = FirebaseAnalyticsUtil.EventTrigger.CLICK,
+                    eventName = "onboarding_skip_button"
+                )
+                setEffect(OnBoardingEffect.HideOnBoarding)
+            }
         }
     }
 
@@ -66,6 +75,7 @@ sealed interface OnBoardingEvent : UiEvent {
     data object GoToGuide : OnBoardingEvent
     data class ShowBottomSheet(val state: Boolean) : OnBoardingEvent
     data class UpdateNextRoute(val route: Route) : OnBoardingEvent
+    data object SkipOnBoarding : OnBoardingEvent
 }
 
 sealed interface OnBoardingEffect : UiEffect {
