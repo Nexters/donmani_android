@@ -8,11 +8,14 @@ import com.gowoon.common.base.UiEffect
 import com.gowoon.common.base.UiEvent
 import com.gowoon.common.base.UiState
 import com.gowoon.common.util.FirebaseAnalyticsUtil
+import com.gowoon.common.util.NotificationConstants
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
+import com.gowoon.domain.usecase.fortune.ReadFortuneUseCase
+import com.gowoon.domain.usecase.fortune.ShowFortuneUseCase
 import com.gowoon.domain.usecase.record.GetRecordListUseCase
 import com.gowoon.domain.usecase.reward.GetRewardReceivedTooltipStateUseCase
 import com.gowoon.domain.usecase.reward.HideRewardReceivedTooltipUseCase
@@ -20,6 +23,7 @@ import com.gowoon.domain.usecase.reward.ShowRewardReceivedTooltipUseCase
 import com.gowoon.domain.usecase.user.GetUserNicknameUseCase
 import com.gowoon.home.navigation.HomeNavigationRoute
 import com.gowoon.model.common.BBSState
+import com.gowoon.model.fortune.Fortune
 import com.gowoon.model.record.Record
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.aakira.napier.Napier
@@ -44,15 +48,17 @@ class HomeViewModel @Inject constructor(
     private val getRewardReceivedTooltipStateUseCase: GetRewardReceivedTooltipStateUseCase,
     private val hideRewardReceivedTooltipUseCase: HideRewardReceivedTooltipUseCase,
     private val showRewardReceivedTooltipUseCase: ShowRewardReceivedTooltipUseCase,
+    private val showFortuneUseCase: ShowFortuneUseCase,
+    private val readFortuneUseCase: ReadFortuneUseCase
 //    private val getBgmStateUseCase: GetBgmStateUseCase
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>() {
     private val _referrer =
         MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().referrer))
     val referrer = _referrer.asStateFlow()
 
-    private val _isFromFcm =
-        MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().isFromFcm))
-    val isFromFcm = _isFromFcm.asStateFlow()
+    private val _fcmType =
+        MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().fcmType))
+    val fcmType = _fcmType.asStateFlow()
 
     override fun createInitialState(): HomeState {
         return HomeState()
@@ -87,9 +93,13 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.UpdateDecorationState -> {
-                Napier.d("gowoon babo updatedeco")
                 setState(currentState.copy(storedState = event.changed))
                 setEffect(HomeEffect.ShowToast(event.message))
+            }
+
+            is HomeEvent.HideFortuneDialog -> {
+                setState(currentState.copy(showFortuneDialog = false))
+                setEffect(HomeEffect.ShowFortuneToast(event.toastMessage))
             }
         }
     }
@@ -177,6 +187,28 @@ class HomeViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            showFortuneUseCase().stateIn(this).collect {
+                when (val result = it) {
+                    is Result.Success -> {
+                        result.data?.let {
+                            setState(
+                                currentState.copy(
+                                    fortuneData = result.data,
+                                    showFortuneDialog = true
+                                )
+                            ).also {
+                                readFortuneUseCase(fcmType.value.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE)
+                            }
+                        }
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
 //            getBgmStateUseCase().stateIn(this).collect {
 //                when (it) {
 //                    is Result.Error -> {
@@ -241,7 +273,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateIsFromFcmState() {
-        _isFromFcm.value = Pair(true, isFromFcm.value.second)
+        _fcmType.value = Pair(true, fcmType.value.second)
     }
 }
 
@@ -258,6 +290,8 @@ data class HomeState(
     val showBottomSheet: Boolean = false,
     val showRewardTooltip: Boolean = false,
     val storedState: String? = null,
+    val fortuneData: Fortune? = null,
+    val showFortuneDialog: Boolean = false
 //    val bgmPlayOn: Boolean = false
 ) : UiState
 
@@ -267,10 +301,12 @@ sealed interface HomeEvent : UiEvent {
     data object HideBottomSheet : HomeEvent
     data class UpdateRewardTooltipState(val state: Boolean) : HomeEvent
     data class UpdateDecorationState(val changed: String, val message: String) : HomeEvent
+    data class HideFortuneDialog(val toastMessage: String) : HomeEvent
 }
 
 sealed interface HomeEffect : UiEffect {
     data object RefreshTrigger : HomeEffect
     data class ShowToast(val message: String) : HomeEffect
+    data class ShowFortuneToast(val message: String) : HomeEffect
 }
 

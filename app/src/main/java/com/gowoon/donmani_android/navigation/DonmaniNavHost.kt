@@ -36,7 +36,7 @@ import com.gowoon.ui.util.rememberHiltJson
 
 @Composable
 fun DonmaniNavHost(
-    modifier: Modifier = Modifier, navController: NavHostController, isFromFcm: Boolean
+    modifier: Modifier = Modifier, navController: NavHostController, isFromFcmAndType: String?
 ) {
     @FeatureJson val json = rememberHiltJson()
     val context = LocalContext.current
@@ -48,7 +48,7 @@ fun DonmaniNavHost(
         splashScreen(
             navigateToHome = {
                 navController.navigateToHome(
-                    referrer = "launcher", isFromFcm = isFromFcm
+                    referrer = "launcher", isFromFcmAndType = isFromFcmAndType
                 )
             }, navigateToOnBoarding = navController::navigateToOnBoarding
         )

@@ -12,4 +12,12 @@
 
     <!-- toast -->
     <string name="result_decoration_toast_message">꾸미기를 반영했어요</string>
+
+    <!-- fortune dialog -->
+    <string name="fortune_title_prefix">토비 요정이 전해주는</string>
+    <string name="fortune_title">%d년 %d월 %d일 운세</string>
+    <string name="fortune_item_prefix">⭐</string>
+    <string name="fortune_button">행운 받아가기</string>
+    <string name="fortune_additional_info">운세는 오늘 것만 보여요</string>
+    <string name="fortune_dismiss_toast_message">매일 운세 알려줄게요!</string>
 </resources>

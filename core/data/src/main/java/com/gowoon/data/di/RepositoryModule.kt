@@ -1,10 +1,12 @@
 package com.gowoon.data.di
 
 import com.gowoon.data.repository.ConfigRepositoryImpl
+import com.gowoon.data.repository.FortuneRepositoryImpl
 import com.gowoon.data.repository.RecordRepositoryImpl
 import com.gowoon.data.repository.RewardRepositoryImpl
 import com.gowoon.data.repository.UserRepositoryImpl
 import com.gowoon.domain.repository.ConfigRepository
+import com.gowoon.domain.repository.FortuneRepository
 import com.gowoon.domain.repository.RecordRepository
 import com.gowoon.domain.repository.RewardRepository
 import com.gowoon.domain.repository.UserRepository
@@ -27,4 +29,7 @@ internal interface RepositoryModule {
 
     @Binds
     fun bindRewardRepository(rewardRepositoryImpl: RewardRepositoryImpl): RewardRepository
+
+    @Binds
+    fun bindFortuneRepository(fortuneRepositoryImpl: FortuneRepositoryImpl): FortuneRepository
 }

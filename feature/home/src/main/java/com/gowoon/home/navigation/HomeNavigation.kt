@@ -12,17 +12,17 @@ import kotlinx.serialization.Serializable
 data class HomeNavigationRoute(
     val addedRecord: String?,
     val referrer: String?,
-    val isFromFcm: Boolean,
+    val fcmType: String?,
     val changedState: String?
 )
 
 fun NavController.navigateToHome(
     addedRecord: String? = null,
     referrer: String? = null,
-    isFromFcm: Boolean = false,
+    isFromFcmAndType: String? = null,
     changedState: String? = null
 ) {
-    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcm, changedState)) {
+    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcmAndType, changedState)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }
