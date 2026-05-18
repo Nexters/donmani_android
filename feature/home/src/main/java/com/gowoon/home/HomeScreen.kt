@@ -320,7 +320,7 @@ internal fun HomeScreen(
             FortuneDialog(
                 fortuneData = it,
                 showAdditionalInfo = false,
-                isTodayExpenseExist = state.isTodayExpenseExist,
+                isTodayExpenseExist = if (fcmType.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND) state.isTodayExpenseExist else null,
                 onDismissRequest = {
                     viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
                 },
