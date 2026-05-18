@@ -123,7 +123,8 @@ internal fun HomeScreen(
                         onClickAdd(state.hasToday, state.hasYesterday, "notification")
                     }
 
-                    NotificationConstants.NOTIFICATION_TYPE_FORTUNE -> {
+                    NotificationConstants.NOTIFICATION_TYPE_FORTUNE,
+                    NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND -> {
 
                     }
                 }
@@ -318,10 +319,16 @@ internal fun HomeScreen(
         if (state.showFortuneDialog) {
             FortuneDialog(
                 fortuneData = it,
-                showAdditionalInfo = false // TODO
-            ) {
-                viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
-            }
+                showAdditionalInfo = false,
+                isTodayExpenseExist = state.isTodayExpenseExist,
+                onDismissRequest = {
+                    viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
+                },
+                onNavigateToRecord = {
+                    viewModel.setEvent(HomeEvent.HideFortuneDialog(""))
+                    onClickAdd(state.hasToday, state.hasYesterday, "fortune_remind")
+                }
+            )
         }
     }
 }

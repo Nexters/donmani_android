@@ -13,16 +13,18 @@ data class HomeNavigationRoute(
     val addedRecord: String?,
     val referrer: String?,
     val fcmType: String?,
-    val changedState: String?
+    val changedState: String?,
+    val isTodayExpenseExist: String?
 )
 
 fun NavController.navigateToHome(
     addedRecord: String? = null,
     referrer: String? = null,
     isFromFcmAndType: String? = null,
-    changedState: String? = null
+    changedState: String? = null,
+    isTodayExpenseExist: String? = null
 ) {
-    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcmAndType, changedState)) {
+    navigate(HomeNavigationRoute(addedRecord, referrer, isFromFcmAndType, changedState, isTodayExpenseExist)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }

@@ -30,15 +30,19 @@ import java.time.LocalDate
 internal fun FortuneDialog(
     fortuneData: Fortune,
     showAdditionalInfo: Boolean,
+    isTodayExpenseExist: Boolean?,
     modifier: Modifier = Modifier,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onNavigateToRecord: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         FortuneDialogContent(
             modifier = modifier,
             fortuneData = fortuneData,
             showAdditionalInfo = showAdditionalInfo,
-            onDismissRequest = onDismissRequest
+            isTodayExpenseExist = isTodayExpenseExist,
+            onDismissRequest = onDismissRequest,
+            onNavigateToRecord = onNavigateToRecord
         )
     }
 }
@@ -48,7 +52,9 @@ private fun FortuneDialogContent(
     modifier: Modifier = Modifier,
     fortuneData: Fortune,
     showAdditionalInfo: Boolean,
-    onDismissRequest: () -> Unit
+    isTodayExpenseExist: Boolean?,
+    onDismissRequest: () -> Unit,
+    onNavigateToRecord: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -60,7 +66,12 @@ private fun FortuneDialogContent(
     ) {
         FortuneHeader(date = fortuneData.date)
         FortuneContent(fortuneContent = fortuneData.content, fortuneItem = fortuneData.item)
-        FortuneButton(showAdditionalInfo = showAdditionalInfo, onClick = onDismissRequest)
+        FortuneButton(
+            showAdditionalInfo = showAdditionalInfo,
+            isTodayExpenseExist = isTodayExpenseExist,
+            onDismissRequest = onDismissRequest,
+            onNavigateToRecord = onNavigateToRecord
+        )
     }
 }
 
@@ -127,8 +138,11 @@ private fun FortuneContent(fortuneContent: String, fortuneItem: String) {
 @Composable
 private fun FortuneButton(
     showAdditionalInfo: Boolean,
-    onClick: () -> Unit
+    isTodayExpenseExist: Boolean?,
+    onDismissRequest: () -> Unit,
+    onNavigateToRecord: () -> Unit
 ) {
+    val showRecordButton = isTodayExpenseExist == false
     Column {
         BaseRoundedButton(
             modifier = Modifier.fillMaxWidth(),
@@ -137,8 +151,9 @@ private fun FortuneButton(
             radius = 16.dp,
             verticalPadding = 16.dp,
             horizontalPadding = 16.dp,
-            label = stringResource(R.string.fortune_button),
-            onClick = onClick
+            label = if (showRecordButton) stringResource(R.string.fortune_record_button)
+                    else stringResource(R.string.fortune_button),
+            onClick = if (showRecordButton) onNavigateToRecord else onDismissRequest
         )
         if (showAdditionalInfo) {
             Text(

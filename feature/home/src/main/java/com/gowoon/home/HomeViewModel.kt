@@ -60,6 +60,9 @@ class HomeViewModel @Inject constructor(
         MutableStateFlow(Pair(false, savedStateHandle.toRoute<HomeNavigationRoute>().fcmType))
     val fcmType = _fcmType.asStateFlow()
 
+    private val isTodayExpenseExistFromRoute =
+        savedStateHandle.toRoute<HomeNavigationRoute>().isTodayExpenseExist
+
     override fun createInitialState(): HomeState {
         return HomeState()
     }
@@ -99,12 +102,23 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.HideFortuneDialog -> {
                 setState(currentState.copy(showFortuneDialog = false))
-                setEffect(HomeEffect.ShowFortuneToast(event.toastMessage))
+                if (event.toastMessage.isNotEmpty()) {
+                    setEffect(HomeEffect.ShowFortuneToast(event.toastMessage))
+                }
             }
         }
     }
 
     private fun initialState() {
+        setState(
+            currentState.copy(
+                isTodayExpenseExist = when (isTodayExpenseExistFromRoute) {
+                    "Y" -> true
+                    "N" -> false
+                    else -> null
+                }
+            )
+        )
         viewModelScope.launch {
             getUserNicknameUseCase().stateIn(this).collect {
                 when (val result = it) {
@@ -197,7 +211,10 @@ class HomeViewModel @Inject constructor(
                                     showFortuneDialog = true
                                 )
                             ).also {
-                                readFortuneUseCase(fcmType.value.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE)
+                                readFortuneUseCase(
+                                    fcmType.value.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE ||
+                                            fcmType.value.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND
+                                )
                             }
                         }
                     }
@@ -291,7 +308,8 @@ data class HomeState(
     val showRewardTooltip: Boolean = false,
     val storedState: String? = null,
     val fortuneData: Fortune? = null,
-    val showFortuneDialog: Boolean = false
+    val showFortuneDialog: Boolean = false,
+    val isTodayExpenseExist: Boolean? = null
 //    val bgmPlayOn: Boolean = false
 ) : UiState
 

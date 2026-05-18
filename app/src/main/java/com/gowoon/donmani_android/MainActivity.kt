@@ -1,6 +1,5 @@
 package com.gowoon.donmani_android
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,14 +22,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         checkNotificationPermission()
         FirebaseAnalyticsUtil.initialize()
-        val isFromFcmAndType = checkFromNotification(intent).also { type ->
-            type?.let {
-                FirebaseAnalyticsUtil.sendEvent(
-                    trigger = FirebaseAnalyticsUtil.EventTrigger.OPEN,
-                    eventName = "notification_open",
-                    Pair("notificationType", it)
-                )
-            }
+        val notificationType = intent.extras?.getString(NotificationConstants.NOTIFICATION_TYPE_KEY)
+        val isTodayExpenseExist = intent.extras?.getString(NotificationConstants.IS_TODAY_EXPENSE_EXIST_KEY)
+        notificationType?.let {
+            FirebaseAnalyticsUtil.sendEvent(
+                trigger = FirebaseAnalyticsUtil.EventTrigger.OPEN,
+                eventName = "notification_open",
+                Pair("notificationType", it)
+            )
         }
         setContent {
             DonmaniTheme {
@@ -39,7 +38,8 @@ class MainActivity : ComponentActivity() {
                 GradientBackground {
                     DonmaniNavHost(
                         navController = navController,
-                        isFromFcmAndType = isFromFcmAndType
+                        isFromFcmAndType = notificationType,
+                        isTodayExpenseExist = isTodayExpenseExist
                     )
                 }
             }
@@ -54,9 +54,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun checkFromNotification(intent: Intent): String? {
-        return intent.extras?.getString(NotificationConstants.NOTIFICATION_TYPE_KEY)
     }
 }
