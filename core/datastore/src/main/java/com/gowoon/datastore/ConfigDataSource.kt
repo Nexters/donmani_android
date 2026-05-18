@@ -23,7 +23,9 @@ class ConfigDataSource @Inject constructor(
         private val STAR_BOTTLE_LIST_TOOLTIP = booleanPreferencesKey("star_bottle_list_tooltip_key")
         private val STAR_BOTTLE_LIST_BANNER = booleanPreferencesKey("star_bottle_list_banner_key")
         private val STAR_BOTTLE_OPEN_SHEET = intPreferencesKey("star_bottle_open_sheet_key")
-//        private val BGM_PLAY_STATUS = booleanPreferencesKey("bgm_play_status_key")
+
+        //        private val BGM_PLAY_STATUS = booleanPreferencesKey("bgm_play_status_key")
+        private val FORTUNE_LAST_READ_DATE_KEY = stringPreferencesKey("fortune_last_read_date_key")
     }
 
     fun getNoConsumptionTooltipState(): Flow<Boolean> = datastore.data.map { preference ->
@@ -93,4 +95,14 @@ class ConfigDataSource @Inject constructor(
 //            preference[BGM_PLAY_STATUS] = state
 //        }
 //    }
+
+    fun getFortuneLastReadDate(): Flow<String> = datastore.data.map { preference ->
+        preference[FORTUNE_LAST_READ_DATE_KEY] ?: ""
+    }
+
+    suspend fun setFortuneLastReadDate(date: String) {
+        datastore.edit { preference ->
+            preference[FORTUNE_LAST_READ_DATE_KEY] = date
+        }
+    }
 }

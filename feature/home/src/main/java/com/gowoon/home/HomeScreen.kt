@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.common.util.FirebaseAnalyticsUtil
+import com.gowoon.common.util.NotificationConstants
 import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.component.HomeCircleButton
 import com.gowoon.designsystem.component.SnackBarType
@@ -43,6 +44,7 @@ import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.designsystem.util.pxToDp
+import com.gowoon.home.component.FortuneDialog
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
@@ -88,9 +90,10 @@ internal fun HomeScreen(
 //    var gravityDiff by remember { mutableStateOf(0f) }
 
     val referrer by viewModel.referrer.collectAsStateWithLifecycle()
-    val isFromFcm by viewModel.isFromFcm.collectAsStateWithLifecycle()
+    val fcmType by viewModel.fcmType.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val fortuneSnackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         FirebaseAnalyticsUtil.sendScreenView("main")
@@ -98,8 +101,10 @@ internal fun HomeScreen(
 
     LaunchedEffect(true) {
         viewModel.uiEffect.collect {
-            if (it is HomeEffect.ShowToast) {
-                snackbarHostState.showSnackbar(it.message)
+            when (it) {
+                is HomeEffect.ShowToast -> snackbarHostState.showSnackbar(it.message)
+                is HomeEffect.ShowFortuneToast -> fortuneSnackbarHostState.showSnackbar(it.message)
+                else -> {}
             }
         }
     }
@@ -110,9 +115,20 @@ internal fun HomeScreen(
 //        }
 //    }
 
-    LaunchedEffect(isFromFcm) {
-        if (!isFromFcm.first && isFromFcm.second) {
-            onClickAdd(state.hasToday, state.hasYesterday, "notification")
+    LaunchedEffect(fcmType) {
+        if (!fcmType.first) {
+            fcmType.second?.let {
+                when (it) {
+                    NotificationConstants.NOTIFICATION_TYPE_DEFAULT -> {
+                        onClickAdd(state.hasToday, state.hasYesterday, "notification")
+                    }
+
+                    NotificationConstants.NOTIFICATION_TYPE_FORTUNE,
+                    NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND -> {
+
+                    }
+                }
+            }
             viewModel.updateIsFromFcmState()
         }
     }
@@ -291,6 +307,29 @@ internal fun HomeScreen(
             snackBarType = SnackBarType.Confirm,
             snackbarHostState = snackbarHostState
         )
+        CustomSnackBarHost(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 50.dp),
+            snackBarType = SnackBarType.None,
+            snackbarHostState = fortuneSnackbarHostState
+        )
+    }
+    state.fortuneData?.let {
+        if (state.showFortuneDialog) {
+            FortuneDialog(
+                fortuneData = it,
+                showAdditionalInfo = false,
+                isTodayExpenseExist = if (fcmType.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND) state.isTodayExpenseExist else null,
+                onDismissRequest = {
+                    viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
+                },
+                onNavigateToRecord = {
+                    viewModel.setEvent(HomeEvent.HideFortuneDialog(""))
+                    onClickAdd(state.hasToday, state.hasYesterday, "fortune_remind")
+                }
+            )
+        }
     }
 }
 
