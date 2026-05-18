@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
 
-enum class SnackBarType { Warning, Confirm }
+enum class SnackBarType { Warning, Confirm, None }
 
 @Composable
 fun CustomSnackBarHost(
@@ -48,17 +48,19 @@ private fun CustomSnackBar(type: SnackBarType, data: SnackbarData) {
             .padding(15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(
-                when (type) {
-                    SnackBarType.Warning -> R.drawable.warning
-                    SnackBarType.Confirm -> R.drawable.confirm
-                }
-            ),
-            tint = Color.Unspecified,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(8.dp))
+        val iconRes = when (type) {
+            SnackBarType.Warning -> R.drawable.warning
+            SnackBarType.Confirm -> R.drawable.confirm
+            SnackBarType.None -> null
+        }
+        if (iconRes != null) {
+            Icon(
+                imageVector = ImageVector.vectorResource(iconRes),
+                tint = Color.Unspecified,
+                contentDescription = null
+            )
+            Spacer(Modifier.width(8.dp))
+        }
         Text(
             text = data.visuals.message,
             color = Color.White,

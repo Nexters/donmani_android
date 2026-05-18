@@ -14,6 +14,16 @@ data class BaseDto<T>(
 )
 
 @Serializable
+data class NullableBaseDto<T>(
+    @SerialName("statusCode")
+    val statusCode: Int,
+    @SerialName("responseMessage")
+    val responseMessage: String?,
+    @SerialName("responseData")
+    val responseData: T?
+)
+
+@Serializable
 data class EmptyBaseDto(
     @SerialName("statusCode")
     val statusCode: Int,

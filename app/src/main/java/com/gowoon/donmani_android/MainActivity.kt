@@ -1,6 +1,5 @@
 package com.gowoon.donmani_android
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.gowoon.common.util.FirebaseAnalyticsUtil
+import com.gowoon.common.util.NotificationConstants
 import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.donmani_android.navigation.DonmaniNavHost
@@ -22,20 +22,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         checkNotificationPermission()
         FirebaseAnalyticsUtil.initialize()
-        val isFromFcm = checkFromNotification(intent).also {
-            if (it) {
-                FirebaseAnalyticsUtil.sendEvent(
-                    trigger = FirebaseAnalyticsUtil.EventTrigger.OPEN,
-                    eventName = "notification_open"
-                )
-            }
+        val notificationType = intent.extras?.getString(NotificationConstants.NOTIFICATION_TYPE_KEY)
+        val isTodayExpenseExist = intent.extras?.getString(NotificationConstants.IS_TODAY_EXPENSE_EXIST_KEY)
+        notificationType?.let {
+            FirebaseAnalyticsUtil.sendEvent(
+                trigger = FirebaseAnalyticsUtil.EventTrigger.OPEN,
+                eventName = "notification_open",
+                Pair("notificationType", it)
+            )
         }
         setContent {
             DonmaniTheme {
                 val navController = rememberNavController()
                 val appState = rememberAppState(navController)
                 GradientBackground {
-                    DonmaniNavHost(navController = navController, isFromFcm = isFromFcm)
+                    DonmaniNavHost(
+                        navController = navController,
+                        isFromFcmAndType = notificationType,
+                        isTodayExpenseExist = isTodayExpenseExist
+                    )
                 }
             }
         }
@@ -49,10 +54,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun checkFromNotification(intent: Intent): Boolean {
-        // 지금은 진입 루트가 런처랑 노티뿐이라 임시로 extra 데이터 있는지만 확인하지만, 서버랑 협의해서 fcm noti 구분할 수 있는 scheme, key 등등 논의 필요
-        return intent.extras != null
     }
 }
