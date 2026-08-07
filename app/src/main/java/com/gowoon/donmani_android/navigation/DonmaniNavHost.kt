@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.gowoon.common.di.FeatureJson
+import com.gowoon.fortune.navigation.fortuneScreen
+import com.gowoon.fortune.navigation.navigateToFortune
 import com.gowoon.home.navigation.homeScreen
 import com.gowoon.home.navigation.navigateToHome
 import com.gowoon.motivation.navigation.motivationScreen
@@ -79,7 +81,18 @@ fun DonmaniNavHost(
             navigateToRecordList = { records, year, month ->
                 navController.navigateToRecordList(json.encodeToString(records), year, month)
             },
-            navigateToStarBottleList = navController::navigateToStarBottleList
+            navigateToStarBottleList = navController::navigateToStarBottleList,
+            navigateToFortune = navController::navigateToFortune
+        )
+        fortuneScreen(
+            onClickBack = navController::popBackStack,
+            navigateToRecord = { hasToday, hasYesterday, referrer ->
+                navController.navigateToRecord(
+                    hasTodayRecord = hasToday,
+                    hasYesterdayRecord = hasYesterday,
+                    referrer = referrer
+                )
+            }
         )
         recordGraph(onClickBack = navController::popBackStack, navigateToHome = { data ->
             navController.navigateToHome(

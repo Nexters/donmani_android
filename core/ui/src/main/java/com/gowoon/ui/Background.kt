@@ -46,6 +46,7 @@ import com.gowoon.model.reward.getDecorationAnimation
 import com.gowoon.model.reward.getDecorationPosition
 import com.gowoon.ui.component.StarBottleMode
 import com.gowoon.ui.util.getColor
+import com.gowoon.designsystem.util.noRippleClickable
 
 enum class BGMode { DEFAULT, SPECIAL }
 
@@ -123,7 +124,8 @@ fun Decoration(
     targetRect: Rect,
     decoration: Gift?,
     starBottleMode: StarBottleMode = StarBottleMode.Default,
-    bottleType: BottleType
+    bottleType: BottleType,
+    onClickDecoration: (() -> Unit)? = null
 ) {
     decoration?.let {
         val decorationOffset = when (getDecorationPosition(it.id)) {
@@ -218,7 +220,11 @@ fun Decoration(
                         y = decorationOffset.second
                     )
                     .then(animatedModifier)
-                    .size(if (it.hidden && starBottleMode == StarBottleMode.Default) 100.dp else 80.dp),
+                    .size(if (it.hidden && starBottleMode == StarBottleMode.Default) 100.dp else 80.dp)
+                    .then(
+                        onClickDecoration?.let { onClick -> Modifier.noRippleClickable(onClick) }
+                            ?: Modifier
+                    ),
                 model = it.resourceUrl,
                 contentDescription = null
             )

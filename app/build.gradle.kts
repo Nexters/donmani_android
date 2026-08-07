@@ -47,6 +47,7 @@ dependencies {
     implementation(projects.feature.statistics)
     implementation(projects.feature.starbottlelist)
     implementation(projects.feature.motivation)
+    implementation(projects.feature.fortune)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.core.ktx)
