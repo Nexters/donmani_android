@@ -6,6 +6,8 @@ import java.time.LocalDate
 
 fun FortuneResponse.toModel(): Fortune = Fortune(
     date = LocalDate.parse(this.targetDate),
+    subtitle = this.subtitle,
     content = this.content,
-    item = this.item
+    item = this.item,
+    imageUrl = this.imageUrl
 )

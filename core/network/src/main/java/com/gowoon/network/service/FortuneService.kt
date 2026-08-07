@@ -9,6 +9,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface FortuneService {
     @PUT("fortune/read")
@@ -20,4 +21,11 @@ interface FortuneService {
     suspend fun getFortune(
         @Path("userKey") userKey: String
     ): Response<BaseDto<FortuneResponse>>
+
+    @GET("fortune/list/{userKey}")
+    suspend fun getFortuneList(
+        @Path("userKey") userKey: String,
+        @Query("startDate") startDate: String? = null,
+        @Query("endDate") endDate: String? = null
+    ): Response<BaseDto<List<FortuneResponse>>>
 }
