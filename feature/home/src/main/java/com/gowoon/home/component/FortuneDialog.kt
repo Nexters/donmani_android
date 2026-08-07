@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.gowoon.designsystem.component.BaseRoundedButton
+import com.gowoon.designsystem.component.NegativeButton
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.R
 import com.gowoon.model.fortune.Fortune
@@ -31,8 +32,10 @@ internal fun FortuneDialog(
     fortuneData: Fortune,
     showAdditionalInfo: Boolean,
     isTodayExpenseExist: Boolean?,
+    showNotificationButton: Boolean,
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
+    onClickNotificationSetting: () -> Unit,
     onNavigateToRecord: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -41,7 +44,9 @@ internal fun FortuneDialog(
             fortuneData = fortuneData,
             showAdditionalInfo = showAdditionalInfo,
             isTodayExpenseExist = isTodayExpenseExist,
+            showNotificationButton = showNotificationButton,
             onDismissRequest = onDismissRequest,
+            onClickNotificationSetting = onClickNotificationSetting,
             onNavigateToRecord = onNavigateToRecord
         )
     }
@@ -53,7 +58,9 @@ private fun FortuneDialogContent(
     fortuneData: Fortune,
     showAdditionalInfo: Boolean,
     isTodayExpenseExist: Boolean?,
+    showNotificationButton: Boolean,
     onDismissRequest: () -> Unit,
+    onClickNotificationSetting: () -> Unit,
     onNavigateToRecord: () -> Unit
 ) {
     Column(
@@ -69,7 +76,9 @@ private fun FortuneDialogContent(
         FortuneButton(
             showAdditionalInfo = showAdditionalInfo,
             isTodayExpenseExist = isTodayExpenseExist,
+            showNotificationButton = showNotificationButton,
             onDismissRequest = onDismissRequest,
+            onClickNotificationSetting = onClickNotificationSetting,
             onNavigateToRecord = onNavigateToRecord
         )
     }
@@ -139,7 +148,9 @@ private fun FortuneContent(fortuneContent: String, fortuneItem: String) {
 private fun FortuneButton(
     showAdditionalInfo: Boolean,
     isTodayExpenseExist: Boolean?,
+    showNotificationButton: Boolean,
     onDismissRequest: () -> Unit,
+    onClickNotificationSetting: () -> Unit,
     onNavigateToRecord: () -> Unit
 ) {
     val showRecordButton = isTodayExpenseExist == false
@@ -155,6 +166,15 @@ private fun FortuneButton(
                     else stringResource(R.string.fortune_button),
             onClick = if (showRecordButton) onNavigateToRecord else onDismissRequest
         )
+        if (showNotificationButton) {
+            NegativeButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                label = stringResource(R.string.fortune_notification_button),
+                onClick = onClickNotificationSetting
+            )
+        }
         if (showAdditionalInfo) {
             Text(
                 modifier = Modifier

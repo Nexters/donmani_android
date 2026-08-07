@@ -21,4 +21,8 @@
     <string name="fortune_record_button">기록하기</string>
     <string name="fortune_additional_info">운세는 오늘 것만 보여요</string>
     <string name="fortune_dismiss_toast_message">매일 운세 알려줄게요!</string>
+    <string name="fortune_notification_button">알림 켜기</string>
+    <string name="fortune_guide_title">저 왔어요! 오늘의 운세 🍀</string>
+    <string name="fortune_guide_description">오늘, 무슨 일이 생길까요?\n토비 요정이 알려주는 운세 확인해보세요!</string>
+    <string name="fortune_guide_confirm">오늘의 내 행운은?</string>
 </resources>
