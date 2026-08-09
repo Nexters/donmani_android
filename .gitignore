@@ -34,3 +34,9 @@ google-services.json
 *.hprof
 
 .kotlin/
+
+# AI agent / local docs
+CLAUDE.md
+AGENTS.md
+REVIEW.md
+.github/
