@@ -1,5 +1,8 @@
 package com.gowoon.home
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -7,9 +10,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gowoon.common.di.FeatureJson
 import com.gowoon.common.util.FirebaseAnalyticsUtil
+import com.gowoon.common.util.NotificationPermissionUtil
 import com.gowoon.common.util.NotificationConstants
 import com.gowoon.designsystem.component.CustomSnackBarHost
 import com.gowoon.designsystem.component.HomeCircleButton
@@ -43,8 +49,10 @@ import com.gowoon.designsystem.component.Tooltip
 import com.gowoon.designsystem.component.TooltipCaretAlignment
 import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.home.component.FortuneDialog
+import com.gowoon.home.component.FortuneGuideBottomSheet
 import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
@@ -70,7 +78,9 @@ internal fun HomeScreen(
     onClickStore: (Boolean, Boolean) -> Unit,
     onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
-    onClickGoToStarBottle: () -> Unit
+    onClickGoToStarBottle: () -> Unit,
+    onClickFortune: () -> Unit,
+    onClickNotificationSetting: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -94,6 +104,7 @@ internal fun HomeScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val fortuneSnackbarHostState = remember { SnackbarHostState() }
+    val notificationGranted = NotificationPermissionUtil.isNotificationPermissionGranted(context)
 
     LaunchedEffect(Unit) {
         FirebaseAnalyticsUtil.sendScreenView("main")
@@ -211,22 +222,17 @@ internal fun HomeScreen(
             )
         }
     ) { padding ->
-        if (state.showBottomSheet && state.bbsState.records.isEmpty()) {
-            StarBottleOpenBottomSheet(
-                onDismissRequest = { viewModel.setEvent(HomeEvent.HideBottomSheet) },
-                onClickGoToStarBottle = onClickGoToStarBottle
-            )
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(vertical = 24.dp)
+                .padding(vertical = 16.dp)
                 .onGloballyPositioned { rewardTooltipOffset = it.boundsInRoot().topRight },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Title(text = state.nickname)
+            Spacer(modifier = Modifier.size(20.dp))
             HomeContent(
                 bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records,
@@ -243,6 +249,7 @@ internal fun HomeScreen(
                         eventName = "main_record_archive_button"
                     )
                 },
+                onClickFortune = onClickFortune
             )
             HomeFooter(
                 hasToday = state.hasToday,
@@ -297,7 +304,8 @@ internal fun HomeScreen(
     Decoration(
         targetRect = decorationOffset,
         decoration = state.bbsState.decoration,
-        bottleType = getBottleType(state.bbsState.case?.id ?: "")
+        bottleType = getBottleType(state.bbsState.case?.id ?: ""),
+        onClickDecoration = onClickFortune
     )
     Box(Modifier.fillMaxSize()) {
         CustomSnackBarHost(
@@ -315,21 +323,44 @@ internal fun HomeScreen(
             snackbarHostState = fortuneSnackbarHostState
         )
     }
-    state.fortuneData?.let {
-        if (state.showFortuneDialog) {
-            FortuneDialog(
-                fortuneData = it,
-                showAdditionalInfo = false,
-                isTodayExpenseExist = if (fcmType.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND) state.isTodayExpenseExist else null,
-                onDismissRequest = {
-                    viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
-                },
-                onNavigateToRecord = {
-                    viewModel.setEvent(HomeEvent.HideFortuneDialog(""))
-                    onClickAdd(state.hasToday, state.hasYesterday, "fortune_remind")
-                }
+    when (state.currentPopup) {
+        HomePopup.StarBottleOpen -> {
+            StarBottleOpenBottomSheet(
+                onDismissRequest = { viewModel.setEvent(HomeEvent.HideBottomSheet) },
+                onClickGoToStarBottle = onClickGoToStarBottle
             )
         }
+
+        HomePopup.FortuneGuide -> {
+            FortuneGuideBottomSheet(
+                showNotificationButton = !notificationGranted,
+                onDismissRequest = {
+                    viewModel.setEvent(HomeEvent.HideFortuneGuideBottomSheet)
+                },
+                onClickNotificationSetting = onClickNotificationSetting
+            )
+        }
+
+        HomePopup.FortuneDialog -> {
+            state.fortuneData?.let {
+                FortuneDialog(
+                    fortuneData = it,
+                    showAdditionalInfo = false,
+                    isTodayExpenseExist = if (fcmType.second == NotificationConstants.NOTIFICATION_TYPE_FORTUNE_REMIND) state.isTodayExpenseExist else null,
+                    showNotificationButton = !notificationGranted,
+                    onDismissRequest = {
+                        viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
+                    },
+                    onClickNotificationSetting = onClickNotificationSetting,
+                    onNavigateToRecord = {
+                        viewModel.setEvent(HomeEvent.HideFortuneDialog(""))
+                        onClickAdd(state.hasToday, state.hasYesterday, "fortune_remind")
+                    }
+                )
+            }
+        }
+
+        null -> {}
     }
 }
 
@@ -342,7 +373,8 @@ private fun HomeContent(
     recordAdded: Boolean,
     onChangePosition: (Rect) -> Unit,
 //    onChangeDiff: (Float) -> Unit,
-    onClickBottle: () -> Unit
+    onClickBottle: () -> Unit,
+    onClickFortune: () -> Unit
 ) {
     var isMoved by remember { mutableStateOf(false) }
     LaunchedEffect(recordAdded) {
@@ -358,17 +390,19 @@ private fun HomeContent(
             stiffness = Spring.StiffnessLow
         )
     )
-    StarBottle(
-        modifier = modifier
-            .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
-            .onGloballyPositioned { onChangePosition(it.boundsInRoot()) },
-        bottleType = bottleType,
-        records = records,
-        newRecord = newRecord,
-        recordAdded = recordAdded,
+    Box(modifier = modifier) {
+        StarBottle(
+            modifier = Modifier
+                .graphicsLayer(translationY = if (recordAdded) offsetY else 0f)
+                .onGloballyPositioned { onChangePosition(it.boundsInRoot()) },
+            bottleType = bottleType,
+            records = records,
+            newRecord = newRecord,
+            recordAdded = recordAdded,
 //        onChangeDiff = onChangeDiff,
-        onClickBottle = onClickBottle
-    )
+            onClickBottle = onClickBottle
+        )
+    }
 }
 
 @Composable

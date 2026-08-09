@@ -23,6 +23,7 @@ class ConfigDataSource @Inject constructor(
         private val STAR_BOTTLE_LIST_TOOLTIP = booleanPreferencesKey("star_bottle_list_tooltip_key")
         private val STAR_BOTTLE_LIST_BANNER = booleanPreferencesKey("star_bottle_list_banner_key")
         private val STAR_BOTTLE_OPEN_SHEET = intPreferencesKey("star_bottle_open_sheet_key")
+        private val FORTUNE_GUIDE_SHEET_KEY = booleanPreferencesKey("fortune_guide_sheet_key")
 
         //        private val BGM_PLAY_STATUS = booleanPreferencesKey("bgm_play_status_key")
         private val FORTUNE_LAST_READ_DATE_KEY = stringPreferencesKey("fortune_last_read_date_key")
@@ -83,6 +84,16 @@ class ConfigDataSource @Inject constructor(
     suspend fun setStarBottleOpenSheetShownMonth(month: Int) {
         datastore.edit { preference ->
             preference[STAR_BOTTLE_OPEN_SHEET] = month
+        }
+    }
+
+    fun getFortuneGuideSheetState(): Flow<Boolean> = datastore.data.map { preference ->
+        preference[FORTUNE_GUIDE_SHEET_KEY] ?: true
+    }
+
+    suspend fun setFortuneGuideSheetState(state: Boolean) {
+        datastore.edit { preference ->
+            preference[FORTUNE_GUIDE_SHEET_KEY] = state
         }
     }
 

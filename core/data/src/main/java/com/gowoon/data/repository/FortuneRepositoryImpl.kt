@@ -66,4 +66,26 @@ class FortuneRepositoryImpl @Inject constructor(
             emit(Result.Error(message = e.message))
         }
     }
+
+    override suspend fun getFortuneList(
+        startDate: String?,
+        endDate: String?
+    ): Result<List<Fortune>> =
+        try {
+            fortuneService.getFortuneList(
+                userKey = deviceId,
+                startDate = startDate,
+                endDate = endDate
+            ).let { result ->
+                if (result.isSuccessful) {
+                    result.body()?.let { body ->
+                        Result.Success(body.responseData.map { it.toModel() })
+                    } ?: Result.Error(message = "empty body")
+                } else {
+                    Result.Error(code = result.code(), message = result.message())
+                }
+            }
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
 }

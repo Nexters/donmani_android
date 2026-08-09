@@ -3,6 +3,10 @@
     <string name="no_consumption_card_title">오늘은 무소비 데이!</string>
     <string name="bbs_rule_bottom_sheet_title">별별소 기록 규칙</string>
     <string name="bbs_rule_bottom_sheet_done_btn">이해완료!</string>
+    <!-- fortune card -->
+    <string name="fortune_card_title_prefix">토비 요정이 전해주는</string>
+    <string name="fortune_card_date">%1$02d년 %2$d월 %3$d일 운세</string>
+    <string name="fortune_card_item_prefix">⭐</string>
     <!-- toast -->
     <string name="toast_max_length">최대로 작성했어요</string>
     <string name="toast_invalid_character">특수문자는 입력할 수 없어요</string>

@@ -9,4 +9,5 @@ interface FortuneRepository {
     suspend fun getFortuneDialogLastReadDate(): Flow<Result<String>>
     suspend fun updateFortuneDialogLastReadDate(fortuneReadType: FortuneReadType): Result<Unit>
     suspend fun getFortune(): Flow<Result<Fortune>>
+    suspend fun getFortuneList(startDate: String? = null, endDate: String? = null): Result<List<Fortune>>
 }
