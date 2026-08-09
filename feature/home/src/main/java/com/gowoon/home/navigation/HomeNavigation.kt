@@ -36,7 +36,8 @@ fun NavGraphBuilder.homeScreen(
     navigateToRecord: (Boolean, Boolean, String) -> Unit,
     navigateToRecordList: (list: List<Record>, year: Int, month: Int) -> Unit,
     navigateToStarBottleList: () -> Unit,
-    navigateToFortune: () -> Unit
+    navigateToFortune: () -> Unit,
+    navigateToSystemSetting: () -> Unit
 ) {
     composable<HomeNavigationRoute> { backStackEntry ->
         val addedRecord = backStackEntry.toRoute<HomeNavigationRoute>().addedRecord
@@ -49,7 +50,8 @@ fun NavGraphBuilder.homeScreen(
             onClickAdd = navigateToRecord,
             onClickBottle = navigateToRecordList,
             onClickGoToStarBottle = navigateToStarBottleList,
-            onClickFortune = navigateToFortune
+            onClickFortune = navigateToFortune,
+            onClickNotificationSetting = navigateToSystemSetting
         )
     }
 }

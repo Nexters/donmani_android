@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -47,6 +48,7 @@ import com.gowoon.model.reward.getDecorationPosition
 import com.gowoon.ui.component.StarBottleMode
 import com.gowoon.ui.util.getColor
 import com.gowoon.designsystem.util.noRippleClickable
+import io.github.aakira.napier.Napier
 
 enum class BGMode { DEFAULT, SPECIAL }
 
@@ -128,8 +130,10 @@ fun Decoration(
     onClickDecoration: (() -> Unit)? = null
 ) {
     decoration?.let {
+        Napier.d { "gowoon decoration is not null $it" }
         val decorationOffset = when (getDecorationPosition(it.id)) {
             DecorationPosition.TOP_START -> {
+                Napier.d { "gowoon Top Start" }
                 when (starBottleMode) {
                     StarBottleMode.Default -> {
                         Pair(
@@ -148,6 +152,7 @@ fun Decoration(
             }
 
             DecorationPosition.BOTTOM_END -> {
+                Napier.d { "gowoon Bottom End" }
                 when (starBottleMode) {
                     StarBottleMode.Default -> {
                         Pair(
@@ -166,12 +171,14 @@ fun Decoration(
             }
 
             DecorationPosition.ABOVE_BOTTLE -> {
+                Napier.d { "gowoon Above Bottle" }
                 val default = when (bottleType) {
                     BottleType.DEFAULT -> Pair(50.dp, (-15).dp)
                     BottleType.CIRCLE -> Pair(0.dp, 0.dp)
                     BottleType.HEART -> Pair(60.dp, 20.dp)
                 }
                 val additional = if (starBottleMode == StarBottleMode.Default) {
+                    Napier.d { "gowoon default" }
                     when (bottleType) {
                         BottleType.DEFAULT -> Pair(20.dp, -5.dp)
                         BottleType.CIRCLE -> Pair(0.dp, 10.dp)
@@ -213,6 +220,20 @@ fun Decoration(
             DecorationAnimation.NONE -> Modifier
         }
         Box(modifier.fillMaxSize()) {
+            if (!it.hidden && starBottleMode == StarBottleMode.Default && onClickDecoration != null) {
+                Napier.d { "gowoon default tobby offset $decorationOffset" }
+                AsyncImage(
+                    modifier = Modifier
+                        .offset(
+                            x = decorationOffset.first,
+                            y = decorationOffset.second - 15.dp
+                        )
+                        .width(96.dp)
+                        .noRippleClickable(onClickDecoration),
+                    model = com.gowoon.designsystem.R.drawable.fortune_tobby_cta,
+                    contentDescription = null
+                )
+            }
             AsyncImage(
                 modifier = Modifier
                     .offset(
@@ -222,8 +243,9 @@ fun Decoration(
                     .then(animatedModifier)
                     .size(if (it.hidden && starBottleMode == StarBottleMode.Default) 100.dp else 80.dp)
                     .then(
-                        onClickDecoration?.let { onClick -> Modifier.noRippleClickable(onClick) }
-                            ?: Modifier
+                        if (it.hidden && onClickDecoration != null) {
+                            Modifier.noRippleClickable(onClickDecoration)
+                        } else Modifier
                     ),
                 model = it.resourceUrl,
                 contentDescription = null

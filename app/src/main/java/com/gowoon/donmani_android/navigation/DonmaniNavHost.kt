@@ -47,6 +47,11 @@ fun DonmaniNavHost(
     val context = LocalContext.current
 
     val startDestination = SplashNavigationRoute
+    val openNotificationSetting = {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:${context.packageName}")
+        context.startActivity(intent)
+    }
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
@@ -82,7 +87,8 @@ fun DonmaniNavHost(
                 navController.navigateToRecordList(json.encodeToString(records), year, month)
             },
             navigateToStarBottleList = navController::navigateToStarBottleList,
-            navigateToFortune = navController::navigateToFortune
+            navigateToFortune = navController::navigateToFortune,
+            navigateToSystemSetting = openNotificationSetting
         )
         fortuneScreen(
             onClickBack = navController::popBackStack,
@@ -133,11 +139,8 @@ fun DonmaniNavHost(
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
                 context.startActivity(intent)
             },
-            navigateToSystemSetting = {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:${context.packageName}")
-                context.startActivity(intent)
-            })
+            navigateToSystemSetting = openNotificationSetting
+        )
         motivationScreen(
             onClickBack = navController::popBackStack,
             navigateToRecord = { hasToday, hasYesterday ->

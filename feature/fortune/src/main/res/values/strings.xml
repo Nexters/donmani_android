@@ -8,7 +8,4 @@
     <string name="fortune_today_record_button">오늘 소비 기록하기</string>
     <string name="fortune_yesterday_record_button">어제 소비 기록하기</string>
     <string name="fortune_date_label">%1$d월 %2$d일 운세</string>
-    <string name="fortune_back_title">토비 요정이 전해주는</string>
-    <string name="fortune_back_date">%1$02d년 %2$d월 %3$d일 운세</string>
-    <string name="fortune_lucky_item">⭐️ 행운 아이템 : %1$s</string>
 </resources>

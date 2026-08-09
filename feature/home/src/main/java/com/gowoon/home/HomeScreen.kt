@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -56,7 +57,6 @@ import com.gowoon.home.component.HomeAppBar
 import com.gowoon.home.component.StarBottleOpenBottomSheet
 import com.gowoon.model.record.Record
 import com.gowoon.model.reward.BottleType
-import com.gowoon.model.reward.GiftCategory
 import com.gowoon.model.reward.getBottleType
 import com.gowoon.ui.BBSScaffold
 import com.gowoon.ui.DecoratedBackground
@@ -79,7 +79,8 @@ internal fun HomeScreen(
     onClickAdd: (Boolean, Boolean, String) -> Unit,
     onClickBottle: (List<Record>, Int, Int) -> Unit,
     onClickGoToStarBottle: () -> Unit,
-    onClickFortune: () -> Unit
+    onClickFortune: () -> Unit,
+    onClickNotificationSetting: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,14 +105,6 @@ internal fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val fortuneSnackbarHostState = remember { SnackbarHostState() }
     val notificationGranted = NotificationPermissionUtil.isNotificationPermissionGranted(context)
-    val openNotificationSetting = {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:${context.packageName}")
-        context.startActivity(intent)
-    }
-    val isFortuneDecoration = state.bbsState.decoration?.category == GiftCategory.DECORATION &&
-            state.bbsState.decoration?.id == "23"
-    val hasPopup = state.currentPopup != null
 
     LaunchedEffect(Unit) {
         FirebaseAnalyticsUtil.sendScreenView("main")
@@ -233,18 +226,18 @@ internal fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(vertical = 24.dp)
+                .padding(vertical = 16.dp)
                 .onGloballyPositioned { rewardTooltipOffset = it.boundsInRoot().topRight },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Title(text = state.nickname)
+            Spacer(modifier = Modifier.size(20.dp))
             HomeContent(
                 bottleType = getBottleType(state.bbsState.case?.id ?: ""),
                 records = state.bbsState.records,
                 newRecord = state.newRecord,
                 recordAdded = state.recordAdded,
-                showDefaultFortuneTobby = !isFortuneDecoration,
                 onChangePosition = {
                     decorationOffset = it
                 },
@@ -312,7 +305,7 @@ internal fun HomeScreen(
         targetRect = decorationOffset,
         decoration = state.bbsState.decoration,
         bottleType = getBottleType(state.bbsState.case?.id ?: ""),
-        onClickDecoration = if (isFortuneDecoration) onClickFortune else null
+        onClickDecoration = onClickFortune
     )
     Box(Modifier.fillMaxSize()) {
         CustomSnackBarHost(
@@ -344,11 +337,7 @@ internal fun HomeScreen(
                 onDismissRequest = {
                     viewModel.setEvent(HomeEvent.HideFortuneGuideBottomSheet)
                 },
-                onClickConfirm = {
-                    viewModel.setEvent(HomeEvent.HideFortuneGuideBottomSheet)
-                    onClickFortune()
-                },
-                onClickNotificationSetting = openNotificationSetting
+                onClickNotificationSetting = onClickNotificationSetting
             )
         }
 
@@ -362,7 +351,7 @@ internal fun HomeScreen(
                     onDismissRequest = {
                         viewModel.setEvent(HomeEvent.HideFortuneDialog(context.getString(R.string.fortune_dismiss_toast_message)))
                     },
-                    onClickNotificationSetting = openNotificationSetting,
+                    onClickNotificationSetting = onClickNotificationSetting,
                     onNavigateToRecord = {
                         viewModel.setEvent(HomeEvent.HideFortuneDialog(""))
                         onClickAdd(state.hasToday, state.hasYesterday, "fortune_remind")
@@ -382,7 +371,6 @@ private fun HomeContent(
     records: List<Record>,
     newRecord: Record?,
     recordAdded: Boolean,
-    showDefaultFortuneTobby: Boolean,
     onChangePosition: (Rect) -> Unit,
 //    onChangeDiff: (Float) -> Unit,
     onClickBottle: () -> Unit,
@@ -414,18 +402,6 @@ private fun HomeContent(
 //        onChangeDiff = onChangeDiff,
             onClickBottle = onClickBottle
         )
-        if (showDefaultFortuneTobby) {
-            Image(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 20.dp, y = (-16).dp)
-                    .size(80.dp)
-                    .graphicsLayer(translationY = offsetY / 3)
-                    .noRippleClickable { onClickFortune() },
-                painter = painterResource(com.gowoon.designsystem.R.drawable.fortune_tobby),
-                contentDescription = null
-            )
-        }
     }
 }
 

@@ -1,11 +1,13 @@
 package com.gowoon.home.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,9 +16,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.gowoon.designsystem.component.BaseRoundedButton
 import com.gowoon.designsystem.component.BottomSheet
+import com.gowoon.designsystem.component.NegativeButton
+import com.gowoon.designsystem.component.PositiveButton
 import com.gowoon.designsystem.theme.DonmaniTheme
 import com.gowoon.home.R
 
@@ -24,19 +28,19 @@ import com.gowoon.home.R
 internal fun FortuneGuideBottomSheet(
     showNotificationButton: Boolean,
     onDismissRequest: () -> Unit,
-    onClickConfirm: () -> Unit,
     onClickNotificationSetting: () -> Unit
 ) {
     BottomSheet(
         onDismissRequest = onDismissRequest,
+        canDismiss = false,
+        isSpaceBetweenBtn = false,
         content = {
             FortuneGuideContent(
                 showNotificationButton = showNotificationButton,
-                onClickConfirm = onClickConfirm,
+                onClickConfirm = onDismissRequest,
                 onClickNotificationSetting = onClickNotificationSetting
             )
-        },
-        isSpaceBetweenBtn = false
+        }
     )
 }
 
@@ -47,7 +51,7 @@ private fun FortuneGuideContent(
     onClickNotificationSetting: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -65,30 +69,19 @@ private fun FortuneGuideContent(
         )
         Spacer(Modifier.height(24.dp))
         Image(
-            modifier = Modifier.size(152.dp),
-            painter = painterResource(com.gowoon.designsystem.R.drawable.fortune_tobby),
+            modifier = Modifier.fillMaxWidth(),
+            painter = painterResource(com.gowoon.designsystem.R.drawable.fortune_guide),
             contentDescription = null
         )
-        Spacer(Modifier.height(24.dp))
-        BaseRoundedButton(
+        PositiveButton(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = DonmaniTheme.colors.Gray95,
-            contentColor = DonmaniTheme.colors.DeepBlue20,
-            radius = 16.dp,
-            verticalPadding = 16.dp,
-            horizontalPadding = 16.dp,
             label = stringResource(R.string.fortune_guide_confirm),
             onClick = onClickConfirm
         )
         if (showNotificationButton) {
             Spacer(Modifier.height(10.dp))
-            BaseRoundedButton(
+            NegativeButton(
                 modifier = Modifier.fillMaxWidth(),
-                backgroundColor = DonmaniTheme.colors.DeepBlue50,
-                contentColor = DonmaniTheme.colors.Common0,
-                radius = 16.dp,
-                verticalPadding = 16.dp,
-                horizontalPadding = 16.dp,
                 label = stringResource(R.string.fortune_notification_button),
                 onClick = onClickNotificationSetting
             )
