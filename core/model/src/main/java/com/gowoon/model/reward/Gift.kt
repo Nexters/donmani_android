@@ -34,7 +34,7 @@ enum class BottleType {
 fun getDecorationPosition(decorationId: String): DecorationPosition {
     return when (decorationId) {
         "20" -> DecorationPosition.BOTTOM_END
-        "23" -> DecorationPosition.ABOVE_BOTTLE
+        "23", "3" -> DecorationPosition.ABOVE_BOTTLE
         else -> DecorationPosition.TOP_START
     }
 }

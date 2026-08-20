@@ -11,7 +11,9 @@ import com.gowoon.common.util.FirebaseAnalyticsUtil
 import com.gowoon.common.util.NotificationConstants
 import com.gowoon.domain.common.Result
 import com.gowoon.domain.usecase.config.HideStarBottleOpenSheetUseCase
+import com.gowoon.domain.usecase.config.HideFortuneGuideBottomSheetUseCase
 import com.gowoon.domain.usecase.config.HideYesterdayTooltipUseCase
+import com.gowoon.domain.usecase.config.ShowFortuneGuideBottomSheetUseCase
 import com.gowoon.domain.usecase.config.ShowStarBottleOpenSheetUseCase
 import com.gowoon.domain.usecase.config.ShowYesterdayTooltipUseCase
 import com.gowoon.domain.usecase.fortune.ReadFortuneUseCase
@@ -48,6 +50,8 @@ class HomeViewModel @Inject constructor(
     private val getRewardReceivedTooltipStateUseCase: GetRewardReceivedTooltipStateUseCase,
     private val hideRewardReceivedTooltipUseCase: HideRewardReceivedTooltipUseCase,
     private val showRewardReceivedTooltipUseCase: ShowRewardReceivedTooltipUseCase,
+    private val showFortuneGuideBottomSheetUseCase: ShowFortuneGuideBottomSheetUseCase,
+    private val hideFortuneGuideBottomSheetUseCase: HideFortuneGuideBottomSheetUseCase,
     private val showFortuneUseCase: ShowFortuneUseCase,
     private val readFortuneUseCase: ReadFortuneUseCase
 //    private val getBgmStateUseCase: GetBgmStateUseCase
@@ -89,6 +93,10 @@ class HomeViewModel @Inject constructor(
 
             is HomeEvent.HideBottomSheet -> {
                 hideSheet()
+            }
+
+            is HomeEvent.HideFortuneGuideBottomSheet -> {
+                hideFortuneGuideSheet()
             }
 
             is HomeEvent.UpdateRewardTooltipState -> {
@@ -201,6 +209,19 @@ class HomeViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            showFortuneGuideBottomSheetUseCase().stateIn(this).collect {
+                when (it) {
+                    is Result.Success -> {
+                        setState(currentState.copy(showFortuneGuideBottomSheet = it.data))
+                    }
+
+                    is Result.Error -> {
+                        // TODO error handling
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
             showFortuneUseCase().stateIn(this).collect {
                 when (val result = it) {
                     is Result.Success -> {
@@ -256,6 +277,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun hideFortuneGuideSheet() {
+        viewModelScope.launch {
+            if (hideFortuneGuideBottomSheetUseCase() is Result.Error) {
+                // TODO error handling
+            }
+        }
+    }
+
     private fun hasRecordOfDay(records: List<Record>, date: LocalDate): Boolean {
         return records.any { record -> record.date == date }
     }
@@ -306,17 +335,33 @@ data class HomeState(
     val showTooltip: Boolean = true,
     val showBottomSheet: Boolean = false,
     val showRewardTooltip: Boolean = false,
+    val showFortuneGuideBottomSheet: Boolean = false,
     val storedState: String? = null,
     val fortuneData: Fortune? = null,
     val showFortuneDialog: Boolean = false,
     val isTodayExpenseExist: Boolean? = null
 //    val bgmPlayOn: Boolean = false
-) : UiState
+) : UiState {
+    val currentPopup: HomePopup?
+        get() = when {
+            showBottomSheet && bbsState.records.isEmpty() -> HomePopup.StarBottleOpen
+            showFortuneGuideBottomSheet -> HomePopup.FortuneGuide
+            showFortuneDialog && fortuneData != null -> HomePopup.FortuneDialog
+            else -> null
+        }
+}
+
+enum class HomePopup {
+    StarBottleOpen, // 새로운 달 안내
+    FortuneGuide, // 운세 안내
+    FortuneDialog // 오늘의 운세
+}
 
 sealed interface HomeEvent : UiEvent {
     data object HideTooltip : HomeEvent
     data class OnAddRecord(val newRecord: Record?, val recordAdded: Boolean) : HomeEvent
     data object HideBottomSheet : HomeEvent
+    data object HideFortuneGuideBottomSheet : HomeEvent
     data class UpdateRewardTooltipState(val state: Boolean) : HomeEvent
     data class UpdateDecorationState(val changed: String, val message: String) : HomeEvent
     data class HideFortuneDialog(val toastMessage: String) : HomeEvent
@@ -327,4 +372,3 @@ sealed interface HomeEffect : UiEffect {
     data class ShowToast(val message: String) : HomeEffect
     data class ShowFortuneToast(val message: String) : HomeEffect
 }
-

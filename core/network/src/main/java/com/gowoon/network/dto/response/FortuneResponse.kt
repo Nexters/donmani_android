@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class FortuneResponse(
     @SerialName("targetDate")
     val targetDate: String,
-    @SerialName("title")
-    val title: String,
+    @SerialName("imageUrl")
+    val imageUrl: String? = null,
     @SerialName("subtitle")
     val subtitle: String,
     @SerialName("content")

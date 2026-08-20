@@ -94,6 +94,20 @@ class ConfigRepositoryImpl @Inject constructor(
             Result.Error(message = e.message)
         }
 
+    override suspend fun getFortuneGuideSheetState(): Flow<Result<Boolean>> =
+        try {
+            configDataSource.getFortuneGuideSheetState().map { Result.Success(it) }
+        } catch (e: Exception) {
+            flow { emit(Result.Error(message = e.message)) }
+        }
+
+    override suspend fun setFortuneGuideSheetState(state: Boolean): Result<Unit> =
+        try {
+            Result.Success(configDataSource.setFortuneGuideSheetState(state))
+        } catch (e: Exception) {
+            Result.Error(message = e.message)
+        }
+
 //    override suspend fun getBgmPlayState(): Flow<Result<Boolean>> = try {
 //        configDataSource.getBgmPlayStatus().map { Result.Success(it) }
 //    } catch (e: Exception) {
