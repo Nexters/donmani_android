@@ -1,15 +1,15 @@
 [versions]
 # app info
 applicationId = "com.gowoon.donmani_android"
-compileSdk = "35"
+compileSdk = "36"
 minSdk = "28"
-targetSdk = "35"
+targetSdk = "36"
 versionCode = "39"
 versionName = "2.4.0"
 apiVersion = "v1"
 
 # android
-agp = "8.8.0"
+agp = "8.9.1"
 coreKtx = "1.15.0"
 lifecycle = "2.8.7"
 activityCompose = "1.10.0"
