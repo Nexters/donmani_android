@@ -25,18 +25,27 @@ import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.gowoon.designsystem.component.Tooltip
+import com.gowoon.designsystem.component.TooltipCaretAlignment
+import com.gowoon.designsystem.component.TooltipDirection
 import com.gowoon.designsystem.theme.DonmaniTheme
+import com.gowoon.designsystem.util.noRippleClickable
 import com.gowoon.designsystem.util.pxToDp
 import com.gowoon.model.record.Category
 import com.gowoon.model.reward.BottleType
@@ -47,8 +56,7 @@ import com.gowoon.model.reward.getDecorationAnimation
 import com.gowoon.model.reward.getDecorationPosition
 import com.gowoon.ui.component.StarBottleMode
 import com.gowoon.ui.util.getColor
-import com.gowoon.designsystem.util.noRippleClickable
-import io.github.aakira.napier.Napier
+import com.gowoon.designsystem.R as DesignR
 
 enum class BGMode { DEFAULT, SPECIAL }
 
@@ -130,10 +138,32 @@ fun Decoration(
     onClickDecoration: (() -> Unit)? = null
 ) {
     decoration?.let {
-        Napier.d { "gowoon decoration is not null $it" }
+        val topCenterX = targetRect.topCenter.x.pxToDp()
+        val topCenterY = targetRect.topCenter.y.pxToDp()
+
+        fun aboveBottleOffset(starBottleMode: StarBottleMode) = run {
+            val default = when (bottleType) {
+                BottleType.DEFAULT -> Pair(50.dp, (-15).dp)
+                BottleType.CIRCLE -> Pair(0.dp, 0.dp)
+                BottleType.HEART -> Pair(60.dp, 20.dp)
+            }
+            val additional = if (starBottleMode == StarBottleMode.Default) {
+                when (bottleType) {
+                    BottleType.DEFAULT -> Pair(20.dp, -5.dp)
+                    BottleType.CIRCLE -> Pair(0.dp, 10.dp)
+                    BottleType.HEART -> Pair(20.dp, 18.dp)
+                }
+            } else {
+                Pair(0.dp, 0.dp)
+            }
+            Pair(
+                topCenterX - 40.dp + default.first + additional.first,
+                topCenterY - 40.dp + default.second + additional.second
+            )
+        }
+
         val decorationOffset = when (getDecorationPosition(it.id)) {
             DecorationPosition.TOP_START -> {
-                Napier.d { "gowoon Top Start" }
                 when (starBottleMode) {
                     StarBottleMode.Default -> {
                         Pair(
@@ -152,12 +182,11 @@ fun Decoration(
             }
 
             DecorationPosition.BOTTOM_END -> {
-                Napier.d { "gowoon Bottom End" }
                 when (starBottleMode) {
                     StarBottleMode.Default -> {
                         Pair(
                             targetRect.bottomRight.x.pxToDp() - 70.dp,
-                            targetRect.bottomRight.y.pxToDp()
+                            targetRect.bottomRight.y.pxToDp() - 10.dp
                         )
                     }
 
@@ -171,28 +200,26 @@ fun Decoration(
             }
 
             DecorationPosition.ABOVE_BOTTLE -> {
-                Napier.d { "gowoon Above Bottle" }
-                val default = when (bottleType) {
-                    BottleType.DEFAULT -> Pair(50.dp, (-15).dp)
-                    BottleType.CIRCLE -> Pair(0.dp, 0.dp)
-                    BottleType.HEART -> Pair(60.dp, 20.dp)
-                }
-                val additional = if (starBottleMode == StarBottleMode.Default) {
-                    Napier.d { "gowoon default" }
-                    when (bottleType) {
-                        BottleType.DEFAULT -> Pair(20.dp, -5.dp)
-                        BottleType.CIRCLE -> Pair(0.dp, 10.dp)
-                        BottleType.HEART -> Pair(20.dp, 18.dp)
-                    }
-                } else {
-                    Pair(0.dp, 0.dp)
-                }
-                Pair(
-                    targetRect.topCenter.x.pxToDp() - 40.dp + default.first + additional.first,
-                    targetRect.topCenter.y.pxToDp() - 40.dp + default.second + additional.second
-                )
+                aboveBottleOffset(starBottleMode)
             }
         }
+        val fortuneCtaOffset = aboveBottleOffset(StarBottleMode.Default)
+        val showFortuneCta =
+            !it.hidden && starBottleMode == StarBottleMode.Default && onClickDecoration != null
+        val showHiddenFortuneCta =
+            it.hidden && starBottleMode == StarBottleMode.Default && onClickDecoration != null
+        val fortuneTooltipAnchor = if (it.hidden) {
+            Pair(
+                decorationOffset.first + 50.dp,
+                decorationOffset.second + 20.dp
+            )
+        } else {
+            Pair(
+                fortuneCtaOffset.first + 48.dp,
+                fortuneCtaOffset.second + 20.dp
+            )
+        }
+        var fortuneTooltipWidth by remember { mutableStateOf(0) }
         val animationOffset by rememberInfiniteTransition().animateFloat(
             initialValue = 0f,
             targetValue = 12f,
@@ -220,17 +247,16 @@ fun Decoration(
             DecorationAnimation.NONE -> Modifier
         }
         Box(modifier.fillMaxSize()) {
-            if (!it.hidden && starBottleMode == StarBottleMode.Default && onClickDecoration != null) {
-                Napier.d { "gowoon default tobby offset $decorationOffset" }
+            if (showFortuneCta) {
                 AsyncImage(
                     modifier = Modifier
                         .offset(
-                            x = decorationOffset.first,
-                            y = decorationOffset.second - 15.dp
+                            x = fortuneCtaOffset.first,
+                            y = fortuneCtaOffset.second
                         )
                         .width(96.dp)
                         .noRippleClickable(onClickDecoration),
-                    model = com.gowoon.designsystem.R.drawable.fortune_tobby_cta,
+                    model = DesignR.drawable.fortune_tobby_cta,
                     contentDescription = null
                 )
             }
@@ -250,6 +276,24 @@ fun Decoration(
                 model = it.resourceUrl,
                 contentDescription = null
             )
+            if (showFortuneCta || showHiddenFortuneCta) {
+                Tooltip(
+                    modifier = Modifier
+                        .offset(
+                            x = fortuneTooltipAnchor.first - (fortuneTooltipWidth / 2).pxToDp(),
+                            y = fortuneTooltipAnchor.second - 44.dp
+                        )
+                        .onSizeChanged { size -> fortuneTooltipWidth = size.width },
+                    direction = TooltipDirection.TopOf,
+                    caretAlignment = TooltipCaretAlignment.Center,
+                    backgroundColor = DonmaniTheme.colors.Green50,
+                    showCloseButton = false,
+                    verticalPadding = 3.dp,
+                    horizontalPadding = 5.dp,
+                    cornerRadius = 6.dp,
+                    message = stringResource(R.string.fortune_tooltip_message)
+                ) { }
+            }
         }
     }
 }

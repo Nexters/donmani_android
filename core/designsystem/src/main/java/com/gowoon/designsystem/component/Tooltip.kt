@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.gowoon.designsystem.R
 import com.gowoon.designsystem.theme.DonmaniTheme
@@ -41,6 +42,10 @@ fun Tooltip(
     caretAlignment: TooltipCaretAlignment,
     backgroundColor: Color = DonmaniTheme.colors.DeepBlue10,
     contentColor: Color = DonmaniTheme.colors.DeepBlue99,
+    verticalPadding: Dp = 8.dp,
+    horizontalPadding: Dp = 12.dp,
+    cornerRadius: Dp = 10.dp,
+    fontWeight: FontWeight = FontWeight.Medium,
     message: String,
     onClick: () -> Unit
 ) {
@@ -51,6 +56,10 @@ fun Tooltip(
                     showCloseButton = showCloseButton,
                     backgroundColor = backgroundColor,
                     contentColor = contentColor,
+                    verticalPadding = verticalPadding,
+                    horizontalPadding = horizontalPadding,
+                    cornerRadius = cornerRadius,
+                    fontWeight = fontWeight,
                     message = message
                 )
                 TooltipCaret(
@@ -70,6 +79,10 @@ fun Tooltip(
                     showCloseButton = showCloseButton,
                     backgroundColor = backgroundColor,
                     contentColor = contentColor,
+                    verticalPadding = verticalPadding,
+                    horizontalPadding = horizontalPadding,
+                    cornerRadius = cornerRadius,
+                    fontWeight = fontWeight,
                     message = message
                 )
             }
@@ -82,24 +95,28 @@ private fun TooltipBody(
     showCloseButton: Boolean,
     backgroundColor: Color,
     contentColor: Color,
+    verticalPadding: Dp,
+    horizontalPadding: Dp,
+    cornerRadius: Dp,
+    fontWeight: FontWeight,
     message: String,
 ) {
     Row(
         modifier = Modifier
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(10.dp)
+                shape = RoundedCornerShape(cornerRadius)
             )
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .padding(vertical = verticalPadding, horizontal = horizontalPadding),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             text = message,
             color = contentColor,
-            style = DonmaniTheme.typography.Body3.copy(fontWeight = FontWeight.Medium)
+            style = DonmaniTheme.typography.Body3.copy(fontWeight = fontWeight)
         )
-        if(showCloseButton){
+        if (showCloseButton) {
             Icon(
                 modifier = Modifier.size(16.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.close),

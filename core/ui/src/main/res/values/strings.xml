@@ -7,6 +7,7 @@
     <string name="fortune_card_title_prefix">토비 요정이 전해주는</string>
     <string name="fortune_card_date">%1$02d년 %2$d월 %3$d일 운세</string>
     <string name="fortune_card_item_prefix">⭐</string>
+    <string name="fortune_tooltip_message">오늘 운세보기</string>
     <!-- toast -->
     <string name="toast_max_length">최대로 작성했어요</string>
     <string name="toast_invalid_character">특수문자는 입력할 수 없어요</string>
